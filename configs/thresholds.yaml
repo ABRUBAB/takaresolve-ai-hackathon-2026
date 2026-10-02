@@ -8,7 +8,11 @@ ai1_pause_check:
   amber: null    # filled by NB01
   red: null
 ai5_qr_shield:
-  review_capacity_per_day: 20     # precision@k uses this k
+  review_capacity_per_week: 20    # precision@k: analysts review the top 20 merchant-weeks each week
   conformal_alpha: 0.10
   amber: null
   red: null
+ai3_cashflow:
+  max_warning_rate: 0.30          # warn at most 30% of customer-weeks (alert budget)
+ai4_liquidity:
+  max_warning_rate: 0.25          # warn at most 25% of agent-days (alert budget)

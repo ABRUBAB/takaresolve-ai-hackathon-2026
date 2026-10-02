@@ -1,4 +1,11 @@
-"""AI-3 Cash-Flow Guardian and AI-4 Agent Liquidity Copilot (both use uvera_ml.forecast)."""
+"""AI-3 Cash-Flow Guardian and AI-4 Agent Liquidity Copilot (both use uvera_ml.forecast).
+
+Event probabilities ("balance below the floor at the end of the next 7 days", "cash demand above the agent's cash on
+hand") are NOT obtained by adding daily quantiles (quantiles of a sum are not the sum of quantiles). Instead we use an
+empirical, conformal-style method: on validation origins we record how real outcomes scattered around the forecast,
+normalised by each series' own forecast width, and read probabilities from that empirical distribution. The warning
+threshold is chosen on validation (best F1), never fixed at 0.5 and never tuned on the test set.
+"""
 from __future__ import annotations
 
 from pathlib import Path
@@ -10,7 +17,8 @@ from uvera_ml import forecast as F
 from uvera_ml.common import load_config, write_json
 from uvera_ml.eval import metrics as M
 from uvera_ml.eval import plots
-from uvera_ml.uncertainty.calibration import IsotonicCalibrator
+
+PROBS = np.linspace(0, 1, 1001)
 
 
 def _summarise(res: pd.DataFrame) -> list[dict]:
@@ -18,12 +26,58 @@ def _summarise(res: pd.DataFrame) -> list[dict]:
             .round(4).reset_index().to_dict("records"))
 
 
-def _prob_metrics(p: np.ndarray, y: np.ndarray, base: np.ndarray) -> dict:
-    flag = p >= 0.5
-    return {"events": int(y.sum()), "n": int(len(y)), "brier": M.brier(y, p), "brier_baseline": M.brier(y, base),
-            "pr_auc": M.pr_auc(y, p), "pr_auc_baseline": M.pr_auc(y, base), "ece": M.ece(y, p),
-            "recall_at_0.5": float(flag[y == 1].mean()) if y.any() else None,
-            "precision_at_0.5": float(y[flag].mean()) if flag.any() else None}
+def ecdf(sorted_r: np.ndarray, z) -> np.ndarray:
+    """P(R <= z) from a sorted sample."""
+    return np.searchsorted(sorted_r, np.asarray(z, float), side="right") / max(1, len(sorted_r))
+
+
+def residual_quantiles(r: np.ndarray) -> list[float]:
+    return np.quantile(r, PROBS).tolist()
+
+
+def cdf_from_quantiles(q: list[float], z) -> np.ndarray:
+    """P(R <= z) using the exported quantile table (used by the API)."""
+    q = np.asarray(q, float)
+    return np.interp(np.asarray(z, float), q, PROBS, left=0.0, right=1.0)
+
+
+def best_threshold(p: np.ndarray, y: np.ndarray, beta: float = 1.0, max_flag_rate: float = 1.0) -> float:
+    """Validation-only operating point: best F-beta among cut-offs that warn on at most `max_flag_rate` of cases
+    (an alert budget, like AI-1), so a weak signal can never 'win' by warning everyone."""
+    best_t, best_f = float(np.quantile(p, 1 - max_flag_rate)), -1.0
+    for t in np.unique(np.quantile(p, np.linspace(0.0, 0.995, 200))):
+        flag = p >= t
+        tp = float((flag & (y == 1)).sum())
+        if tp == 0 or flag.mean() > max_flag_rate:
+            continue
+        prec, rec = tp / flag.sum(), tp / max(1, (y == 1).sum())
+        f = (1 + beta ** 2) * prec * rec / (beta ** 2 * prec + rec)
+        if f > best_f:
+            best_t, best_f = float(t), f
+    return best_t
+
+
+def _prob_metrics(p: np.ndarray, y: np.ndarray, base: np.ndarray, thr: float) -> dict:
+    def at(t):
+        flag = p >= t
+        return {"threshold": float(t), "recall": float(flag[y == 1].mean()) if y.any() else None,
+                "precision": float(y[flag].mean()) if flag.any() else None, "flag_rate": float(flag.mean())}
+
+    return {"events": int(y.sum()), "n": int(len(y)), "base_rate": float(y.mean()), "brier": M.brier(y, p),
+            "brier_baseline": M.brier(y, base), "pr_auc": M.pr_auc(y, p), "pr_auc_baseline": M.pr_auc(y, base),
+            "ece": M.ece(y, p), "at_validation_threshold": at(thr), "at_0.5_for_reference": at(0.5)}
+
+
+def _cross_fit(val: pd.DataFrame, z_col: str, upper_tail: bool) -> np.ndarray:
+    """Probabilities for validation rows using residuals from the OTHER validation origins (no in-sample optimism)."""
+    out = np.zeros(len(val))
+    origins = val["origin"].unique()
+    for o in origins:
+        mask = (val["origin"] == o).to_numpy()
+        pool = val.loc[~mask, "r"] if len(origins) > 1 else val["r"]
+        c = ecdf(np.sort(pool.to_numpy()), val.loc[mask, z_col])
+        out[mask] = 1 - c if upper_tail else c
+    return out
 
 
 def run_ai3(world, out: str | Path, n_customers: int = 2000, use_chronos: bool = True) -> dict:
@@ -38,25 +92,34 @@ def run_ai3(world, out: str | Path, n_customers: int = 2000, use_chronos: bool =
     winner = F.pick_winner(res)
     p = preds[winner]
 
-    # P(shortfall): balance at the end of the 7-day horizon falls below the floor
-    agg = p.groupby(["id", "origin"]).agg(mu=("q0.5", "sum"), lo=("q0.1", "sum"), hi=("q0.9", "sum")).reset_index()
+    # event: balance below the floor at the END of the next 7 days
+    actual = s.set_index(["id", "day"])["target"]
+    p = p.assign(actual=actual.reindex(pd.MultiIndex.from_arrays([p["id"], p["day"]])).to_numpy())
+    agg = p.groupby(["id", "origin", "split"]).agg(mu=("q0.5", "sum"), lo=("q0.1", "sum"), hi=("q0.9", "sum"),
+                                                   actual_sum=("actual", "sum")).reset_index()
     bal0 = s.set_index(["id", "day"])["balance_sod"]
-    agg["balance_now"] = bal0.reindex(pd.MultiIndex.from_arrays([agg["id"], agg["origin"]])).to_numpy()
-    agg["p_shortfall"] = 1 - F.normal_prob_above(floor - agg["balance_now"], agg["lo"], agg["mu"], agg["hi"])
     end = s.set_index(["id", "day"])["balance_eod"]
+    agg["balance_now"] = bal0.reindex(pd.MultiIndex.from_arrays([agg["id"], agg["origin"]])).to_numpy()
     agg["balance_end_actual"] = end.reindex(pd.MultiIndex.from_arrays([agg["id"], agg["origin"] + F.HORIZON - 1])).to_numpy()
     agg = agg.dropna(subset=["balance_now", "balance_end_actual"])
     agg["actual_shortfall"] = (agg["balance_end_actual"] < floor).astype(int)
-    agg["split"] = agg["origin"].map(p.drop_duplicates("origin").set_index("origin")["split"])
-    val, te = agg[agg["split"] == "val"], agg[agg["split"] == "test"].copy()
-    calib = IsotonicCalibrator().fit(val["p_shortfall"], val["actual_shortfall"])  # recalibrated on validation origins
-    te["p_shortfall_raw"] = te["p_shortfall"]
-    te["p_shortfall"] = calib.predict(te["p_shortfall_raw"])
+    agg["scale"] = np.maximum(agg["hi"] - agg["lo"], 1.0)
+    agg["r"] = (agg["actual_sum"] - agg["mu"]) / agg["scale"]
+    agg["z"] = (floor - agg["balance_now"] - agg["mu"]) / agg["scale"]
+    agg["p_naive"] = 1 - F.normal_prob_above(floor - agg["balance_now"], agg["lo"], agg["mu"], agg["hi"])
+
+    val, te = agg[agg["split"] == "val"].copy(), agg[agg["split"] == "test"].copy()
+    val["p_shortfall"] = _cross_fit(val, "z", upper_tail=False)
+    budget = load_config("thresholds").get("ai3_cashflow", {}).get("max_warning_rate", 0.30)
+    thr = best_threshold(val["p_shortfall"].to_numpy(), val["actual_shortfall"].to_numpy(), beta=1.0, max_flag_rate=budget)
+    R = np.sort(val["r"].to_numpy())
+    te["p_shortfall"] = ecdf(R, te["z"])
+    lo_r, hi_r = np.quantile(R, [0.1, 0.9])
+    interval_cov = float(((te["actual_sum"] >= te["mu"] + lo_r * te["scale"]) & (te["actual_sum"] <= te["mu"] + hi_r * te["scale"])).mean())
+
     y = te["actual_shortfall"].to_numpy()
     hist = s[s["day"] < F.origins(world.n_days)["train_end"]].groupby("id")["balance_eod"].apply(lambda b: (b < floor).mean())
     base = te["id"].map(hist).fillna(0).to_numpy()
-    raw_metrics = _prob_metrics(te["p_shortfall_raw"].to_numpy(), y, base)
-    agg = te
 
     ex = s["id"].iloc[0]
     o0 = p["origin"].min()
@@ -65,15 +128,23 @@ def run_ai3(world, out: str | Path, n_customers: int = 2000, use_chronos: bool =
     if len(pe):
         plots.forecast_band(pe["date"], hist_days.set_index("day").loc[pe["day"], "target"], pe["q0.1"], pe["q0.5"], pe["q0.9"],
                             rep / "figures" / "ai3_forecast_example.png", f"AI-3 net cash-flow forecast ({winner})")
+    plots.reliability({"empirical (ours)": M.reliability_table(y, te["p_shortfall"]),
+                       "sum-of-quantiles normal (naive)": M.reliability_table(y, te["p_naive"])},
+                      rep / "figures" / "ai3_shortfall_reliability.png", "AI-3 shortfall probability calibration (test)")
 
-    p = p[p["split"] == "test"]
-    p.to_parquet(art / "forecasts.parquet", index=False)
-    agg.to_parquet(art / "shortfall.parquet", index=False)
-    write_json(art / "shortfall_calibrator.json", calib.to_json())
+    p[p["split"] == "test"].drop(columns=["actual"]).to_parquet(art / "forecasts.parquet", index=False)
+    te.drop(columns=["r", "actual_sum"]).to_parquet(art / "shortfall.parquet", index=False)
+    write_json(art / "residuals.json", {"method": "empirical normalised 7-day-sum residuals (validation origins)",
+                                        "quantiles": residual_quantiles(R), "threshold": thr, "floor_bdt": floor,
+                                        "horizon_days": F.HORIZON})
     summary = {"ai": "AI-3 Cash-Flow Guardian", "target": "daily net flow (inflow - outflow)", "horizon_days": F.HORIZON,
+               "event": f"balance below Tk {floor} at the end of the next {F.HORIZON} days",
                "n_series": int(s["id"].nunique()), "winner_on_validation": winner, "backtest": _summarise(res),
-               "shortfall_floor_bdt": floor, "shortfall_probability_test": _prob_metrics(agg["p_shortfall"].to_numpy(), y, base),
-               "shortfall_probability_test_before_recalibration": raw_metrics,
+               "probability_method": "empirical normalised residuals of the 7-day sum (calibrated on validation origins)",
+               "validation_threshold": thr, "threshold_rule": "best F1 on validation within an alert budget (configs/thresholds.yaml)",
+               "seven_day_sum_80pct_interval_coverage_test": interval_cov,
+               "shortfall_probability_test": _prob_metrics(te["p_shortfall"].to_numpy(), y, base, thr),
+               "shortfall_probability_test_naive_sum_of_quantiles": _prob_metrics(te["p_naive"].to_numpy(), y, base, thr),
                "baseline": "historical frequency of low balance (training window)"}
     write_json(rep / "metrics_ai3.json", summary)
     res.to_csv(rep / "ai3_backtest.csv", index=False)
@@ -93,38 +164,55 @@ def run_ai4(world, out: str | Path, use_chronos: bool = True) -> dict:
     winner = F.pick_winner(res)
     p = preds[winner].copy()
     p["capacity"] = p["id"].map(cap)
-    p["p_stockout"] = F.normal_prob_above(p["capacity"], p["q0.1"], p["q0.5"], p["q0.9"])
-    p["topup_needed_bdt"] = np.maximum(0, np.round((p["q0.9"] - p["capacity"]) / 500) * 500)
     act = s.set_index(["id", "day"])["target"]
     p["actual"] = act.reindex(pd.MultiIndex.from_arrays([p["id"], p["day"]])).to_numpy()
     p["actual_stockout"] = (p["actual"] > p["capacity"]).astype(int)
-    vp = p[p["split"] == "val"]
-    calib = IsotonicCalibrator().fit(vp["p_stockout"], vp["actual_stockout"])
-    p = p[p["split"] == "test"].copy()
-    p["p_stockout_raw"] = p["p_stockout"]
-    p["p_stockout"] = calib.predict(p["p_stockout_raw"])
-    y = p["actual_stockout"].to_numpy()
+    p["scale"] = np.maximum(p["q0.9"] - p["q0.1"], 1.0)
+    p["r"] = (p["actual"] - p["q0.5"]) / p["scale"]
+    p["z"] = (p["capacity"] - p["q0.5"]) / p["scale"]
+    p["p_naive"] = F.normal_prob_above(p["capacity"], p["q0.1"], p["q0.5"], p["q0.9"])
+    p["topup_needed_bdt"] = np.maximum(0, np.round((p["q0.9"] - p["capacity"]) / 500) * 500)
+
+    val, te = p[p["split"] == "val"].copy(), p[p["split"] == "test"].copy()
+    val["p_stockout"] = _cross_fit(val, "z", upper_tail=True)
+    # a missed stock-out (agent cannot pay customers) costs more than an extra top-up check -> recall-weighted F2
+    budget = load_config("thresholds").get("ai4_liquidity", {}).get("max_warning_rate", 0.25)
+    thr = best_threshold(val["p_stockout"].to_numpy(), val["actual_stockout"].to_numpy(), beta=2.0, max_flag_rate=budget)
+    R = np.sort(val["r"].to_numpy())
+    te["p_stockout"] = 1 - ecdf(R, te["z"])
+    y = te["actual_stockout"].to_numpy()
+    band = (te["q0.9"] > te["capacity"]).to_numpy()  # action rule: plan for the bad-but-plausible day
+    band_rule = {"rule": "top up when the 90% forecast exceeds cash on hand", "recall": float(band[y == 1].mean()) if y.any() else None,
+                 "precision": float(y[band].mean()) if band.any() else None, "flag_rate": float(band.mean())}
     tr = s[s["day"] < org["train_end"]].assign(dow=lambda d: d["date"].dt.dayofweek, cap=lambda d: d["id"].map(cap))
     freq = (tr["target"] > tr["cap"]).groupby([tr["id"], tr["dow"]]).mean()
-    dows = (pd.Timestamp(world.meta["start"]) + pd.to_timedelta(p["day"], unit="D")).dt.dayofweek
-    base = freq.reindex(pd.MultiIndex.from_arrays([p["id"], dows])).fillna(0).to_numpy()
+    dows = (pd.Timestamp(world.meta["start"]) + pd.to_timedelta(te["day"], unit="D")).dt.dayofweek
+    base = freq.reindex(pd.MultiIndex.from_arrays([te["id"], dows])).fillna(0).to_numpy()
 
     ex = s["id"].iloc[0]
-    o0 = p["origin"].min()
+    o0 = te["origin"].min()
     hist_days = s[(s["id"] == ex) & (s["day"] >= o0 - 21) & (s["day"] < o0 + F.HORIZON)]
-    pe = p[(p["id"] == ex) & (p["origin"] == o0)].merge(hist_days[["day", "date"]], on="day")
+    pe = te[(te["id"] == ex) & (te["origin"] == o0)].merge(hist_days[["day", "date"]], on="day")
     if len(pe):
         plots.forecast_band(pe["date"], pe["actual"], pe["q0.1"], pe["q0.5"], pe["q0.9"],
                             rep / "figures" / "ai4_forecast_example.png", f"AI-4 agent cash-out demand ({winner})")
+    plots.reliability({"empirical (ours)": M.reliability_table(y, te["p_stockout"]),
+                       "normal approximation (naive)": M.reliability_table(y, te["p_naive"])},
+                      rep / "figures" / "ai4_stockout_reliability.png", "AI-4 stock-out probability calibration (test)")
 
-    p.to_parquet(art / "forecasts.parquet", index=False)
-    write_json(art / "stockout_calibrator.json", calib.to_json())
+    te.drop(columns=["r"]).to_parquet(art / "forecasts.parquet", index=False)
+    write_json(art / "residuals.json", {"method": "empirical normalised daily residuals (validation origins)",
+                                        "quantiles": residual_quantiles(R), "threshold": thr})
     pd.DataFrame({"agent_id": cap.index, "capacity_bdt": cap.round(0).to_numpy()}).to_parquet(art / "capacity.parquet", index=False)
     summary = {"ai": "AI-4 Agent Liquidity Copilot", "target": "daily cash-out demand per agent", "horizon_days": F.HORIZON,
+               "event": "cash-out demand above the agent's cash on hand on that day",
                "n_agents": int(s["id"].nunique()), "winner_on_validation": winner, "backtest": _summarise(res),
                "capacity_rule": "agent_capacity_factor x mean daily demand in the training window [ASSUMPTION]",
-               "stockout_probability_test": _prob_metrics(p["p_stockout"].to_numpy(), y, base),
-               "stockout_probability_test_before_recalibration": _prob_metrics(p["p_stockout_raw"].to_numpy(), y, base),
+               "probability_method": "empirical normalised residuals (calibrated on validation origins)",
+               "validation_threshold": thr, "threshold_rule": "best F2 on validation within an alert budget (configs/thresholds.yaml)",
+               "action_rule_test": band_rule,
+               "stockout_probability_test": _prob_metrics(te["p_stockout"].to_numpy(), y, base, thr),
+               "stockout_probability_test_naive_normal": _prob_metrics(te["p_naive"].to_numpy(), y, base, thr),
                "baseline": "historical stock-out frequency per agent and weekday (training window)"}
     write_json(rep / "metrics_ai4.json", summary)
     res.to_csv(rep / "ai4_backtest.csv", index=False)
