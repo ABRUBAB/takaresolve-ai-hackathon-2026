@@ -1,0 +1,140 @@
+{
+  "ai": "AI-5 QR Shield",
+  "model": "70% LightGBM + 30% IsolationForest (rank fusion)",
+  "held_out_family": "D_rotating_ring",
+  "fee_rate_assumption": {
+    "fee_rate": 0.015,
+    "verified": false,
+    "note": "[ASSUMPTION] placeholder; a Sept 2026 press report mentions Tk 12-18 per cash-out - check the unit/basis before quoting."
+  },
+  "single_feature_auc_top3": {
+    "A_round_amount_atm": [
+      [
+        "peer_z_round",
+        0.961
+      ],
+      [
+        "round_share",
+        0.832
+      ],
+      [
+        "amount_cv",
+        0.78
+      ]
+    ],
+    "B_split_under_limit": [
+      [
+        "burst_share",
+        0.913
+      ],
+      [
+        "payments_per_payer",
+        0.887
+      ],
+      [
+        "repeat_payer_share",
+        0.872
+      ]
+    ],
+    "C_cash_in_pass_through": [
+      [
+        "cashin_gap_share",
+        0.902
+      ],
+      [
+        "amount_cv",
+        0.886
+      ],
+      [
+        "drain_share",
+        0.809
+      ]
+    ],
+    "D_rotating_ring": [
+      [
+        "ticket_ratio_category",
+        0.752
+      ],
+      [
+        "cashin_gap_share",
+        0.707
+      ],
+      [
+        "peer_z_ticket",
+        0.665
+      ]
+    ]
+  },
+  "cv_summary_train": [
+    {
+      "model": "fused",
+      "mean": 0.7524,
+      "std": 0.0811
+    },
+    {
+      "model": "isolation_forest",
+      "mean": 0.4062,
+      "std": 0.1164
+    },
+    {
+      "model": "peer_z",
+      "mean": 0.4445,
+      "std": 0.0925
+    },
+    {
+      "model": "supervised",
+      "mean": 0.822,
+      "std": 0.0637
+    }
+  ],
+  "thresholds": {
+    "amber_score": 0.7828436438801122,
+    "red_score": 0.880732614794035,
+    "frozen": true,
+    "rule": "validation split: amber = 10%, red = 2% of honest merchant-weeks flagged",
+    "amber_p": 0.03571428571428571,
+    "red_p": 0.08333333333333333
+  },
+  "test": {
+    "n_merchant_weeks": 2559,
+    "disguised_weeks": 179,
+    "pr_auc_seen_families": 0.7616209356753325,
+    "pr_auc_all": 0.6938619133392336,
+    "weekly_precision_at_k": 0.875,
+    "k": 20,
+    "recall_by_family": {
+      "A_round_amount_atm": 0.9024390243902439,
+      "B_split_under_limit": 0.8,
+      "C_cash_in_pass_through": 0.8909090909090909,
+      "D_rotating_ring": 0.5263157894736842
+    },
+    "unseen_family_D": {
+      "supervised": 0.09091912705170713,
+      "isolation_forest": 0.04654488584379271,
+      "peer_z": 0.02658485395826298,
+      "fused": 0.12647778302893856
+    },
+    "fpr_honest_round_price_shops": 0.05737704918032787,
+    "fpr_honest_all": 0.09159663865546218,
+    "fpr_by_size": {
+      "small": 0.0710267229254571,
+      "medium": 0.106703146374829,
+      "large": 0.17180616740088106
+    },
+    "ece": 0.021640963397919828,
+    "brier": 0.034587356516288296,
+    "conformal": {
+      "overall": 0.9722547870261821,
+      "class_1": 0.8715083798882681,
+      "class_0": 0.9798319327731092,
+      "unsure_rate": 0.15670183665494333,
+      "target": 0.9
+    },
+    "states": {
+      "green": 2199,
+      "grey_review": 199,
+      "red": 161
+    },
+    "peer_z_baseline_pr_auc": 0.29682273024390826
+  }
+}
