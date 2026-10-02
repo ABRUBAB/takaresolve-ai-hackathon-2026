@@ -32,7 +32,7 @@ def add(zip_path: Path) -> str:
     for n in names:
         print("  ", n)
     subprocess.run(["git", "-C", str(ROOT), "add", "artifacts", "reports"], check=True)
-    staged = subprocess.run(["git", "-C", str(ROOT), "diff", "--cached", "--quiet"])
+    staged = subprocess.run(["git", "-C", str(ROOT), "diff", "--cached", "--quiet"], stdout=subprocess.DEVNULL)
     if staged.returncode == 0:
         print("Nothing new to commit (these results are already in the repo).")
         return nb
