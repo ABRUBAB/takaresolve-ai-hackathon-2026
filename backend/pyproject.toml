@@ -25,5 +25,3 @@ include = ["app*"]
 pythonpath = ["."]
 testpaths = ["tests"]
 
-[tool.ruff]
-line-length = 110
