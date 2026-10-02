@@ -63,9 +63,37 @@ def _logreg(features=FEATURES):
                          LogisticRegression(C=1.0, class_weight="balanced", max_iter=3000))
 
 
+def _xgb(seed, ya):
+    import xgboost as xgb
+
+    pos = max(1, int(ya.sum()))
+    return xgb.XGBClassifier(n_estimators=400, learning_rate=0.05, max_depth=6, subsample=0.8, colsample_bytree=0.8,
+                             scale_pos_weight=np.sqrt((len(ya) - pos) / pos), eval_metric="aucpr", random_state=seed, n_jobs=4)
+
+
+def _cat(seed):
+    from catboost import CatBoostClassifier
+
+    return CatBoostClassifier(iterations=400, learning_rate=0.05, depth=6, auto_class_weights="SqrtBalanced",
+                              random_seed=seed, verbose=False, thread_count=4)
+
+
+def _available() -> list[str]:
+    out = []
+    for name, mod in (("xgboost", "xgboost"), ("catboost", "catboost")):
+        try:
+            __import__(mod)
+            out.append(name)
+        except ImportError:
+            pass
+    return out
+
+
 def cross_validate(train: pd.DataFrame, seeds=(42,), n_splits=5, compare=True) -> tuple[pd.DataFrame, int]:
-    """StratifiedGroupKFold grouped by sender: no customer is in both the fit and the evaluation fold."""
+    """StratifiedGroupKFold grouped by sender. Every model is fitted on EXACTLY the same folds and seeds (paired),
+    so differences between models can be tested fairly."""
     X, y, g = train, train[LABEL].to_numpy(), train["src"].to_numpy()
+    others = _available() if compare else []
     rows, iters = [], []
     for seed in seeds:
         cv = StratifiedGroupKFold(n_splits=n_splits, shuffle=True, random_state=seed)
@@ -73,37 +101,16 @@ def cross_validate(train: pd.DataFrame, seeds=(42,), n_splits=5, compare=True) -
             Xa, Xb, ya, yb = X.iloc[a], X.iloc[b], y[a], y[b]
             booster, it = _fit_lgb(Xa, ya, seed, Xv=Xb, yv=yb)
             iters.append(it)
-            s = booster.predict(Xb[FEATURES], num_iteration=it)
-            rows.append({"model": "lightgbm", "seed": seed, "fold": fold, "pr_auc": M.pr_auc(yb, s), "roc_auc": M.roc_auc(yb, s)})
-            if seed != seeds[0] or not compare:
-                continue
-            rows.append({"model": "rule_baseline", "seed": seed, "fold": fold,
-                         "pr_auc": M.pr_auc(yb, rule_baseline_score(Xb)), "roc_auc": M.roc_auc(yb, rule_baseline_score(Xb))})
-            lr = _logreg().fit(Xa[FEATURES], ya)
-            s = lr.predict_proba(Xb[FEATURES])[:, 1]
-            rows.append({"model": "logistic_regression", "seed": seed, "fold": fold, "pr_auc": M.pr_auc(yb, s), "roc_auc": M.roc_auc(yb, s)})
-            try:
-                import xgboost as xgb
-
-                pos = max(1, ya.sum())
-                m = xgb.XGBClassifier(n_estimators=400, learning_rate=0.05, max_depth=6, subsample=0.8,
-                                      colsample_bytree=0.8, scale_pos_weight=np.sqrt((len(ya) - pos) / pos),
-                                      eval_metric="aucpr", random_state=seed, n_jobs=4)
-                m.fit(Xa[FEATURES], ya)
-                s = m.predict_proba(Xb[FEATURES])[:, 1]
-                rows.append({"model": "xgboost", "seed": seed, "fold": fold, "pr_auc": M.pr_auc(yb, s), "roc_auc": M.roc_auc(yb, s)})
-            except ImportError:
-                pass
-            try:
-                from catboost import CatBoostClassifier
-
-                m = CatBoostClassifier(iterations=400, learning_rate=0.05, depth=6, auto_class_weights="SqrtBalanced",
-                                       random_seed=seed, verbose=False)
-                m.fit(Xa[FEATURES], ya)
-                s = m.predict_proba(Xb[FEATURES])[:, 1]
-                rows.append({"model": "catboost", "seed": seed, "fold": fold, "pr_auc": M.pr_auc(yb, s), "roc_auc": M.roc_auc(yb, s)})
-            except ImportError:
-                pass
+            scores = {"lightgbm": booster.predict(Xb[FEATURES], num_iteration=it)}
+            if compare:
+                scores["rule_baseline"] = rule_baseline_score(Xb)
+                scores["logistic_regression"] = _logreg().fit(Xa[FEATURES], ya).predict_proba(Xb[FEATURES])[:, 1]
+                if "xgboost" in others:
+                    scores["xgboost"] = _xgb(seed, ya).fit(Xa[FEATURES], ya).predict_proba(Xb[FEATURES])[:, 1]
+                if "catboost" in others:
+                    scores["catboost"] = _cat(seed).fit(Xa[FEATURES], ya).predict_proba(Xb[FEATURES])[:, 1]
+            for name, sc in scores.items():
+                rows.append({"model": name, "seed": seed, "fold": fold, "pr_auc": M.pr_auc(yb, sc), "roc_auc": M.roc_auc(yb, sc)})
     folds = pd.DataFrame(rows)
     return folds, int(np.median(iters)) if iters else 300
 
@@ -112,6 +119,68 @@ def summarise_cv(folds: pd.DataFrame) -> pd.DataFrame:
     return (folds.groupby("model").agg(pr_auc_mean=("pr_auc", "mean"), pr_auc_std=("pr_auc", "std"),
                                        roc_auc_mean=("roc_auc", "mean"), n_fits=("pr_auc", "size"))
             .sort_values("pr_auc_mean", ascending=False).round(4).reset_index())
+
+
+EQUIVALENCE_MARGIN = 0.01  # pre-registered: PR-AUC differences smaller than this are treated as practically equal
+
+
+def paired_comparison(folds: pd.DataFrame, reference: str = "lightgbm") -> list[dict]:
+    """Paired difference (model - reference) over identical folds and seeds, with a 95% t-interval."""
+    from scipy import stats
+
+    wide = folds.pivot_table(index=["seed", "fold"], columns="model", values="pr_auc")
+    out = []
+    for m in wide.columns:
+        if m == reference:
+            continue
+        d = (wide[m] - wide[reference]).dropna().to_numpy()
+        if len(d) < 2:
+            continue
+        mean, se = float(d.mean()), float(d.std(ddof=1) / np.sqrt(len(d)))
+        h = float(stats.t.ppf(0.975, len(d) - 1) * se)
+        out.append({"model": m, "vs": reference, "n_pairs": int(len(d)), "mean_diff": mean, "ci95": [mean - h, mean + h],
+                    "significant": bool(mean - h > 0 or mean + h < 0), "wins": int((d > 0).sum())})
+    return out
+
+
+def select_model(cv: pd.DataFrame, paired: list[dict]) -> dict:
+    """Pre-registered rule: take the best mean CV PR-AUC among the boosted-tree models, unless it is not clearly
+    better than LightGBM (CI includes 0 OR gain < EQUIVALENCE_MARGIN). Then keep LightGBM: exact built-in TreeSHAP,
+    smallest artifact and fastest serving. The test set is never used for this choice."""
+    gbdt = cv[cv["model"].isin(["lightgbm", "xgboost", "catboost"])].sort_values("pr_auc_mean", ascending=False)
+    best = str(gbdt.iloc[0]["model"]) if len(gbdt) else "lightgbm"
+    if best == "lightgbm":
+        return {"chosen": "lightgbm", "best_mean_cv": best, "reason": "LightGBM had the highest mean CV PR-AUC."}
+    p = next((x for x in paired if x["model"] == best), None)
+    clearly_better = bool(p and p["significant"] and p["mean_diff"] >= EQUIVALENCE_MARGIN)
+    if clearly_better:
+        return {"chosen": best, "best_mean_cv": best, "reason": f"{best} is clearly better than LightGBM (paired CI excludes 0 and gain >= {EQUIVALENCE_MARGIN})."}
+    return {"chosen": "lightgbm", "best_mean_cv": best,
+            "reason": (f"{best} had the highest mean CV PR-AUC, but the paired difference vs LightGBM "
+                       f"({p['mean_diff']:+.4f}, 95% CI {p['ci95'][0]:+.4f} to {p['ci95'][1]:+.4f}) is not clearly better "
+                       f"(margin {EQUIVALENCE_MARGIN}). LightGBM is kept for exact TreeSHAP reasons and faster serving.") if p else
+                      f"{best} had the highest mean, LightGBM kept (no paired comparison available)."}
+
+
+def test_comparison(tr: pd.DataFrame, ca: pd.DataFrame, te: pd.DataFrame, n_rounds: int, seed: int = 42) -> list[dict]:
+    """Every boosted-tree model through the SAME final pipeline (train -> isotonic on cal -> one test pass).
+    Reported for transparency only; the choice is made on CV, never on the test set."""
+    y, yc = tr[LABEL].to_numpy(), ca[LABEL].to_numpy()
+    models = {"lightgbm": lambda: _fit_lgb(tr, y, seed, n_rounds)[0]}
+    if "xgboost" in _available():
+        models["xgboost"] = lambda: _xgb(seed, y).fit(tr[FEATURES], y)
+    if "catboost" in _available():
+        models["catboost"] = lambda: _cat(seed).fit(tr[FEATURES], y)
+    rows = []
+    for name, make in models.items():
+        m = make()
+        pred = (lambda X, m=m: m.predict(X[FEATURES])) if name == "lightgbm" else (lambda X, m=m: m.predict_proba(X[FEATURES])[:, 1])
+        p = IsotonicCalibrator().fit(pred(ca), yc).predict(pred(te))
+        yt = te[LABEL].to_numpy()
+        rows.append({"model": name, "test_pr_auc": M.pr_auc(yt, p), "test_pr_auc_ci95": M.bootstrap_ci(M.pr_auc, yt, p),
+                     "test_roc_auc": M.roc_auc(yt, p), "test_ece": M.ece(yt, p),
+                     "recall_at_5pct": M.at_alert_rate(yt, p, 0.05)["recall"]})
+    return rows
 
 
 def _states(score, conf_state, ood, thr):
@@ -209,13 +278,18 @@ def run_ai1(world, out: str | Path, seeds=(42, 7, 1337, 2026, 99), quick: bool =
     seeds = seeds[:1] if quick else seeds
     folds, n_rounds = cross_validate(tr, seeds, n_splits=3 if quick else 5, compare=not quick)
     cv = summarise_cv(folds)
+    paired = paired_comparison(folds)
+    selection = select_model(cv, paired)
     print(cv.to_string(index=False))
+    print("Paired vs LightGBM:", paired)
+    print("Model choice:", selection["reason"])
 
     booster, _ = _fit_lgb(tr, tr[LABEL].to_numpy(), seeds[0], n_rounds)
     raw = {k: booster.predict(v[FEATURES]) for k, v in dict(cal=ca, val=va, test=te, test_seen=te_seen).items()}
     calib = IsotonicCalibrator().fit(raw["cal"], ca[LABEL])
     p = {k: calib.predict(v) for k, v in raw.items()}
-    conf = MondrianConformal(alpha).fit(p["cal"], ca[LABEL])
+    # split conformal must be fitted on data NOT used to fit the score function (isotonic was fitted on cal) -> use val
+    conf = MondrianConformal(alpha).fit(p["val"], va[LABEL])
     nov = RobustNovelty().fit(tr[FEATURES])
     neg_val = raw["val"][va[LABEL].to_numpy() == 0]  # thresholds on the continuous model score (no isotonic ties)
     thr = {"amber_score": float(np.quantile(neg_val, 0.95)), "red_score": float(np.quantile(neg_val, 0.99)),
@@ -232,6 +306,7 @@ def run_ai1(world, out: str | Path, seeds=(42, 7, 1337, 2026, 99), quick: bool =
     _, uns_win = _states(raw_win, conf.state(p_win), nov.flag(window[FEATURES]), thr)
     fair = slices(window, p_win, raw_win, uns_win, thr)
     abl = [] if quick else ablation(tr, va, n_rounds)
+    test_cmp = [] if quick else test_comparison(tr, ca, te, n_rounds, seeds[0])
 
     contrib = booster.predict(te[FEATURES], pred_contrib=True)
     imp = np.abs(contrib[:, :-1]).mean(axis=0)
@@ -269,6 +344,8 @@ def run_ai1(world, out: str | Path, seeds=(42, 7, 1337, 2026, 99), quick: bool =
     summary = {"ai": "AI-1 Pause Check", "model": "LightGBM + isotonic + Mondrian conformal + robust novelty",
                "n_rounds": n_rounds, "splits": day_bounds(world.n_days), "world": world.meta,
                "leakage_single_feature_auc": leak.to_dict("records"), "cv_summary": cv.to_dict("records"),
+               "cv_paired_vs_lightgbm": paired, "model_selection": selection, "test_comparison_all_gbdt": test_cmp,
+               "conformal_fitted_on": "validation window (separate from the isotonic calibration window)",
                "thresholds": thr, "test_unseen_customers": test_metrics, "test_seen_customers": seen_metrics,
                "fairness_slices_test_window": fair, "ablation_validation": abl, "global_importance": global_importance}
     write_json(rep / "metrics_ai1.json", summary)

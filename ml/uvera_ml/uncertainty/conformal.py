@@ -11,6 +11,17 @@ import math
 import numpy as np
 
 
+def wilson(k: int, n: int, z: float = 1.96) -> list[float]:
+    """95% Wilson interval for a proportion k/n (shows whether coverage is consistent with the target)."""
+    if n == 0:
+        return [float("nan"), float("nan")]
+    p = k / n
+    den = 1 + z * z / n
+    c = (p + z * z / (2 * n)) / den
+    h = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / den
+    return [c - h, c + h]
+
+
 class MondrianConformal:
     def __init__(self, alpha: float = 0.10, q0: float | None = None, q1: float | None = None):
         self.alpha, self.q0, self.q1 = alpha, q0, q1
@@ -47,7 +58,9 @@ class MondrianConformal:
         return {"overall": float(cov.mean()),
                 "class_1": float(cov[y == 1].mean()) if (y == 1).any() else float("nan"),
                 "class_0": float(cov[y == 0].mean()) if (y == 0).any() else float("nan"),
-                "unsure_rate": float(np.mean(in0 == in1)), "target": 1 - self.alpha}
+                "class_1_ci95": wilson(int(cov[y == 1].sum()), int((y == 1).sum())),
+                "class_0_ci95": wilson(int(cov[y == 0].sum()), int((y == 0).sum())),
+                "n_class_1": int((y == 1).sum()), "unsure_rate": float(np.mean(in0 == in1)), "target": 1 - self.alpha}
 
     def to_json(self) -> dict:
         return {"method": "mondrian_split_conformal", "alpha": self.alpha, "q0": self.q0, "q1": self.q1}

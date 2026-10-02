@@ -118,7 +118,9 @@ def run_ai5(world, out: str | Path, seeds=(42, 7, 1337, 2026, 99), quick: bool =
     s = {k_: (model.score(d) if len(d) else np.array([])) for k_, d in dict(cal=ca, val=va, test=te).items()}
     calib = IsotonicCalibrator().fit(s["cal"], ca["is_disguised"])
     p = {k_: calib.predict(v) for k_, v in s.items()}
-    conf = MondrianConformal(th["conformal_alpha"]).fit(p["cal"], ca["is_disguised"])
+    # conformal on data not used by the isotonic fit (cal): validation weeks when available
+    conf_p, conf_y = (p["val"], va["is_disguised"]) if len(va) else (p["cal"], ca["is_disguised"])
+    conf = MondrianConformal(th["conformal_alpha"]).fit(conf_p, conf_y)
     thr_src, thr_df = ("val", va) if len(va) else ("cal", ca)
     neg_val = s[thr_src][thr_df["is_disguised"].to_numpy() == 0]  # thresholds on the continuous score (no ties)
     thr = {"amber_score": float(np.quantile(neg_val, 0.90)), "red_score": float(np.quantile(neg_val, 0.98)), "frozen": True,

@@ -13,6 +13,9 @@ from pathlib import Path
 
 DEFAULT_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.8-flash")
 FALLBACK_MODEL = os.environ.get("GEMINI_FALLBACK_MODEL", "gemini-3.5-flash-lite")
+# tried in order; the first one that answers is remembered (free tiers differ between keys and regions)
+MODEL_CHAIN = [m for m in dict.fromkeys([DEFAULT_MODEL, "gemini-3.5-flash", FALLBACK_MODEL, "gemini-2.5-flash",
+                                         "gemini-2.5-flash-lite"]) if m]
 
 
 class GeminiUnavailable(RuntimeError):
@@ -57,7 +60,8 @@ class Gemini:
             raise GeminiUnavailable("pip install google-genai") from e
         self._types = types
         self.client = genai.Client(api_key=key, http_options=types.HttpOptions(timeout=int(timeout_s * 1000)))
-        self.models = [model or DEFAULT_MODEL, FALLBACK_MODEL]
+        self.models = list(dict.fromkeys([model, *MODEL_CHAIN])) if model else list(MODEL_CHAIN)
+        self.last_error = None
         self.min_interval_s, self.max_retries = min_interval_s, max_retries
         self._last = 0.0
         self.cache_dir = Path(cache_dir) if cache_dir else None
@@ -92,9 +96,13 @@ class Gemini:
                     data = json.loads(resp.text)
                     if self.cache_dir:
                         (self.cache_dir / f"{key}.json").write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+                    if model != self.models[0]:  # remember the model that works for this key
+                        self.models.remove(model)
+                        self.models.insert(0, model)
                     return data
                 except Exception as e:  # noqa: BLE001 - network/API errors are retried, then we fall back
                     last_err = e
+                    self.last_error = f"{model}: {str(e)[:200]}"
                     msg = str(e)
                     if "429" in msg or "RESOURCE_EXHAUSTED" in msg or "503" in msg or "timeout" in msg.lower():
                         time.sleep(min(60, 5 * 2 ** attempt))
@@ -104,10 +112,13 @@ class Gemini:
         raise GeminiUnavailable(f"Gemini failed: {last_err!r}"[:300])
 
     def ping(self) -> dict:
-        """One tiny request to check the key, region and quota before a long run."""
-        out = self.json("Reply with a JSON list containing the single word ok.", list[str], temperature=0.0)
+        """One tiny request to check the key, region and quota before a long run (tries every model in the chain)."""
+        try:
+            out = self.json("Reply with a JSON list containing the single word ok.", list[str], temperature=0.0)
+        except GeminiUnavailable:
+            return {"ok": False, "tried": self.models, "last_error": self.last_error}
         return {"ok": bool(out), "model": self.models[0]}
 
     def stats(self) -> dict:
-        return {"model": self.models[0], "fallback_model": self.models[1], "calls": self.calls,
+        return {"model": self.models[0], "fallback_models": self.models[1:], "calls": self.calls,
                 "cache_hits": self.cache_hits, "failures": self.failures}
