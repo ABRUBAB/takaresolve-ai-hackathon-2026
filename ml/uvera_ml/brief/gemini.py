@@ -19,6 +19,31 @@ class GeminiUnavailable(RuntimeError):
     pass
 
 
+def load_key_on_kaggle(secret_name: str = "GEMINI_API_KEY") -> str:
+    """Find the Gemini key on Kaggle without ever printing it.
+
+    Order: Kaggle Secret (Add-ons -> Secrets) -> environment variable -> a file named gemini_key.txt inside an attached
+    PRIVATE Kaggle dataset (fallback if secrets are not available in a background run). Returns where it was found.
+    """
+    if os.environ.get(secret_name):
+        return "environment"
+    try:
+        from kaggle_secrets import UserSecretsClient
+
+        value = UserSecretsClient().get_secret(secret_name)
+        if value:
+            os.environ[secret_name] = value.strip()
+            return "kaggle_secret"
+    except Exception:  # noqa: BLE001 - not on Kaggle, secret not attached, or not available in this run
+        pass
+    for p in Path("/kaggle/input").glob("**/gemini_key.txt") if Path("/kaggle/input").exists() else []:
+        value = p.read_text(encoding="utf-8").strip()
+        if value:
+            os.environ[secret_name] = value
+            return "private_dataset_file"
+    return "not_found"
+
+
 class Gemini:
     def __init__(self, model: str | None = None, min_interval_s: float = 6.5, cache_dir: str | Path | None = None,
                  max_retries: int = 4, timeout_s: float = 60.0):
@@ -77,6 +102,11 @@ class Gemini:
                     break  # non-retryable for this model -> try the fallback model
         self.failures += 1
         raise GeminiUnavailable(f"Gemini failed: {last_err!r}"[:300])
+
+    def ping(self) -> dict:
+        """One tiny request to check the key, region and quota before a long run."""
+        out = self.json("Reply with a JSON list containing the single word ok.", list[str], temperature=0.0)
+        return {"ok": bool(out), "model": self.models[0]}
 
     def stats(self) -> dict:
         return {"model": self.models[0], "fallback_model": self.models[1], "calls": self.calls,

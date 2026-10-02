@@ -7,9 +7,9 @@ Python package [`ml/uvera_ml`](../ml/uvera_ml), so the notebooks only orchestrat
 |---|---|---|---|---|---|
 | [`NB00_synthetic_world`](NB00_synthetic_world.ipynb) | Synthetic world + data card + leakage guard | CPU | On | — | 5–10 min |
 | [`NB01_ai1_pause_check`](NB01_ai1_pause_check.ipynb) | AI-1 Pause Check (scam risk before Confirm) | CPU | On | — | 20–40 min |
-| [`NB02_ai2_scam_text`](NB02_ai2_scam_text.ipynb) | AI-2 Scam Text Sentinel (Bangla / Banglish / English) | GPU T4 ×1 | On · `GEMINI_API_KEY` | [UCI SMS Spam Collection](https://www.kaggle.com/datasets/uciml/sms-spam-collection-dataset) | 45–90 min |
-| [`NB03_ai3_cashflow_guardian`](NB03_ai3_cashflow_guardian.ipynb) | AI-3 Cash-Flow Guardian (forecast + shortfall risk) | GPU T4 ×1 | On | — | 20–40 min |
-| [`NB04_ai4_agent_liquidity`](NB04_ai4_agent_liquidity.ipynb) | AI-4 Agent Liquidity Copilot (cash stock-out risk) | GPU T4 ×1 | On | — | 20–40 min |
+| [`NB02_ai2_scam_text`](NB02_ai2_scam_text.ipynb) | AI-2 Scam Text Sentinel (Bangla / Banglish / English) | GPU T4 ×2 | On · `GEMINI_API_KEY` | [UCI SMS Spam Collection](https://www.kaggle.com/datasets/uciml/sms-spam-collection-dataset) | 45–90 min |
+| [`NB03_ai3_cashflow_guardian`](NB03_ai3_cashflow_guardian.ipynb) | AI-3 Cash-Flow Guardian (forecast + shortfall risk) | GPU T4 ×2 | On | — | 20–40 min |
+| [`NB04_ai4_agent_liquidity`](NB04_ai4_agent_liquidity.ipynb) | AI-4 Agent Liquidity Copilot (cash stock-out risk) | GPU T4 ×2 | On | — | 20–40 min |
 | [`NB05_ai5_qr_shield`](NB05_ai5_qr_shield.ipynb) | AI-5 QR Shield (Bangla QR used as cash-out) | CPU | On | — | 10–20 min |
 | [`NB06_ai6_case_linker`](NB06_ai6_case_linker.ipynb) | AI-6 Case Linker (alerts → evidence-backed cases) | CPU | On | AI-1 + AI-5 results in repo | 5–15 min |
 | [`NB07_ai7_grounded_brief`](NB07_ai7_grounded_brief.ipynb) | AI-7 Grounded Brief (Gemini + validator) | CPU | On · `GEMINI_API_KEY` | AI-1 + AI-6 results in repo | 20–40 min |
