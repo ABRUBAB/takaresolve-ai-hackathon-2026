@@ -267,7 +267,7 @@ export default function TrustCenter() {
                 ai="AI-2"
                 src={S.ai2}
                 title="Scam Text Check"
-                lead={`Tested on a writing style held out from training (style B). Embedder: ${a2?.embedder ?? "—"}. Served model chosen on cross-validation: ${a2?.served_model_chosen_on_cv ?? "—"}.`}
+                lead={`Tested on a writing style held out from training (style B). Embedder: ${a2?.embedder ?? "—"}. Best on cross-validation: ${a2?.served_model_chosen_on_cv ?? "—"}. The live demo serves the TF-IDF model: it runs on a free CPU server and its scam / not-scam verdict held up best on the unseen style; the embedding models name the scam family better.`}
               >
                 {a2?.test_heldout_style_B && (
                   <Table
