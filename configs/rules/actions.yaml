@@ -3,6 +3,9 @@ states:
   confident_low:
     recommendation: [proceed]
     human_review: not_needed
+  elevated:
+    recommendation: [verify_number, continue_anyway]
+    human_review: not_needed
   confident_high:
     recommendation: [wait_10_min, verify_number, ask_trusted_contact, continue_anyway]
     human_review: suggested
