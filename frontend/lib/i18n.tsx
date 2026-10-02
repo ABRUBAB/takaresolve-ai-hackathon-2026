@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useSyncExternalStore, type ReactNode } from "react";
 
 export type Lang = "en" | "bn";
 
@@ -29,6 +29,28 @@ const DICT = {
 
 export type Key = keyof typeof DICT;
 
+const KEY = "uvera.lang";
+const listeners = new Set<() => void>();
+
+function subscribe(cb: () => void) {
+  listeners.add(cb);
+  window.addEventListener("storage", cb);
+  return () => {
+    listeners.delete(cb);
+    window.removeEventListener("storage", cb);
+  };
+}
+
+function getSnapshot(): Lang {
+  try {
+    return localStorage.getItem(KEY) === "bn" ? "bn" : "en";
+  } catch {
+    return "en";
+  }
+}
+
+const getServerSnapshot = (): Lang => "en";
+
 const Ctx = createContext<{ lang: Lang; setLang: (l: Lang) => void; t: (k: Key) => string }>({
   lang: "en",
   setLang: () => {},
@@ -36,23 +58,15 @@ const Ctx = createContext<{ lang: Lang; setLang: (l: Lang) => void; t: (k: Key) 
 });
 
 export function LangProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>("en");
-  useEffect(() => {
+  const lang = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const setLang = useCallback((l: Lang) => {
     try {
-      const saved = localStorage.getItem("uvera.lang");
-      if (saved === "bn" || saved === "en") setLangState(saved);
+      localStorage.setItem(KEY, l);
     } catch {
-      /* ignore */
+      /* private mode: language resets on reload */
     }
+    listeners.forEach((fn) => fn());
   }, []);
-  const setLang = (l: Lang) => {
-    setLangState(l);
-    try {
-      localStorage.setItem("uvera.lang", l);
-    } catch {
-      /* ignore */
-    }
-  };
   return <Ctx.Provider value={{ lang, setLang, t: (k) => DICT[k][lang] }}>{children}</Ctx.Provider>;
 }
 
