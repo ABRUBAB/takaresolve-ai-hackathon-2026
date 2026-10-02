@@ -108,7 +108,8 @@ def link_cases(world, scored_transfers: pd.DataFrame, merchant_scores: pd.DataFr
         forwarded = sum(x["amount"] for x in edges if x["hop"] >= 1)
         fwd_share = min(1.0, forwarded / max(received, 1.0))
         pmax = float(max(m.p_calibrated for m in members))
-        qr_flag = any(mm in flagged_merchants for mm in merchants)
+        n_flagged = sum(mm in flagged_merchants for mm in merchants)
+        qr_flag = n_flagged > 0
         # transparent chain score (weights are design assumptions, shown to the analyst)
         score = 1 - (1 - pmax) * (1 - 0.15 * min(len(victims) - 1, 3)) * (1 - 0.5 * fwd_share) * (1 - (0.3 if qr_flag else 0))
         evidence = [
@@ -118,8 +119,9 @@ def link_cases(world, scored_transfers: pd.DataFrame, merchant_scores: pd.DataFr
         ]
         if merchants:
             evidence.append({"id": "E4", "type": "model" if qr_flag else "rule",
-                             "text": f"Money reached {len(merchants)} QR merchant(s)" + (" flagged by QR Shield" if qr_flag else ""),
-                             "value": len(merchants)})
+                             "text": f"Money reached {len(merchants)} QR merchant(s)"
+                                     + (f"; {n_flagged} of them flagged by QR Shield" if qr_flag else ""),
+                             "value": n_flagged if qr_flag else len(merchants)})
         if agents:
             evidence.append({"id": "E5", "type": "rule", "text": f"Cash-out at {len(agents)} agent point(s)", "value": len(agents)})
         cases.append({
