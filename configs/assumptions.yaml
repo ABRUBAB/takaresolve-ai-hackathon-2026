@@ -4,8 +4,8 @@ version: 0.1.0
 seed: 42
 
 scale:
-  full:  {customers: 10000, agents: 400, merchants: 1500, days: 120}
-  small: {customers: 1000,  agents: 40,  merchants: 150,  days: 60}
+  full:  {customers: 20000, agents: 600, merchants: 2500, days: 120}
+  small: {customers: 3000,  agents: 90,  merchants: 400,  days: 90}
 
 zones: {urban: 0.45, semi_urban: 0.30, rural: 0.25}
 channels: {app: 0.70, ussd: 0.30}
@@ -17,10 +17,10 @@ calendar:
   festival_bump: {start_fraction: 0.58, length_days: 7, volume_multiplier: 1.8}  # generic, not a real date
 
 rates:
-  scam_share_of_p2p: 0.005          # creates real class imbalance
+  scam_share_of_p2p: 0.006          # creates real class imbalance
   disguised_qr_merchant_share: 0.08
-  label_noise: 0.02                 # flips to avoid perfectly clean labels
-  legit_lookalike_share: 0.01       # legit big transfers to new recipients (rent, family, Eid)
+  label_noise: 0.10                 # 10% of scam labels go unreported + the same number of false reports
+  legit_lookalike_share: 0.03       # legit big transfers to new recipients (rent, family, Eid)
 
 mule_chain: {hops_min: 1, hops_max: 3, cashout_within_hours: [24, 48]}
 
@@ -47,3 +47,12 @@ text:
   languages: {bangla: 0.40, banglish: 0.35, english: 0.25}
   generator: gemini_plus_templates
   prompt_families: {train: A, heldout_test: B}
+
+impact:
+  # [ASSUMPTION] share of warned customers who stop a scam transfer (used only for the simulated loss-prevented figure)
+  follow_rate: {conservative: 0.3, base: 0.5, optimistic: 0.7}
+
+# [ASSUMPTION] agent cash on hand = factor x mean daily cash-out demand (training window)
+agent_capacity_factor: 1.5
+# [ASSUMPTION] customer 'shortfall' = balance below this at the end of the 7-day horizon
+shortfall_floor_bdt: 200
