@@ -1,26 +1,192 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
+/* UVERA design tokens: see DESIGN.md. Colour is reserved for meaning. */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-geist), var(--font-anek), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-serif: var(--font-instrument), Georgia, serif;
+  --font-bangla: var(--font-anek), var(--font-geist), sans-serif;
+  --font-heading: var(--font-sans);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-volt: var(--volt);
+  --color-volt-ink: var(--volt-ink);
+  --color-safe: var(--safe);
+  --color-caution: var(--caution);
+  --color-risk: var(--risk);
+  --color-unsure: var(--unsure);
+  --color-model: var(--chip-model);
+  --color-rule: var(--chip-rule);
+  --color-generated: var(--chip-generated);
+  --color-faint: var(--faint);
+  --color-surface-2: var(--surface-2);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --background: #fafafa;
+  --foreground: #0a0a0a;
+  --card: #ffffff;
+  --card-foreground: #0a0a0a;
+  --popover: #ffffff;
+  --popover-foreground: #0a0a0a;
+  --primary: #0a0a0a;
+  --primary-foreground: #fafafa;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #0a0a0a;
+  --muted: #f4f4f5;
+  --muted-foreground: #52525b;
+  --faint: #71717a;
+  --surface-2: #f4f4f5;
+  --accent: #f4f4f5;
+  --accent-foreground: #0a0a0a;
+  --destructive: #b91c1c;
+  --border: #e4e4e7;
+  --input: #e4e4e7;
+  --ring: #a1a1aa;
+  --volt: #d7ff3a;
+  --volt-ink: #4d7c0f;
+  --safe: #047857;
+  --caution: #b45309;
+  --risk: #b91c1c;
+  --unsure: #71717a;
+  --chip-model: #1d4ed8;
+  --chip-rule: #6d28d9;
+  --chip-generated: #0f766e;
+  --chart-1: #0a0a0a;
+  --chart-2: #52525b;
+  --chart-3: #a1a1aa;
+  --chart-4: #4d7c0f;
+  --chart-5: #b91c1c;
+  --radius: 0.75rem;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #fafafa;
+  --card: #111111;
+  --card-foreground: #fafafa;
+  --popover: #111111;
+  --popover-foreground: #fafafa;
+  --primary: #fafafa;
+  --primary-foreground: #0a0a0a;
+  --secondary: #171717;
+  --secondary-foreground: #fafafa;
+  --muted: #171717;
+  --muted-foreground: #a3a3a3;
+  --faint: #737373;
+  --surface-2: #171717;
+  --accent: #171717;
+  --accent-foreground: #fafafa;
+  --destructive: #ff4d4f;
+  --border: #262626;
+  --input: #2a2a2a;
+  --ring: #525252;
+  --volt: #d7ff3a;
+  --volt-ink: #d7ff3a;
+  --safe: #34d399;
+  --caution: #f5a524;
+  --risk: #ff4d4f;
+  --unsure: #a3a3a3;
+  --chip-model: #60a5fa;
+  --chip-rule: #a78bfa;
+  --chip-generated: #2dd4bf;
+  --chart-1: #fafafa;
+  --chart-2: #a3a3a3;
+  --chart-3: #525252;
+  --chart-4: #d7ff3a;
+  --chart-5: #ff4d4f;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+  html {
+    @apply font-sans;
+    scroll-behavior: auto;
+  }
+  ::selection {
+    background: var(--volt);
+    color: #0a0a0a;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .label-mono {
+    @apply font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-faint;
+  }
+  .hairline {
+    @apply border border-border;
+  }
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+  .bn {
+    font-family: var(--font-bangla);
+    line-height: 1.65;
+  }
+  .grain {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+  .grid-bg {
+    background-image: linear-gradient(to right, color-mix(in oklab, var(--border) 60%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklab, var(--border) 60%, transparent) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+}
+
+@keyframes pause-ring {
+  0% { transform: scale(0.4); opacity: 0; }
+  40% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.9; }
+}
+.pause-ring {
+  animation: pause-ring 900ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
