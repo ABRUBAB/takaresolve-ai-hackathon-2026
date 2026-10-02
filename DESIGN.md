@@ -69,4 +69,4 @@ breakpoints: [640, 768, 1024, 1280, 1536]
 - No upay logo, colours or screenshots (our own brand).
 - No number on screen that doesn't come from `reports/*.json` or the API.
 
-Full rationale: `docs/plan/UVERA_PLAN.md`, sections K.1–K.9.
+Component sources and licenses: [`docs/third_party.md`](docs/third_party.md).

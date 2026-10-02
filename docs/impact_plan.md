@@ -1,5 +1,17 @@
-# Business / Customer Impact Plan
+# Business and customer impact plan
 
-_Status: template — filled in during the hackathon from measured results only._
+All values come from `reports/` (written by the notebooks). Money figures use transparent assumptions in
+`configs/assumptions.yaml` and are reported as conservative / base / optimistic scenarios.
 
-See the plan (`docs/plan/UVERA_PLAN.md`) for the full design.
+| Metric | Baseline | How it is measured |
+|---|---|---|
+| Scam loss prevented at the same alert rate | Rule baseline (large amount + new receiver) | Test split; warned customers stop with an assumed follow rate (0.3 / 0.5 / 0.7) |
+| False alerts per 1,000 normal transfers | Rule baseline | Test split at the frozen red threshold |
+| QR misuse caught (precision@k per week) | Peer z-score only | Test merchants, including the unseen family D |
+| Agent stock-outs anticipated + forecast error | Seasonal-naive / historical frequency | Rolling-origin backtest, Brier score |
+| Customer shortfall warnings | Historical low-balance frequency | Rolling-origin backtest, Brier score |
+| Analyst items per scam | One item per alert | Linked cases vs alerts (AI-6) |
+| Unsafe generated text shown to users | — | Prompt-injection test set (AI-7) |
+
+**Limits:** simulated follow rates and synthetic behaviour are assumptions, not production evidence. Real impact would be
+measured in a shadow-mode pilot and an A/B holdout (see `production_path.md`).

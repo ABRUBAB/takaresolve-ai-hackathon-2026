@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="460" viewBox="0 0 1200 460" role="img" aria-labelledby="t d">
+  <title id="t">UVERA — Trust you can verify</title>
+  <desc id="d">A scam payment travels from the customer layer, stops mid-way, and a pause ring holds while the case appears on the operations layer.</desc>
+  <style>
+    .bg{fill:#0A0A0A}.grid{stroke:#141414;stroke-width:1}
+    .word{font:700 104px 'Segoe UI',Helvetica,Arial,sans-serif;fill:#FAFAFA;letter-spacing:-5px}
+    .tag{font:italic 34px Georgia,'Times New Roman',serif;fill:#FAFAFA}
+    .sub{font:400 17px 'Segoe UI',Helvetica,Arial,sans-serif;fill:#A3A3A3}
+    .mono{font:600 11px Consolas,'SF Mono',Menlo,monospace;fill:#737373;letter-spacing:2px}
+    .chip{fill:none;stroke:#2A2A2A}.chipt{font:600 12px 'Segoe UI',Helvetica,Arial,sans-serif;fill:#D4D4D4;letter-spacing:.5px}
+    .plane{fill:#111111;stroke:#262626}.edge{stroke:#2E2E2E;stroke-width:1}.node{fill:#E5E5E5}.dim{fill:#5A5A5A}
+    .volt{fill:#D7FF3A}.voltS{stroke:#D7FF3A}
+    .flow{fill:#BDBDBD;opacity:.8}
+    .f1{animation:f1 3.2s linear infinite}.f2{animation:f2 4.1s linear infinite}.f3{animation:f3 3.6s linear infinite .8s}
+    @keyframes f1{from{transform:translate(0,0)}to{transform:translate(120px,96px)}}
+    @keyframes f2{from{transform:translate(0,0)}to{transform:translate(-90px,96px)}}
+    @keyframes f3{from{transform:translate(0,0)}to{transform:translate(140px,-4px)}}
+    .scam{animation:travel 7s cubic-bezier(.4,0,.2,1) infinite}
+    @keyframes travel{0%{transform:translate(0,0);opacity:0}6%{opacity:1}38%,100%{transform:translate(78px,52px);opacity:1}}
+    .ring{transform-box:fill-box;transform-origin:center;animation:ring 7s ease-out infinite}
+    @keyframes ring{0%,37%{transform:scale(0);opacity:0}45%{transform:scale(1);opacity:1}100%{transform:scale(1);opacity:.85}}
+    .note{animation:fade 7s ease-out infinite}.case{animation:case 7s ease-out infinite}.link{stroke-dasharray:4 5;animation:dash 7s linear infinite}
+    @keyframes fade{0%,45%{opacity:0}55%,100%{opacity:1}}
+    @keyframes case{0%,60%{fill:#3A3A3A}70%,100%{fill:#D7FF3A}}
+    @keyframes dash{0%,60%{opacity:0}70%,100%{opacity:1}}
+    @media (prefers-reduced-motion: reduce){*{animation:none!important}.scam{transform:translate(78px,52px)}.note,.link{opacity:1}.case{fill:#D7FF3A}}
+  </style>
+  <rect class="bg" width="1200" height="460"/>
+  <g class="grid">
+    <path d="M0 115H1200M0 230H1200M0 345H1200M300 0V460M600 0V460M900 0V460"/>
+  </g>
+
+  <text class="mono" x="64" y="78">AI DEV FEST 2026 · DIU-CPC × UPAY · TRACK 07</text>
+  <text class="word" x="56" y="196">UVERA</text>
+  <text class="tag" x="64" y="246">Trust you can verify.</text>
+  <text class="sub" x="64" y="292">AI that pauses scams before money moves,</text>
+  <text class="sub" x="64" y="316">protects agents from QR cash-out abuse, and turns many alerts into one case.</text>
+  <g transform="translate(64 350)">
+    <rect class="chip" width="112" height="32" rx="16"/><text class="chipt" x="56" y="21" text-anchor="middle">CUSTOMERS</text>
+    <rect class="chip" x="124" width="98" height="32" rx="16"/><text class="chipt" x="173" y="21" text-anchor="middle">AGENTS</text>
+    <rect class="chip" x="234" width="128" height="32" rx="16"/><text class="chipt" x="298" y="21" text-anchor="middle">OPERATIONS</text>
+  </g>
+  <text class="mono" x="64" y="420">SYNTHETIC DATA ONLY · AI RECOMMENDS, HUMANS DECIDE</text>
+
+  <!-- Trust Field: three layers -->
+  <g transform="translate(700 60)">
+    <path class="plane" d="M40 40L420 40L380 110L0 110Z"/>
+    <path class="plane" d="M40 160L420 160L380 230L0 230Z"/>
+    <path class="plane" d="M40 280L420 280L380 350L0 350Z"/>
+    <text class="mono" x="44" y="32">CUSTOMERS</text>
+    <text class="mono" x="44" y="152">AGENTS &amp; QR SHOPS</text>
+    <text class="mono" x="44" y="272">OPERATIONS · ONE CASE</text>
+    <g class="edge">
+      <path d="M90 70L210 166M150 88L60 184M260 62L330 196M310 92L180 210M200 80L300 76M120 96L250 98M180 210L270 190M300 300L210 318"/>
+    </g>
+    <g class="node">
+      <circle cx="90" cy="70" r="3.5"/><circle cx="150" cy="88" r="3.5"/><circle cx="200" cy="80" r="3.5"/>
+      <circle cx="260" cy="62" r="3.5"/><circle cx="310" cy="92" r="3.5"/><circle cx="120" cy="96" r="3.5"/>
+      <circle cx="300" cy="76" r="3"/><circle cx="250" cy="98" r="3"/><circle cx="340" cy="60" r="3"/>
+    </g>
+    <g class="dim">
+      <rect x="205" y="161" width="9" height="9"/><rect x="56" y="180" width="9" height="9"/><rect x="326" y="192" width="9" height="9"/>
+      <path d="M180 202l8 8-8 8-8-8z"/><path d="M270 182l8 8-8 8-8-8z"/><circle cx="210" cy="318" r="4"/><circle cx="300" cy="300" r="4"/>
+    </g>
+    <circle class="flow f1" cx="90" cy="70" r="2.4"/>
+    <circle class="flow f2" cx="150" cy="88" r="2.4"/>
+    <circle class="flow f3" cx="120" cy="96" r="2.4"/>
+
+    <!-- the scam payment: travels, stops, pause ring holds -->
+    <path d="M232 82L388 186" stroke="#3A3A3A" stroke-width="1" stroke-dasharray="3 4"/>
+    <circle class="volt scam" cx="232" cy="82" r="5"/>
+    <circle class="ring voltS" cx="310" cy="134" r="17" fill="none" stroke-width="1.6"/>
+    <g class="note">
+      <rect x="326" y="118" width="196" height="34" rx="6" fill="#0A0A0A" stroke="#2A2A2A"/>
+      <text class="chipt" x="338" y="140" style="font-size:11px">PAUSED · 3 reasons · human check</text>
+    </g>
+    <path class="link voltS" d="M310 151L255 312" fill="none" stroke-width="1.2"/>
+    <circle class="case" cx="255" cy="314" r="7"/>
+  </g>
+</svg>
