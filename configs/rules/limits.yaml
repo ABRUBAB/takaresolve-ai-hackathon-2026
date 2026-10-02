@@ -1,0 +1,8 @@
+# Synthetic transaction limits used by the simulator and the rule baseline.
+# [ASSUMPTION] — not upay's real limits.
+p2p_single_max_bdt: 25000
+p2p_daily_max_bdt: 50000
+cash_out_daily_max_bdt: 30000
+rule_baseline:
+  large_amount_bdt: 5000
+  flag_new_recipient: true

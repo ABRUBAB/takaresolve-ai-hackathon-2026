@@ -1,0 +1,14 @@
+# Decision thresholds. Chosen on the VALIDATION split by NB01 / NB05, then frozen.
+# Never tuned on the test set.
+frozen: false
+ai1_pause_check:
+  target_false_alert_rate: 0.01   # [TARGET]
+  alert_rate_budget: 0.05
+  conformal_alpha: 0.10
+  amber: null    # filled by NB01
+  red: null
+ai5_qr_shield:
+  review_capacity_per_day: 20     # precision@k uses this k
+  conformal_alpha: 0.10
+  amber: null
+  red: null

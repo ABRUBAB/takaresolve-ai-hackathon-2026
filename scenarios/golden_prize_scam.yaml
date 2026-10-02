@@ -1,0 +1,16 @@
+# The golden thread: one story across all three areas.
+id: golden_prize_scam
+seed: 20261002
+story: Rina is told she won a prize and sends Tk 3,000 to a 2-day-old wallet; the mule tries a QR cash-out.
+steps:
+  - area: customer
+    action: draft_transfer
+    amount_bdt: 3000
+    recipient: new_wallet_age_2_days
+    expected_state: confident_high
+  - area: agent
+    view: qr_leakage_zone
+    expected: zone flagged with family A pattern
+  - area: ops
+    view: case_detail
+    expected: one linked case (victim -> mule -> QR merchant) with Dispute Clock

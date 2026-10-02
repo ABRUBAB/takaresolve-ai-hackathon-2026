@@ -1,0 +1,16 @@
+# Dispute Clock rules — BUSINESS RULES, not AI (Guideline p9 §12).
+# Source: press report (The Daily Star, Sept 2026) on Bangladesh Bank's Bangla QR dispute guideline.
+# VERIFY every number against the original circular before showing it as fact.
+effective_from: 2026-12-01
+verified: false
+clocks:
+  failed_payment_auto_refund:          {limit: 30, unit: minutes}
+  customer_complaint_window:           {limit: 45, unit: days}
+  issuer_accept_or_reject:             {limit: 2,  unit: working_days, on_breach: formal_chargeback_via_npsb}
+  acquirer_response:                   {limit: 7,  unit: days}
+  arbitration:                         {limit: 30, unit: days}
+  suspected_fraud_investigation:       {limit: 30, unit: days}
+  reimbursement_if_institution_fault:  {limit: 3,  unit: business_days}
+  merchant_refund_request:             {limit: 60, unit: days}
+reason_codes: []   # read the eight standard codes from the circular; do NOT invent them
+warn_when_remaining_fraction: 0.25

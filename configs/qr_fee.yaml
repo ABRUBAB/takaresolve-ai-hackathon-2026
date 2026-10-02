@@ -1,0 +1,5 @@
+# PLACEHOLDER — replace with upay's real cash-out tariff. Used only for the
+# "estimated cash-out fee leakage" figure (suspected amount x fee rate).
+fee_rate: 0.015
+verified: false
+note: "[ASSUMPTION] placeholder; a Sept 2026 press report mentions Tk 12-18 per cash-out - check the unit/basis before quoting."

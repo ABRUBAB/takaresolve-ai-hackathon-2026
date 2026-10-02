@@ -1,0 +1,15 @@
+# Maps decision state -> recommended actions -> human review. The customer is never blocked.
+states:
+  confident_low:
+    recommendation: [proceed]
+    human_review: not_needed
+  confident_high:
+    recommendation: [wait_10_min, verify_number, ask_trusted_contact, continue_anyway]
+    human_review: suggested
+  unsure:
+    recommendation: [soft_warning, verify_number, continue_anyway]
+    human_review: suggested
+  confident_high_large_amount:
+    recommendation: [wait_10_min, verify_number, ask_trusted_contact, continue_anyway]
+    human_review: required          # hold only if a human approves
+large_amount_bdt: 10000

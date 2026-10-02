@@ -1,0 +1,32 @@
+# Injected patterns (Guideline p8 §11: "Inject known patterns for testing").
+# Labels come from a hidden scammer process, NOT from these signals directly (no single signal decides).
+scam_families:
+  otp_reversal_counter:   {share: 0.20, amount_bdt: [500, 5000],   recipient_age_days: [0, 7]}
+  fake_customer_care:     {share: 0.20, amount_bdt: [1000, 10000], recipient_age_days: [0, 14]}
+  prize_lottery:          {share: 0.20, amount_bdt: [1000, 8000],  recipient_age_days: [0, 5]}
+  investment_group:       {share: 0.15, amount_bdt: [2000, 25000], recipient_age_days: [0, 30]}
+  gold_jar_offer:         {share: 0.10, amount_bdt: [3000, 30000], recipient_age_days: [0, 10]}
+  refund_government:      {share: 0.15, amount_bdt: [500, 6000],   recipient_age_days: [0, 7]}
+
+qr_disguise_families:
+  A_round_amount_atm:
+    description: Many one-time payers, round amounts (500/1000/2000/5000), little variety
+    round_amount_share: [0.6, 0.9]
+  B_split_under_limit:
+    description: Same payer pays several smaller amounts in short bursts
+    burst_size: [2, 5]
+    burst_window_minutes: [5, 40]
+  C_cash_in_pass_through:
+    description: Wallet funded by cash-in, then almost fully drained to a QR merchant within minutes
+    drain_ratio: [0.85, 1.0]
+    gap_minutes: [2, 45]
+  D_rotating_ring:
+    description: A set of payers rotates across a few merchants with shifting amounts (HELD OUT from training)
+    ring_size: [5, 15]
+    merchants_per_ring: [2, 4]
+
+legit_lookalikes:
+  - fixed_price_shops_round_amounts   # fairness slice: small legit merchants with round prices
+  - eid_family_transfers
+  - rent_to_new_recipient
+  - supplier_payments_by_shop_owners

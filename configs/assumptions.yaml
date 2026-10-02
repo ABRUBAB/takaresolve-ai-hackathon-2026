@@ -1,0 +1,49 @@
+# Every synthetic-world assumption (Guideline p8 §11: "Document every synthetic assumption").
+# All values are [ASSUMPTION]s chosen by the team. They are NOT facts about upay.
+version: 0.1.0
+seed: 42
+
+scale:
+  full:  {customers: 10000, agents: 400, merchants: 1500, days: 120}
+  small: {customers: 1000,  agents: 40,  merchants: 150,  days: 60}
+
+zones: {urban: 0.45, semi_urban: 0.30, rural: 0.25}
+channels: {app: 0.70, ussd: 0.30}
+
+calendar:
+  salary_week_days: [1, 2, 3, 4, 5]
+  month_end_pressure_from_day: 25
+  weekly_cycle: true
+  festival_bump: {start_fraction: 0.58, length_days: 7, volume_multiplier: 1.8}  # generic, not a real date
+
+rates:
+  scam_share_of_p2p: 0.005          # creates real class imbalance
+  disguised_qr_merchant_share: 0.08
+  label_noise: 0.02                 # flips to avoid perfectly clean labels
+  legit_lookalike_share: 0.01       # legit big transfers to new recipients (rent, family, Eid)
+
+mule_chain: {hops_min: 1, hops_max: 3, cashout_within_hours: [24, 48]}
+
+# Splits are fractions of the simulated days, so they work for both scales.
+splits:
+  train: 0.584        # days 1-70 at full scale
+  calibration: 0.125  # days 71-85
+  validation: 0.125   # days 86-100
+  test: 0.166         # days 101-120, customers disjoint from train
+  test_customers_disjoint: true
+  qr_heldout_family: D
+
+cross_validation:
+  scheme: StratifiedGroupKFold
+  n_splits: 5
+  groups: {ai1: sender_customer_id, ai2: template_family, ai5: merchant_id}
+  seeds: [42, 7, 1337, 2026, 99]
+
+leakage_guard:
+  max_single_feature_auc: 0.80
+
+text:
+  n_messages: 15000
+  languages: {bangla: 0.40, banglish: 0.35, english: 0.25}
+  generator: gemini_plus_templates
+  prompt_families: {train: A, heldout_test: B}

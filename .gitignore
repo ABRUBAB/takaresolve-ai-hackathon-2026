@@ -1,0 +1,47 @@
+# --- secrets
+.env
+.env.*
+!.env.example
+
+# --- python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+build/
+dist/
+
+# --- node / next (frontend has its own .gitignore too)
+node_modules/
+.next/
+out/
+
+# --- generated data (regenerate with `make data`; never commit large data)
+data/*
+!data/README.md
+*.parquet
+*.csv.gz
+
+# --- large model files (small artifacts are committed; see artifacts/README.md)
+artifacts/**/*.bin
+artifacts/**/*.safetensors
+artifacts/**/*.onnx
+hf_cache/
+
+# --- runtime
+*.db
+*.sqlite
+*.log
+reports/tmp/
+
+# --- OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
