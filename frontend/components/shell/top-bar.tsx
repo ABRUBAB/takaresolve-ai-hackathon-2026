@@ -69,7 +69,7 @@ export function TopBar({ floating = false }: { floating?: boolean }) {
           </button>
         </div>
       </div>
-      <nav className="flex gap-1 overflow-x-auto border-t border-border px-4 py-2 md:hidden" aria-label="Areas (mobile)">
+      <nav className="no-scrollbar flex gap-1 overflow-x-auto border-t border-border px-4 py-2 md:hidden" aria-label="Areas (mobile)">
         {AREAS.map((a) => (
           <Link
             key={a.href}

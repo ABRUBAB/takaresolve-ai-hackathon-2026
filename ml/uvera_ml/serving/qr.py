@@ -70,7 +70,9 @@ class QREngine:
         hist = self.scores[self.scores["merchant_id"] == merchant_id].sort_values("week")
         f = self.features()
         mine = f[(f["merchant_id"] == merchant_id) & (f["week"] == row["week"])]
-        peers = f[(f["category"] == row["category"]) & (f["zone"] == row["zone"]) & (f["week"] == row["week"])]
+        coarse = f[(f["category"] == row["category"]) & (f["zone"] == row["zone"]) & (f["week"] == row["week"])]
+        fine = coarse[coarse["size"] == row["size"]] if "size" in coarse.columns else coarse
+        peers = fine if len(fine) >= 5 else coarse  # same type, area and size when there are enough shops (as in the model)
         compare = []
         for col, label in [("round_share", "Round-amount payments"), ("one_time_payer_share", "One-time payers"),
                            ("cashin_gap_share", "Paid minutes after a cash-in"), ("burst_share", "Quick repeat payments"),

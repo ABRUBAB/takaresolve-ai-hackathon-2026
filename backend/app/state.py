@@ -56,6 +56,12 @@ class AppState:
             self.demo = scenarios.build(self.world, self.pause, self.forecasts, self.qr, self.cases)
             self.ready = True
             self._step("ready")
+            # warm the slow QR merchant features after "ready", so the first merchant drawer opens instantly
+            try:
+                self.qr.features()
+                self._step("QR features warmed")
+            except Exception:  # noqa: BLE001 - optional warm-up; the drawer builds them on first use instead
+                self._step("QR features will be built on first use")
         except Exception:  # noqa: BLE001 - surfaced through /v1/health/ready
             self.error = traceback.format_exc()[-1500:]
             print(self.error, flush=True)
