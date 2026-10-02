@@ -1,0 +1,57 @@
+{
+  "features": [
+    "sender_tenure_days",
+    "amount_log",
+    "amount_z_30d",
+    "amount_to_balance",
+    "sender_out_count_7d",
+    "cash_in_gap_min",
+    "device_change_72h",
+    "pin_reset_72h",
+    "first_time_pair",
+    "recipient_age_days",
+    "recipient_in_count_7d",
+    "recipient_sender_days_7d",
+    "recipient_in_today_before",
+    "recipient_out_in_ratio_7d",
+    "recipient_cashout_count_7d",
+    "hour",
+    "is_night",
+    "dow",
+    "channel_ussd"
+  ],
+  "groups": {
+    "sender": [
+      "sender_tenure_days",
+      "amount_log",
+      "amount_z_30d",
+      "amount_to_balance",
+      "sender_out_count_7d",
+      "cash_in_gap_min",
+      "device_change_72h",
+      "pin_reset_72h",
+      "first_time_pair"
+    ],
+    "recipient": [
+      "recipient_age_days",
+      "recipient_in_count_7d",
+      "recipient_sender_days_7d",
+      "recipient_in_today_before",
+      "recipient_out_in_ratio_7d",
+      "recipient_cashout_count_7d"
+    ],
+    "context": [
+      "hour",
+      "is_night",
+      "dow",
+      "channel_ussd"
+    ]
+  },
+  "slices": [
+    "zone",
+    "channel",
+    "tenure_bucket",
+    "language",
+    "segment"
+  ]
+}

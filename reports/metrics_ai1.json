@@ -1,0 +1,576 @@
+{
+  "ai": "AI-1 Pause Check",
+  "model": "LightGBM + isotonic + Mondrian conformal + robust novelty",
+  "n_rounds": 482,
+  "splits": {
+    "warmup_end": 14,
+    "train_end": 70,
+    "cal_end": 85,
+    "val_end": 100,
+    "end": 120
+  },
+  "world": {
+    "scale": "full",
+    "seed": 42,
+    "days": 120,
+    "start": "2025-01-06",
+    "n_events": 2203725,
+    "n_scam_transfers": 3728,
+    "n_cases": 3100,
+    "n_mules": 200,
+    "n_disguised_merchants": 141,
+    "festival_days": [
+      70,
+      76
+    ],
+    "version": "0.1.0",
+    "hashes": {
+      "customers": "4f9c83bf35b4272816674c2ce7b6e3a456a2326694bd4bde57907ae60c578223",
+      "agents": "934092e92bc0f381506d6eecae4eba14cc885e374c7bed778651bccd9a553514",
+      "merchants": "784e1be42e883144e0cb3fbcf01e4fb81fdcc28c0621d13d619e466e28b5f109",
+      "events": "41d324455a7160a1ba4d879ffa18eaae07991ba99c8c79a0cbfe643b16866580",
+      "security": "c3ec6f0a23532d6f95e737a07b0cc7fc0c0967bcb6861b13fbfce5b8ccc18fa3",
+      "daily_customer": "c120f6e09fd8c25cfc3d0d119e82cfd0b8fe123d4e41b09b8c0eab3980731654",
+      "daily_agent": "32a882fb8c0ff9fd0680aec9b0c3d4e6668d4722d5a881d341e764e935e23dc4",
+      "truth_customers": "a14e1e138c585a9131660bf6fbce21473d582074c2276957898d571f45eb50ee",
+      "truth_merchants": "d11967df10d0defebb4e533614b95b53bfc03ca3dec1d916de0c7026b4a59576",
+      "truth_cases": "022d4108e58948bc43986218cb722ba0f553d73fc90e43c3afdad36cae16f6dc"
+    }
+  },
+  "leakage_single_feature_auc": [
+    {
+      "feature": "recipient_sender_days_7d",
+      "auc": 0.7812
+    },
+    {
+      "feature": "recipient_in_count_7d",
+      "auc": 0.7805
+    },
+    {
+      "feature": "amount_log",
+      "auc": 0.7391
+    },
+    {
+      "feature": "amount_z_30d",
+      "auc": 0.6943
+    },
+    {
+      "feature": "amount_to_balance",
+      "auc": 0.6856
+    },
+    {
+      "feature": "first_time_pair",
+      "auc": 0.6764
+    },
+    {
+      "feature": "recipient_cashout_count_7d",
+      "auc": 0.6734
+    },
+    {
+      "feature": "cash_in_gap_min",
+      "auc": 0.664
+    },
+    {
+      "feature": "recipient_age_days",
+      "auc": 0.6613
+    },
+    {
+      "feature": "recipient_in_today_before",
+      "auc": 0.6046
+    },
+    {
+      "feature": "hour",
+      "auc": 0.5989
+    },
+    {
+      "feature": "sender_tenure_days",
+      "auc": 0.5903
+    },
+    {
+      "feature": "channel_ussd",
+      "auc": 0.5501
+    },
+    {
+      "feature": "recipient_out_in_ratio_7d",
+      "auc": 0.5346
+    },
+    {
+      "feature": "pin_reset_72h",
+      "auc": 0.5313
+    },
+    {
+      "feature": "device_change_72h",
+      "auc": 0.5227
+    },
+    {
+      "feature": "dow",
+      "auc": 0.5139
+    },
+    {
+      "feature": "is_night",
+      "auc": 0.5064
+    },
+    {
+      "feature": "sender_out_count_7d",
+      "auc": 0.5019
+    }
+  ],
+  "cv_summary": [
+    {
+      "model": "catboost",
+      "pr_auc_mean": 0.6159,
+      "pr_auc_std": 0.0325,
+      "roc_auc_mean": 0.9352,
+      "n_fits": 5
+    },
+    {
+      "model": "xgboost",
+      "pr_auc_mean": 0.6144,
+      "pr_auc_std": 0.0331,
+      "roc_auc_mean": 0.9401,
+      "n_fits": 5
+    },
+    {
+      "model": "lightgbm",
+      "pr_auc_mean": 0.6129,
+      "pr_auc_std": 0.0479,
+      "roc_auc_mean": 0.9373,
+      "n_fits": 25
+    },
+    {
+      "model": "logistic_regression",
+      "pr_auc_mean": 0.3856,
+      "pr_auc_std": 0.0346,
+      "roc_auc_mean": 0.9104,
+      "n_fits": 5
+    },
+    {
+      "model": "rule_baseline",
+      "pr_auc_mean": 0.0195,
+      "pr_auc_std": 0.0028,
+      "roc_auc_mean": 0.6937,
+      "n_fits": 5
+    }
+  ],
+  "thresholds": {
+    "amber_score": 0.015729024793478145,
+    "red_score": 0.1500801419275889,
+    "rule": "chosen on the validation split: amber = 5% / red = 1% of normal transfers flagged",
+    "frozen": true,
+    "amber_p": 0.004008016032064128,
+    "red_p": 0.033783783783783786
+  },
+  "test_unseen_customers": {
+    "n": 24827,
+    "positives": 181,
+    "model": {
+      "pr_auc": 0.6510450395054618,
+      "pr_auc_ci95": [
+        0.567265242124827,
+        0.7259501455133707
+      ],
+      "roc_auc": 0.9308547149179343,
+      "brier": 0.0036047078277019902,
+      "ece_calibrated": 0.0016948883969839853,
+      "ece_uncalibrated": 0.003863714560220779,
+      "at_5pct_alert_rate": {
+        "alert_rate": 0.05,
+        "alerts": 1241,
+        "recall": 0.861878453038674,
+        "precision": 0.12570507655116842,
+        "amount_caught": 692660.0,
+        "amount_total_scam": 744223.5700000001
+      },
+      "false_alerts_per_1000_at_red": 8.885823257323704,
+      "recall_at_red": 0.7569060773480663,
+      "precision_at_red": 0.3848314606741573
+    },
+    "rule_baseline": {
+      "pr_auc": 0.04842211013357686,
+      "roc_auc": 0.8313356912892076,
+      "at_5pct_alert_rate": {
+        "alert_rate": 0.05,
+        "alerts": 1241,
+        "recall": 0.281767955801105,
+        "precision": 0.0410958904109589,
+        "amount_caught": 437300.0,
+        "amount_total_scam": 744223.5700000001
+      },
+      "false_alerts_per_1000": 13.511320295382617
+    },
+    "conformal": {
+      "overall": 0.9414347283199742,
+      "class_1": 0.8895027624309392,
+      "class_0": 0.9418161162054695,
+      "unsure_rate": 0.039150924396826034,
+      "target": 0.9
+    },
+    "ood_rate": 0.006404317879727716,
+    "unsure_rate": 0.006404317879727716,
+    "error_rate_confident_vs_unsure": {
+      "confident": 0.010256202367439626,
+      "unsure": 0.06289308176100628
+    },
+    "risk_levels": {
+      "low": 23618,
+      "medium": 853,
+      "high": 356
+    },
+    "selective": {
+      "error_at_100pct_coverage": 0.010593305675272835,
+      "error_at_80pct_coverage": 0.0013593797200684987
+    },
+    "loss_prevented_bdt": {
+      "conservative": {
+        "model": 207798.0,
+        "rule_baseline": 131190.0,
+        "follow_rate": 0.3
+      },
+      "base": {
+        "model": 346330.0,
+        "rule_baseline": 218650.0,
+        "follow_rate": 0.5
+      },
+      "optimistic": {
+        "model": 484861.99999999994,
+        "rule_baseline": 306110.0,
+        "follow_rate": 0.7
+      }
+    }
+  },
+  "test_seen_customers": {
+    "n": 58728,
+    "positives": 405,
+    "model": {
+      "pr_auc": 0.6500652643075484,
+      "pr_auc_ci95": [
+        0.6014709820133908,
+        0.6929241453912772
+      ],
+      "roc_auc": 0.9503479664016672,
+      "brier": 0.00358148014350777,
+      "ece_calibrated": 0.0013883657203169802,
+      "ece_uncalibrated": 0.0037365542340192922,
+      "at_5pct_alert_rate": {
+        "alert_rate": 0.05,
+        "alerts": 2936,
+        "recall": 0.8790123456790123,
+        "precision": 0.12125340599455041,
+        "amount_caught": 1339197.0,
+        "amount_total_scam": 1412047.12
+      },
+      "false_alerts_per_1000_at_red": 8.092862164154793,
+      "recall_at_red": 0.7679012345679013,
+      "precision_at_red": 0.39719029374201786
+    },
+    "rule_baseline": {
+      "pr_auc": 0.03881494731084801,
+      "roc_auc": 0.8262010646118688,
+      "at_5pct_alert_rate": {
+        "alert_rate": 0.05,
+        "alerts": 2936,
+        "recall": 0.25925925925925924,
+        "precision": 0.035762942779291554,
+        "amount_caught": 811580.0,
+        "amount_total_scam": 1412047.12
+      },
+      "false_alerts_per_1000": 13.373797644154106
+    },
+    "conformal": {
+      "overall": 0.9424635608227762,
+      "class_1": 0.908641975308642,
+      "class_0": 0.9426984208631243,
+      "unsure_rate": 0.038175997820460425,
+      "target": 0.9
+    },
+    "ood_rate": 0.005006129955046996,
+    "unsure_rate": 0.005006129955046996,
+    "error_rate_confident_vs_unsure": {
+      "confident": 0.009429441763356916,
+      "unsure": 0.05102040816326525
+    },
+    "risk_levels": {
+      "low": 55894,
+      "medium": 2051,
+      "high": 783
+    },
+    "selective": {
+      "error_at_100pct_coverage": 0.009637651546110848,
+      "error_at_80pct_coverage": 0.0012345153463028113
+    },
+    "loss_prevented_bdt": {
+      "conservative": {
+        "model": 401759.1,
+        "rule_baseline": 243474.0,
+        "follow_rate": 0.3
+      },
+      "base": {
+        "model": 669598.5,
+        "rule_baseline": 405790.0,
+        "follow_rate": 0.5
+      },
+      "optimistic": {
+        "model": 937437.8999999999,
+        "rule_baseline": 568106.0,
+        "follow_rate": 0.7
+      }
+    }
+  },
+  "fairness_slices_test_window": [
+    {
+      "slice": "zone",
+      "group": "rural",
+      "n": 20954,
+      "positives": 161,
+      "fpr_at_red": 0.009089597460683885,
+      "fnr_at_red": 0.18012422360248448,
+      "ece": 0.0014148592473663866,
+      "unsure_rate": 0.0055836594444974704
+    },
+    {
+      "slice": "zone",
+      "group": "semi_urban",
+      "n": 25293,
+      "positives": 167,
+      "fpr_at_red": 0.008238478070524555,
+      "fnr_at_red": 0.2455089820359282,
+      "ece": 0.001580894196248488,
+      "unsure_rate": 0.005811884711184913
+    },
+    {
+      "slice": "zone",
+      "group": "urban",
+      "n": 37308,
+      "positives": 258,
+      "fpr_at_red": 0.00796221322537112,
+      "fnr_at_red": 0.26356589147286824,
+      "ece": 0.0015979786364785375,
+      "unsure_rate": 0.005065937600514635
+    },
+    {
+      "slice": "channel",
+      "group": "app",
+      "n": 58411,
+      "positives": 387,
+      "fpr_at_red": 0.00775541155383979,
+      "fnr_at_red": 0.25322997416020676,
+      "ece": 0.0013810833280223625,
+      "unsure_rate": 0.005581140538597182
+    },
+    {
+      "slice": "channel",
+      "group": "ussd",
+      "n": 25144,
+      "positives": 199,
+      "fpr_at_red": 0.009661254760473042,
+      "fnr_at_red": 0.20100502512562812,
+      "ece": 0.0017142387075966701,
+      "unsure_rate": 0.0050509067769646835
+    },
+    {
+      "slice": "tenure_bucket",
+      "group": "90-365d",
+      "n": 23651,
+      "positives": 281,
+      "fpr_at_red": 0.009242618741976894,
+      "fnr_at_red": 0.19217081850533813,
+      "ece": 0.0034394144795687302,
+      "unsure_rate": 0.006257663523741068
+    },
+    {
+      "slice": "tenure_bucket",
+      "group": "<90d",
+      "n": 6713,
+      "positives": 43,
+      "fpr_at_red": 0.01649175412293853,
+      "fnr_at_red": 0.18604651162790697,
+      "ece": 0.0017751812427862002,
+      "unsure_rate": 0.005660658423953523
+    },
+    {
+      "slice": "tenure_bucket",
+      "group": ">365d",
+      "n": 53191,
+      "positives": 262,
+      "fpr_at_red": 0.0068960305314666815,
+      "fnr_at_red": 0.29007633587786263,
+      "ece": 0.0008950290355238199,
+      "unsure_rate": 0.005019646180744863
+    },
+    {
+      "slice": "language",
+      "group": "bangla",
+      "n": 33100,
+      "positives": 228,
+      "fpr_at_red": 0.008669992698953516,
+      "fnr_at_red": 0.2149122807017544,
+      "ece": 0.0013823573918278235,
+      "unsure_rate": 0.005166163141993958
+    },
+    {
+      "slice": "language",
+      "group": "banglish",
+      "n": 29098,
+      "positives": 198,
+      "fpr_at_red": 0.007854671280276816,
+      "fnr_at_red": 0.2222222222222222,
+      "ece": 0.001313002724483154,
+      "unsure_rate": 0.005670492817375764
+    },
+    {
+      "slice": "language",
+      "group": "english",
+      "n": 21357,
+      "positives": 160,
+      "fpr_at_red": 0.008444591215738076,
+      "fnr_at_red": 0.28125,
+      "ece": 0.0020667798566295927,
+      "unsure_rate": 0.005478297513695744
+    },
+    {
+      "slice": "segment",
+      "group": "daily_wage",
+      "n": 24656,
+      "positives": 216,
+      "fpr_at_red": 0.010106382978723405,
+      "fnr_at_red": 0.21759259259259256,
+      "ece": 0.0018020746057872056,
+      "unsure_rate": 0.005191434133679429
+    },
+    {
+      "slice": "segment",
+      "group": "remittance",
+      "n": 14984,
+      "positives": 93,
+      "fpr_at_red": 0.007185548317775838,
+      "fnr_at_red": 0.31182795698924726,
+      "ece": 0.0015948693750421753,
+      "unsure_rate": 0.005672717565403097
+    },
+    {
+      "slice": "segment",
+      "group": "salaried",
+      "n": 36639,
+      "positives": 198,
+      "fpr_at_red": 0.008506901566916386,
+      "fnr_at_red": 0.2727272727272727,
+      "ece": 0.0010063576471917573,
+      "unsure_rate": 0.005622424192800022
+    },
+    {
+      "slice": "segment",
+      "group": "student",
+      "n": 7276,
+      "positives": 79,
+      "fpr_at_red": 0.003751563151313047,
+      "fnr_at_red": 0.10126582278481011,
+      "ece": 0.003305292224328013,
+      "unsure_rate": 0.004672897196261682
+    }
+  ],
+  "ablation_validation": [
+    {
+      "features": "sender only",
+      "n_features": 9,
+      "val_pr_auc": 0.26853454983507874
+    },
+    {
+      "features": "recipient only",
+      "n_features": 6,
+      "val_pr_auc": 0.500399921384722
+    },
+    {
+      "features": "sender + recipient",
+      "n_features": 15,
+      "val_pr_auc": 0.6370824298145079
+    },
+    {
+      "features": "full",
+      "n_features": 19,
+      "val_pr_auc": 0.6611900870575561
+    },
+    {
+      "features": "rule baseline",
+      "n_features": 2,
+      "val_pr_auc": 0.03554377833524456
+    }
+  ],
+  "global_importance": [
+    [
+      "amount_to_balance",
+      0.44248
+    ],
+    [
+      "recipient_out_in_ratio_7d",
+      0.38968
+    ],
+    [
+      "recipient_age_days",
+      0.38609
+    ],
+    [
+      "first_time_pair",
+      0.36198
+    ],
+    [
+      "hour",
+      0.34957
+    ],
+    [
+      "amount_log",
+      0.31881
+    ],
+    [
+      "sender_tenure_days",
+      0.27025
+    ],
+    [
+      "recipient_sender_days_7d",
+      0.23364
+    ],
+    [
+      "amount_z_30d",
+      0.21024
+    ],
+    [
+      "cash_in_gap_min",
+      0.17345
+    ],
+    [
+      "dow",
+      0.13348
+    ],
+    [
+      "recipient_in_count_7d",
+      0.11411
+    ],
+    [
+      "sender_out_count_7d",
+      0.08564
+    ],
+    [
+      "recipient_cashout_count_7d",
+      0.0836
+    ],
+    [
+      "channel_ussd",
+      0.06989
+    ],
+    [
+      "recipient_in_today_before",
+      0.05213
+    ],
+    [
+      "device_change_72h",
+      0.01998
+    ],
+    [
+      "pin_reset_72h",
+      0.00823
+    ],
+    [
+      "is_night",
+      0.00343
+    ]
+  ]
+}

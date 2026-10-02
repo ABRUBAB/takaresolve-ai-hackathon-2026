@@ -1,0 +1,8 @@
+{
+  "amber_score": 0.015729024793478145,
+  "red_score": 0.1500801419275889,
+  "rule": "chosen on the validation split: amber = 5% / red = 1% of normal transfers flagged",
+  "frozen": true,
+  "amber_p": 0.004008016032064128,
+  "red_p": 0.033783783783783786
+}
