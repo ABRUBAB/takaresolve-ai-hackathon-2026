@@ -6,6 +6,7 @@ import { ArrowRight, MousePointerClick, Pause, Play } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { Mark } from "@/components/brand/logo";
 import type { WorldCompact } from "@/components/home/trust-scene";
 import Magnet from "@/components/reactbits/Magnet";
 import { HyperText } from "@/components/ui/hyper-text";
@@ -75,11 +76,43 @@ export function Hero() {
     return () => clearTimeout(id);
   }, [playing, mode]);
 
+  const tabs = (compact: boolean) => (
+    <div role="tablist" aria-label="What the 3D field shows" className={cn("inline-flex flex-wrap gap-1 rounded-full border border-border bg-background/70 p-1 backdrop-blur-md", compact && "w-full justify-between")}>
+      {MODES.map((m, i) => (
+        <button
+          key={m.label}
+          role="tab"
+          aria-selected={mode === i}
+          onClick={() => {
+            setMode(i);
+            setAuto(false);
+          }}
+          className={cn(
+            "relative overflow-hidden rounded-full transition-colors",
+            compact ? "h-9 px-2.5 text-[11px]" : "h-9 px-3.5 text-[12.5px]",
+            mode === i ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          {m.label}
+          {mode === i && playing && (
+            <motion.span
+              key={`p${mode}`}
+              className="absolute inset-x-3 bottom-1 h-px origin-left bg-background/60"
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: STEP_MS / 1000, ease: "linear" }}
+            />
+          )}
+        </button>
+      ))}
+    </div>
+  );
+
   return (
-    <section ref={box} className="relative isolate min-h-[100svh] overflow-hidden border-b border-border" aria-labelledby="hero-title">
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_70%_40%,color-mix(in_oklab,var(--volt)_7%,transparent),transparent_60%)]" />
+    <section ref={box} className="relative isolate h-[100svh] min-h-[600px] overflow-hidden border-b border-border" aria-labelledby="hero-title">
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_72%_45%,color-mix(in_oklab,var(--volt)_7%,transparent),transparent_60%)]" />
       <motion.div
-        className="absolute inset-0 -z-10 md:left-[18%]"
+        className="absolute inset-x-0 bottom-12 top-14 -z-10 opacity-60 md:left-[34%] md:opacity-100"
         initial={{ opacity: 0, scale: 1.04 }}
         animate={{ opacity: world ? 1 : 0, scale: world ? 1 : 1.04 }}
         transition={{ duration: 1.8, ease: [0.2, 0.8, 0.2, 1] }}
@@ -88,20 +121,54 @@ export function Hero() {
       >
         {world && <TrustScene world={world} mode={mode} dark={resolvedTheme !== "light"} animate={animate && visible} mobile={mobile} />}
       </motion.div>
-      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-background via-background/60 to-transparent md:via-background/20" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-56 bg-gradient-to-t from-background to-transparent" />
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-background via-background/50 to-transparent md:via-background/10 md:to-40%" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-background to-transparent" />
       <div className="grain" />
 
-      <div className="pointer-events-none mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-center px-4 pb-36 pt-28 md:px-6">
-        <motion.p className="label-mono mb-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
-          AI DEV FEST 2026 · Track 07 · synthetic demo
-        </motion.p>
-        <h1 id="hero-title" className="max-w-4xl font-serif text-[clamp(3.4rem,9.5vw,9rem)] leading-[0.9] tracking-[-0.02em]">
+      {/* view switcher: top-right corner, over the field */}
+      <motion.div
+        className="absolute right-4 top-28 z-10 hidden max-w-md flex-col items-end gap-2 md:right-6 md:flex lg:top-[4.5rem]"
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1, duration: 0.6 }}
+      >
+        {tabs(false)}
+        <AnimatePresence mode="wait">
+          <motion.p
+            key={mode}
+            className="max-w-sm text-right text-xs leading-relaxed text-muted-foreground"
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.25 }}
+          >
+            {MODES[mode].caption}
+          </motion.p>
+        </AnimatePresence>
+        <p className="flex items-center gap-1.5 font-mono text-[10.5px] text-faint">
+          <MousePointerClick className="size-3.5" /> move through the field · click for a shockwave
+        </p>
+      </motion.div>
+
+      <div className="pointer-events-none mx-auto flex h-full max-w-7xl flex-col justify-center px-4 pb-16 pt-16 md:px-6">
+        <motion.div
+          className="mb-5 flex flex-wrap items-center gap-x-4 gap-y-2"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+        >
+          <span className="inline-flex items-center gap-2.5 text-[clamp(1.6rem,2.6vw,2.4rem)] font-semibold leading-none tracking-[-0.04em]">
+            <Mark className="size-[1.1em]" animated />
+            UVERA
+          </span>
+          <span className="label-mono border-l border-border pl-4">AI DEV FEST 2026 · Track 07</span>
+        </motion.div>
+        <h1 id="hero-title" className="max-w-3xl font-serif text-[clamp(2.8rem,min(7.2vw,11.5vh),7.25rem)] leading-[0.92] tracking-[-0.02em]">
           <motion.span
             className="block"
             initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 0.9, ease: [0.2, 0.8, 0.2, 1] }}
+            transition={{ duration: 0.9, delay: 0.1, ease: [0.2, 0.8, 0.2, 1] }}
           >
             Trust you can
           </motion.span>
@@ -112,15 +179,15 @@ export function Hero() {
           </span>
         </h1>
         <motion.p
-          className="mt-8 max-w-md text-lg leading-relaxed text-muted-foreground md:text-xl"
+          className="mt-[clamp(1rem,3vh,2rem)] max-w-md text-base leading-relaxed text-muted-foreground md:text-lg"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
-          Pause a scam <span className="text-foreground">before the money moves</span>. Every answer shows its evidence.
+          A trust layer for mobile money. It pauses a scam <span className="text-foreground">before the money moves</span>, and every answer shows its evidence.
         </motion.p>
         <motion.div
-          className="pointer-events-auto mt-10 flex flex-wrap items-center gap-3"
+          className="pointer-events-auto mt-[clamp(1.25rem,4vh,2.5rem)] flex flex-wrap items-center gap-3"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
@@ -128,7 +195,7 @@ export function Hero() {
           <Magnet padding={60} magnetStrength={6} disabled={!animate || mobile}>
             <a
               href="#live"
-              className="group inline-flex h-13 items-center gap-2 rounded-full bg-volt px-7 text-sm font-semibold text-black shadow-[0_0_40px_-8px_var(--volt)]"
+              className="group inline-flex h-12 items-center gap-2 rounded-full bg-volt px-7 text-sm font-semibold text-black shadow-[0_0_40px_-8px_var(--volt)]"
             >
               Run a scam through it
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
@@ -136,62 +203,12 @@ export function Hero() {
           </Magnet>
           <Link
             href="/trust"
-            className="inline-flex h-13 items-center rounded-full border border-border bg-background/50 px-7 text-sm font-medium backdrop-blur hover:border-foreground/40"
+            className="inline-flex h-12 items-center rounded-full border border-border bg-background/50 px-7 text-sm font-medium backdrop-blur hover:border-foreground/40"
           >
             See the evidence
           </Link>
         </motion.div>
-
-        <motion.div
-          className="pointer-events-auto mt-14 max-w-xl"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.1, duration: 0.8 }}
-        >
-          <div role="tablist" aria-label="What the 3D field shows" className="inline-flex flex-wrap gap-1 rounded-full border border-border bg-background/70 p-1 backdrop-blur-md">
-            {MODES.map((m, i) => (
-              <button
-                key={m.label}
-                role="tab"
-                aria-selected={mode === i}
-                onClick={() => {
-                  setMode(i);
-                  setAuto(false);
-                }}
-                className={cn(
-                  "relative h-10 overflow-hidden rounded-full px-4 text-[13px] transition-colors",
-                  mode === i ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                {m.label}
-                {mode === i && playing && (
-                  <motion.span
-                    key={`p${mode}`}
-                    className="absolute inset-x-3 bottom-1 h-px origin-left bg-background/60"
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    transition={{ duration: STEP_MS / 1000, ease: "linear" }}
-                  />
-                )}
-              </button>
-            ))}
-          </div>
-          <AnimatePresence mode="wait">
-            <motion.p
-              key={mode}
-              className="mt-3 pl-2 text-sm text-muted-foreground"
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.3 }}
-            >
-              {MODES[mode].caption}
-            </motion.p>
-          </AnimatePresence>
-          <p className="mt-2 hidden items-center gap-1.5 pl-2 font-mono text-[11px] text-faint md:flex">
-            <MousePointerClick className="size-3.5" /> Move the mouse through the field · click it to send a shockwave
-          </p>
-        </motion.div>
+        <div className="pointer-events-auto mt-6 md:hidden">{tabs(true)}</div>
       </div>
 
       <div className="absolute inset-x-0 bottom-0 border-t border-border/60 bg-background/60 backdrop-blur-md">

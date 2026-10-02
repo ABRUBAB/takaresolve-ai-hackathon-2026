@@ -449,7 +449,7 @@ function Scene({ world, mode, animate, mobile, dark }: { world: WorldCompact; mo
     const lo = Math.floor(Math.min(L.state, 2.999));
     const f = L.state - lo;
     const cam = CAMERA[lo].map((v, k) => v + (CAMERA[lo + 1][k] - v) * f);
-    const zoom = mobile ? 1.25 : 1;
+    const zoom = mobile ? 1.3 : 1.12;
     camera.position.set(cam[0] + L.pointer.x * 0.25 * L.mouseOn, cam[1] * zoom, cam[2] * zoom);
     camera.lookAt(0, 0.1, 0);
     camera.updateMatrixWorld();

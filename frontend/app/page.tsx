@@ -1,7 +1,9 @@
+import { DecisionFlow } from "@/components/home/flow";
 import { Hero } from "@/components/home/hero";
 import { LivePause } from "@/components/home/live-pause";
+import { AiOrbit } from "@/components/home/orbit";
 import { Results } from "@/components/home/results";
-import { AiGrid, Portals, Principles } from "@/components/home/sections";
+import { Portals, Principles } from "@/components/home/sections";
 import { Story } from "@/components/home/story";
 import { Footer } from "@/components/shell/footer";
 import { SmoothScroll } from "@/components/shell/smooth-scroll";
@@ -15,8 +17,9 @@ export default function Home() {
         <Hero />
         <Story />
         <LivePause />
+        <DecisionFlow />
+        <AiOrbit />
         <Results />
-        <AiGrid />
         <Principles />
         <Portals />
       </main>
