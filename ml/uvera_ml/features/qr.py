@@ -6,7 +6,9 @@ import pandas as pd
 
 from uvera_ml.sim.world import DAY, World
 
-FEATURES = ["n_payments", "n_payers", "payments_per_payer", "one_time_payer_share", "first_time_share", "round_share",
+# Raw volume (n_payments, n_payers) is NOT a model input: it made big honest shops look suspicious. Volume enters only
+# relative to same-size peers (peer_z_payers), which keeps the comparison fair across shop sizes.
+FEATURES = ["payments_per_payer", "one_time_payer_share", "first_time_share", "round_share",
             "amount_cv", "median_ticket", "ticket_ratio_category", "cashin_gap_share", "drain_share", "burst_share",
             "night_share", "cross_merchant_share", "repeat_payer_share", "peer_z_ticket", "peer_z_payers", "peer_z_round"]
 
@@ -89,10 +91,18 @@ def build_qr_features(w: World) -> pd.DataFrame:
     f["size"] = f["merchant_id"].map(mer["size"])
     cat_med = f.groupby(["category", "week"])["median_ticket"].transform("median")
     f["ticket_ratio_category"] = f["median_ticket"] / cat_med
-    peer = f.groupby(["category", "zone", "week"])
-    f["peer_z_ticket"] = peer["median_ticket"].transform(_robust_z).abs()
-    f["peer_z_payers"] = peer["n_payers"].transform(_robust_z)
-    f["peer_z_round"] = peer["round_share"].transform(_robust_z)
+    # peers = same category, zone AND size (fallback to category + zone when fewer than 5 such shops that week)
+    fine, coarse = ["category", "zone", "size", "week"], ["category", "zone", "week"]
+    use_fine = (f.groupby(fine)["merchant_id"].transform("size") >= 5).to_numpy()
+
+    def peer_z(col):
+        zf = f.groupby(fine)[col].transform(_robust_z).to_numpy()
+        zc = f.groupby(coarse)[col].transform(_robust_z).to_numpy()
+        return np.where(use_fine, zf, zc)
+
+    f["peer_z_ticket"] = np.abs(peer_z("median_ticket"))
+    f["peer_z_payers"] = peer_z("n_payers")
+    f["peer_z_round"] = peer_z("round_share")
     f["peer_z_baseline"] = f[["peer_z_ticket", "peer_z_payers", "peer_z_round"]].clip(lower=0).sum(axis=1)
     f["volume"] = g["amount"].sum().to_numpy()
 

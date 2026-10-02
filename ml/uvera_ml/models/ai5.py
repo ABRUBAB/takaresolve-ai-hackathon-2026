@@ -87,7 +87,7 @@ def run_ai5(world, out: str | Path, seeds=(42, 7, 1337, 2026, 99), quick: bool =
     (rep / "figures").mkdir(parents=True, exist_ok=True)
     th = load_config("thresholds")["ai5_qr_shield"]
     fee = load_config("qr_fee")
-    k = int(th["review_capacity_per_day"])
+    k = int(th["review_capacity_per_week"])
 
     f = build_qr_features(world)
     f["split"] = assign_qr_split(f, world.n_days)
@@ -198,7 +198,11 @@ def run_ai5(world, out: str | Path, seeds=(42, 7, 1337, 2026, 99), quick: bool =
     te_out.to_parquet(art / "merchant_scores.parquet", index=False)
     zone.to_parquet(art / "zone_summary.parquet", index=False)
 
-    summary = {"ai": "AI-5 QR Shield", "model": f"{W_SUPERVISED:.0%} LightGBM + {1 - W_SUPERVISED:.0%} IsolationForest (rank fusion)",
+    summary = {"ai": "AI-5 QR Shield",
+               "model": (f"{W_SUPERVISED:.0%} LightGBM (uses same-size peer-comparison features) + {1 - W_SUPERVISED:.0%} "
+                         "IsolationForest (rank fusion); the peer z-score alone is the transparent baseline"),
+               "review_capacity": f"top {k} merchant-weeks per week",
+               "fee_leakage_note": "estimated potential fee leakage under an UNVERIFIED synthetic fee assumption, not a real figure",
                "held_out_family": HELD_OUT, "fee_rate_assumption": fee, "single_feature_auc_top3": single,
                "cv_summary_train": cv_summary, "thresholds": thr, "test": test}
     write_json(rep / "metrics_ai5.json", summary)
