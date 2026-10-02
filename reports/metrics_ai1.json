@@ -118,17 +118,17 @@
   "cv_summary": [
     {
       "model": "catboost",
-      "pr_auc_mean": 0.6159,
-      "pr_auc_std": 0.0325,
-      "roc_auc_mean": 0.9352,
-      "n_fits": 5
+      "pr_auc_mean": 0.6205,
+      "pr_auc_std": 0.0436,
+      "roc_auc_mean": 0.9363,
+      "n_fits": 25
     },
     {
       "model": "xgboost",
-      "pr_auc_mean": 0.6144,
-      "pr_auc_std": 0.0331,
-      "roc_auc_mean": 0.9401,
-      "n_fits": 5
+      "pr_auc_mean": 0.6193,
+      "pr_auc_std": 0.0429,
+      "roc_auc_mean": 0.9377,
+      "n_fits": 25
     },
     {
       "model": "lightgbm",
@@ -139,19 +139,110 @@
     },
     {
       "model": "logistic_regression",
-      "pr_auc_mean": 0.3856,
-      "pr_auc_std": 0.0346,
-      "roc_auc_mean": 0.9104,
-      "n_fits": 5
+      "pr_auc_mean": 0.3862,
+      "pr_auc_std": 0.0296,
+      "roc_auc_mean": 0.9102,
+      "n_fits": 25
     },
     {
       "model": "rule_baseline",
       "pr_auc_mean": 0.0195,
-      "pr_auc_std": 0.0028,
-      "roc_auc_mean": 0.6937,
-      "n_fits": 5
+      "pr_auc_std": 0.0025,
+      "roc_auc_mean": 0.6939,
+      "n_fits": 25
     }
   ],
+  "cv_paired_vs_lightgbm": [
+    {
+      "model": "catboost",
+      "vs": "lightgbm",
+      "n_pairs": 25,
+      "mean_diff": 0.007627672831533405,
+      "ci95": [
+        0.0020410131610372455,
+        0.013214332502029564
+      ],
+      "significant": true,
+      "wins": 17
+    },
+    {
+      "model": "logistic_regression",
+      "vs": "lightgbm",
+      "n_pairs": 25,
+      "mean_diff": -0.2266884734514036,
+      "ci95": [
+        -0.23737810593288286,
+        -0.21599884096992436
+      ],
+      "significant": true,
+      "wins": 0
+    },
+    {
+      "model": "rule_baseline",
+      "vs": "lightgbm",
+      "n_pairs": 25,
+      "mean_diff": -0.5933663881337322,
+      "ci95": [
+        -0.6128067190073911,
+        -0.5739260572600733
+      ],
+      "significant": true,
+      "wins": 0
+    },
+    {
+      "model": "xgboost",
+      "vs": "lightgbm",
+      "n_pairs": 25,
+      "mean_diff": 0.006429867571168777,
+      "ci95": [
+        0.001032239402286663,
+        0.01182749574005089
+      ],
+      "significant": true,
+      "wins": 17
+    }
+  ],
+  "model_selection": {
+    "chosen": "lightgbm",
+    "best_mean_cv": "catboost",
+    "reason": "catboost had the highest mean CV PR-AUC, but the paired difference vs LightGBM (+0.0076, 95% CI +0.0020 to +0.0132) is not clearly better (margin 0.01). LightGBM is kept for exact TreeSHAP reasons and faster serving."
+  },
+  "test_comparison_all_gbdt": [
+    {
+      "model": "lightgbm",
+      "test_pr_auc": 0.6510450395054618,
+      "test_pr_auc_ci95": [
+        0.567265242124827,
+        0.7259501455133707
+      ],
+      "test_roc_auc": 0.9308547149179343,
+      "test_ece": 0.0016948883969839853,
+      "recall_at_5pct": 0.861878453038674
+    },
+    {
+      "model": "xgboost",
+      "test_pr_auc": 0.6283045068933317,
+      "test_pr_auc_ci95": [
+        0.5524442989916157,
+        0.7060167350140895
+      ],
+      "test_roc_auc": 0.9352033636065696,
+      "test_ece": 0.0015608579293562874,
+      "recall_at_5pct": 0.850828729281768
+    },
+    {
+      "model": "catboost",
+      "test_pr_auc": 0.6602542655131626,
+      "test_pr_auc_ci95": [
+        0.5881880785731599,
+        0.7355074078961558
+      ],
+      "test_roc_auc": 0.9368694974989499,
+      "test_ece": 0.0017773795782265232,
+      "recall_at_5pct": 0.8674033149171271
+    }
+  ],
+  "conformal_fitted_on": "validation window (separate from the isotonic calibration window)",
   "thresholds": {
     "amber_score": 0.015729024793478145,
     "red_score": 0.1500801419275889,
@@ -199,10 +290,19 @@
       "false_alerts_per_1000": 13.511320295382617
     },
     "conformal": {
-      "overall": 0.9414347283199742,
-      "class_1": 0.8895027624309392,
+      "overall": 0.9415555645063842,
+      "class_1": 0.9060773480662984,
       "class_0": 0.9418161162054695,
-      "unsure_rate": 0.039150924396826034,
+      "class_1_ci95": [
+        0.8547436864152406,
+        0.940531835977987
+      ],
+      "class_0_ci95": [
+        0.9388240914951032,
+        0.9446704296218196
+      ],
+      "n_class_1": 181,
+      "unsure_rate": 0.21694123333467596,
       "target": 0.9
     },
     "ood_rate": 0.006404317879727716,
@@ -277,10 +377,19 @@
       "false_alerts_per_1000": 13.373797644154106
     },
     "conformal": {
-      "overall": 0.9424635608227762,
-      "class_1": 0.908641975308642,
+      "overall": 0.942667892657676,
+      "class_1": 0.9382716049382716,
       "class_0": 0.9426984208631243,
-      "unsure_rate": 0.038175997820460425,
+      "class_1_ci95": [
+        0.9104643567553974,
+        0.9578425865693523
+      ],
+      "class_0_ci95": [
+        0.9407828214791499,
+        0.9445557050629761
+      ],
+      "n_class_1": 405,
+      "unsure_rate": 0.21831153793761068,
       "target": 0.9
     },
     "ood_rate": 0.005006129955046996,
