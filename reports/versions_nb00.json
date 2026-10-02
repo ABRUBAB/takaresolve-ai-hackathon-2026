@@ -1,0 +1,18 @@
+{
+  "python": "3.12.13",
+  "platform": "Linux-6.18.48+-x86_64-with-glibc2.35",
+  "numpy": "2.0.2",
+  "pandas": "2.3.3",
+  "sklearn": "1.6.1",
+  "lightgbm": "4.6.0",
+  "xgboost": "3.2.0",
+  "catboost": "1.2.10",
+  "torch": "2.10.0+cpu",
+  "sentence_transformers": "5.4.1",
+  "chronos": null,
+  "networkx": "3.6.1",
+  "google.genai": "1.68.0",
+  "cuda": false,
+  "gpu": null,
+  "uvera_commit": "7a215ccffe75ac6d0baa97514764924fd9b0cb60"
+}

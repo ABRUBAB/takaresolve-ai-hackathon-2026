@@ -1,0 +1,78 @@
+[
+  {
+    "feature": "recipient_sender_days_7d",
+    "auc": 0.7812
+  },
+  {
+    "feature": "recipient_in_count_7d",
+    "auc": 0.7805
+  },
+  {
+    "feature": "amount_log",
+    "auc": 0.7391
+  },
+  {
+    "feature": "amount_z_30d",
+    "auc": 0.6943
+  },
+  {
+    "feature": "amount_to_balance",
+    "auc": 0.6856
+  },
+  {
+    "feature": "first_time_pair",
+    "auc": 0.6764
+  },
+  {
+    "feature": "recipient_cashout_count_7d",
+    "auc": 0.6734
+  },
+  {
+    "feature": "cash_in_gap_min",
+    "auc": 0.664
+  },
+  {
+    "feature": "recipient_age_days",
+    "auc": 0.6613
+  },
+  {
+    "feature": "recipient_in_today_before",
+    "auc": 0.6046
+  },
+  {
+    "feature": "hour",
+    "auc": 0.5989
+  },
+  {
+    "feature": "sender_tenure_days",
+    "auc": 0.5903
+  },
+  {
+    "feature": "channel_ussd",
+    "auc": 0.5501
+  },
+  {
+    "feature": "recipient_out_in_ratio_7d",
+    "auc": 0.5346
+  },
+  {
+    "feature": "pin_reset_72h",
+    "auc": 0.5313
+  },
+  {
+    "feature": "device_change_72h",
+    "auc": 0.5227
+  },
+  {
+    "feature": "dow",
+    "auc": 0.5139
+  },
+  {
+    "feature": "is_night",
+    "auc": 0.5064
+  },
+  {
+    "feature": "sender_out_count_7d",
+    "auc": 0.5019
+  }
+]

@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "scale": "full",
+    "seed": 42,
+    "days": 120,
+    "start": "2025-01-06",
+    "n_events": 2203725,
+    "n_scam_transfers": 3728,
+    "n_cases": 3100,
+    "n_mules": 200,
+    "n_disguised_merchants": 141,
+    "festival_days": [
+      70,
+      76
+    ],
+    "version": "0.1.0",
+    "hashes": {
+      "customers": "4f9c83bf35b4272816674c2ce7b6e3a456a2326694bd4bde57907ae60c578223",
+      "agents": "934092e92bc0f381506d6eecae4eba14cc885e374c7bed778651bccd9a553514",
+      "merchants": "784e1be42e883144e0cb3fbcf01e4fb81fdcc28c0621d13d619e466e28b5f109",
+      "events": "41d324455a7160a1ba4d879ffa18eaae07991ba99c8c79a0cbfe643b16866580",
+      "security": "c3ec6f0a23532d6f95e737a07b0cc7fc0c0967bcb6861b13fbfce5b8ccc18fa3",
+      "daily_customer": "c120f6e09fd8c25cfc3d0d119e82cfd0b8fe123d4e41b09b8c0eab3980731654",
+      "daily_agent": "32a882fb8c0ff9fd0680aec9b0c3d4e6668d4722d5a881d341e764e935e23dc4",
+      "truth_customers": "a14e1e138c585a9131660bf6fbce21473d582074c2276957898d571f45eb50ee",
+      "truth_merchants": "d11967df10d0defebb4e533614b95b53bfc03ca3dec1d916de0c7026b4a59576",
+      "truth_cases": "022d4108e58948bc43986218cb722ba0f553d73fc90e43c3afdad36cae16f6dc"
+    }
+  },
+  "entities": {
+    "customers": 20000,
+    "agents": 600,
+    "merchants": 2500
+  },
+  "events_by_type": {
+    "qr_pay": 656403,
+    "cash_in": 534352,
+    "p2p": 479557,
+    "recharge": 237074,
+    "cash_out": 176473,
+    "bill_pay": 62896,
+    "remit_in": 30483,
+    "salary_in": 26487
+  },
+  "p2p_scam_rate": 0.0077847174803241685,
+  "scams_by_family": {
+    "investment_group": 1210,
+    "prize_lottery": 595,
+    "fake_customer_care": 583,
+    "otp_reversal_counter": 580,
+    "refund_government": 468,
+    "gold_jar_offer": 292
+  },
+  "label_noise": {
+    "scam_labels_lost": 373,
+    "false_reports": 373
+  },
+  "qr_disguise_payments_by_family": {
+    "B_split_under_limit": 6481,
+    "A_round_amount_atm": 4185,
+    "C_cash_in_pass_through": 2910,
+    "D_rotating_ring": 1865
+  },
+  "disguised_merchants_by_family": {
+    "A_round_amount_atm": 46,
+    "B_split_under_limit": 35,
+    "C_cash_in_pass_through": 34,
+    "D_rotating_ring": 26
+  },
+  "mule_wallets": 200,
+  "cases": 3100,
+  "customers_by_zone": {
+    "urban": 8998,
+    "semi_urban": 6035,
+    "rural": 4967
+  },
+  "customers_by_channel": {
+    "app": 14199,
+    "ussd": 5801
+  },
+  "customers_by_language": {
+    "bangla": 7961,
+    "banglish": 6960,
+    "english": 5079
+  },
+  "amount_quantiles_p2p": {
+    "0.1": 116.0,
+    "0.5": 670.0,
+    "0.9": 4358.0,
+    "0.99": 13000.0
+  }
+}
