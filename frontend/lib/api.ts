@@ -17,31 +17,39 @@ export class ApiError extends Error {
   }
 }
 
-const tokenKey = (role: Role) => `uvera.token.${role}`;
+const tokenKey = (role: Role, subject?: string) => `uvera.token.${role}.${subject ?? "default"}`;
 
-function readToken(role: Role): string | null {
+function readToken(key: string): string | null {
   try {
-    return sessionStorage.getItem(tokenKey(role));
+    return sessionStorage.getItem(key);
   } catch {
     return null;
   }
 }
 
-function saveToken(role: Role, token: string) {
+function saveToken(key: string, token: string) {
   try {
-    sessionStorage.setItem(tokenKey(role), token);
+    sessionStorage.setItem(key, token);
   } catch {
     /* private mode: keep in memory only */
   }
 }
 
-const memoryTokens: Partial<Record<Role, string>> = {};
+const memoryTokens: Record<string, string> = {};
 
 async function raw(path: string, init: RequestInit = {}, token?: string): Promise<Response> {
   const headers = new Headers(init.headers);
   headers.set("Content-Type", "application/json");
   if (token) headers.set("Authorization", `Bearer ${token}`);
-  return fetch(`${API_BASE}/v1${path}`, { ...init, headers, cache: "no-store" });
+  try {
+    return await fetch(`${API_BASE}/v1${path}`, { ...init, headers, cache: "no-store" });
+  } catch {
+    throw new ApiError(0, "The API is not reachable right now.");
+  }
+}
+
+export async function post<T>(path: string, role: Role, body: unknown, subject?: string): Promise<T> {
+  return api<T>(path, role, { method: "POST", body: JSON.stringify(body) }, subject);
 }
 
 async function parse<T>(res: Response): Promise<T> {
@@ -54,16 +62,19 @@ async function parse<T>(res: Response): Promise<T> {
 export async function login(role: Role, subjectId?: string): Promise<{ token: string; subject_id: string; display_name: string }> {
   const res = await raw("/auth/demo-login", { method: "POST", body: JSON.stringify({ role, subject_id: subjectId }) });
   const out = await parse<{ token: string; subject_id: string; display_name: string }>(res);
-  memoryTokens[role] = out.token;
-  saveToken(role, out.token);
+  const key = tokenKey(role, subjectId);
+  memoryTokens[key] = out.token;
+  saveToken(key, out.token);
   return out;
 }
 
-export async function api<T>(path: string, role: Role, init: RequestInit = {}): Promise<T> {
-  let token = memoryTokens[role] || readToken(role) || (await login(role)).token;
+/** Call the API as a demo persona. `subject` picks a different synthetic customer/agent than the default persona. */
+export async function api<T>(path: string, role: Role, init: RequestInit = {}, subject?: string): Promise<T> {
+  const key = tokenKey(role, subject);
+  let token = memoryTokens[key] || readToken(key) || (await login(role, subject)).token;
   let res = await raw(path, init, token);
   if (res.status === 401) {
-    token = (await login(role)).token;
+    token = (await login(role, subject)).token;
     res = await raw(path, init, token);
   }
   return parse<T>(res);

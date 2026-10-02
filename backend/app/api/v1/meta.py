@@ -5,6 +5,7 @@ from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, ConfigDict
+from uvera_ml.eval.report import AIS, fairness_summary, headline
 
 from app.api.v1.deps import engines, envelope
 from app.core.security import issue
@@ -65,11 +66,14 @@ def world_sample() -> dict:
 @router.get("/metrics/summary")
 def metrics_summary(request: Request) -> dict:
     s = engines()
-    summary = s.store.json("reports/metrics.json", None)
-    per_ai = {k: s.store.json(f"reports/metrics_{k}.json", None) for k in ("ai1", "ai2", "ai3", "ai4", "ai5", "ai6", "ai7")}
+    per_ai = {k: s.store.json(f"reports/metrics_{k}.json", None) for k in AIS}
+    found = {k: v for k, v in per_ai.items() if v}
+    # Built per AI from the newest available file (official Kaggle run first), so official and dev never mix in one number.
+    summary = {"available": {AIS[k]: k in found for k in AIS}, "headline": headline(found), "fairness": fairness_summary(found),
+               "note": "All results are on synthetic data: they show that the pipeline works, not real-world accuracy."}
     data_card = s.store.json("reports/data_card_stats.json", None)
     return envelope(request, {
-        "summary": summary or {"note": "not measured yet"}, "per_ai": per_ai, "data_card": data_card,
+        "summary": summary, "per_ai": per_ai, "data_card": data_card,
         "sources": {ai: s.store.source_of(ai) for ai in ("ai1", "ai2", "ai3", "ai4", "ai5", "ai6", "ai7")},
         "live_health": {**telemetry.summary(), "briefs": s.briefs.stats},
         "note": "Every number here is read from files written by the notebooks. Results are on synthetic data.",
