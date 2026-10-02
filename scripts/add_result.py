@@ -17,9 +17,22 @@ ROOT = Path(__file__).resolve().parents[1]
 ALLOWED = ("artifacts/", "reports/")
 
 
+def add_notebook(nb_path: Path) -> None:
+    """Executed notebook downloaded from a Kaggle version (has outputs) -> notebooks/executed/."""
+    dest = ROOT / "notebooks" / "executed" / nb_path.name
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_bytes(nb_path.read_bytes())
+    subprocess.run(["git", "-C", str(ROOT), "add", str(dest)], check=True)
+    subprocess.run(["git", "-C", str(ROOT), "commit", "-q", "-m", f"docs(notebooks): executed {nb_path.stem} from Kaggle"], check=True)
+    print(f"Committed executed notebook {nb_path.name}")
+
+
 def add(zip_path: Path) -> str:
     if not zip_path.exists():
         sys.exit(f"File not found: {zip_path}")
+    if zip_path.suffix == ".ipynb":
+        add_notebook(zip_path)
+        return zip_path.stem
     nb = re.search(r"(NB\d\d)", zip_path.name, re.I)
     nb = nb.group(1).upper() if nb else zip_path.stem
     with zipfile.ZipFile(zip_path) as z:

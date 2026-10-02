@@ -39,6 +39,7 @@ class Embedder:
 
     def __init__(self, use_bge: bool = True):
         self.kind = "tfidf_svd_fallback"
+        self.error = None if use_bge else "BGE-M3 disabled by the caller"
         if use_bge:
             try:
                 import torch
@@ -50,7 +51,8 @@ class Embedder:
                     self.model.half()
                 self.kind = "bge-m3"
             except Exception as e:  # noqa: BLE001
-                print("BGE-M3 unavailable, using TF-IDF+SVD fallback:", repr(e)[:150])
+                self.error = repr(e)[:300]
+                print("BGE-M3 unavailable, using TF-IDF+SVD fallback:", self.error)
 
     def fit(self, texts):
         if self.kind != "bge-m3":
@@ -84,7 +86,7 @@ def _metrics(y_cls, proba, p_scam, conf, name) -> dict:
 
 
 def run_ai2(out: str | Path, corpus: pd.DataFrame, uci: pd.DataFrame | None = None, use_bge: bool = True,
-            seeds=(42, 7, 1337), quick: bool = False) -> dict:
+            seeds=(42, 7, 1337), quick: bool = False, diagnostics: dict | None = None) -> dict:
     out = Path(out)
     art, rep = out / "artifacts" / "ai2", out / "reports"
     art.mkdir(parents=True, exist_ok=True)
@@ -192,6 +194,9 @@ def run_ai2(out: str | Path, corpus: pd.DataFrame, uci: pd.DataFrame | None = No
                                                     "unsure": "otherwise, or evidential u above threshold"}})
     corpus.to_parquet(art / "corpus.parquet", index=False)
     summary = {"ai": "AI-2 Scam Text Sentinel", "embedder": emb.kind, "served_model_chosen_on_cv": served,
+               "diagnostics": {"embedder": emb.kind, "embedder_error": emb.error,
+                               "intended_pipeline_ran": emb.kind == "bge-m3" and bool((corpus["source"] == "gemini").any()),
+                               **(diagnostics or {})},
                "corpus": {"total": int(len(corpus)), "by_source": corpus["source"].value_counts().to_dict(),
                           "by_language": corpus["language"].value_counts().to_dict(), "by_label": corpus["label"].value_counts().to_dict()},
                "cv_summary_family_A": cv_summary.reset_index().to_dict("records"),

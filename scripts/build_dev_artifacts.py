@@ -18,7 +18,6 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "ml"))
 
 import pandas as pd  # noqa: E402
-
 from uvera_ml.common import read_json, write_json  # noqa: E402
 from uvera_ml.eval.report import build_summary  # noqa: E402
 from uvera_ml.graph.linker import run_ai6  # noqa: E402
