@@ -17,7 +17,10 @@ Rulebook §4.4 / §9.2: every significant external resource is disclosed here. U
 | Recharts, Cytoscape.js, TanStack, Motion, lucide | Library | MIT / ISC | Charts, graph, tables, motion, icons | No | OK |
 | Geist, Geist Mono, Instrument Serif, Anek Bangla | Fonts | SIL OFL 1.1 | Typography | No | OK |
 | three.js, @react-three/fiber, drei, postprocessing, react-force-graph-3d | Library | MIT | Homepage 3D, optional 3D graph | No | OK |
-| @shadergradient/react | Library | MIT | Homepage atmosphere | Configured (monochrome preset) | Attribute |
+| @paper-design/shaders-react (GrainGradient, LiquidMetal) | Library | Apache-2.0 | Homepage atmosphere, logo | Configured | Keep LICENSE/NOTICE if redistributed |
+| Aceternity UI — Tracing Beam | Component (copied) | MIT per listings (confirm on the page) | Homepage H2 | Yes (restyled) | Attribute |
+| React Bits — DecryptedText, Noise | Components (copied) | MIT + Commons Clause | Trace drawer, grain | Yes (restyled) | Free use; do not sell the components |
+| Emil Kowalski skills, Impeccable, Taste skill | Dev tooling (agent skills) | See each repo (Impeccable Apache-2.0, Taste MIT) | Design/motion review | No | Not shipped in the app |
 | GSAP (ScrollTrigger, SplitText) | Library | GSAP Standard "no charge" license (not MIT) | Homepage scroll story | No | Free incl. commercial; disclose |
 | Lenis | Library | MIT | Smooth scroll | No | OK |
 | UCI SMS Spam Collection | Dataset | Check the UCI page (listed as CC BY 4.0) | AI-2 external test only | No | Not committed; download script |
@@ -25,4 +28,4 @@ Rulebook §4.4 / §9.2: every significant external resource is disclosed here. U
 | Vercel, Hugging Face Spaces, Kaggle, GitHub | Services | Free tiers / ToS | Hosting, compute | — | — |
 | Pre-existing team code (if any, e.g. evidential head) | Code | Own | AI-2 head | Adapted | Disclose (Rulebook §4.3) |
 
-**Copied / adapted UI code** (shadcn/ui, Magic UI): list each file under `frontend/components/ui/` and `frontend/components/magicui/` here when added.
+**Copied / adapted UI code** (shadcn/ui, Magic UI, Aceternity, React Bits): list each file under `frontend/components/ui/`, `frontend/components/magicui/`, `frontend/components/aceternity/` and `frontend/components/reactbits/` here when added.
