@@ -27,16 +27,15 @@ def _prev_sum(mat: np.ndarray, window: int) -> np.ndarray:
     return cs[d] - cs[np.maximum(0, d - window)]
 
 
-def build_ai1_features(w: World) -> pd.DataFrame:
+def dense_state(w: World) -> dict:
+    """Day x customer activity matrices. Shared by training (features per past transfer) and serving (a new draft)."""
     ev = w.events
     D, N = w.n_days, len(w.customers)
-    reg = w.customers["registration_day"].to_numpy()
     cust_side_src = ev["src_kind"].to_numpy() == 0
     cust_side_dst = ev["dst_kind"].to_numpy() == 0
     day = ev["day"].to_numpy().astype(int)
     amt = ev["amount"].to_numpy(float)
     et = ev["etype"].astype(str).to_numpy()
-
     src_i = np.full(len(ev), -1, np.int64)
     dst_i = np.full(len(ev), -1, np.int64)
     src_i[cust_side_src] = _cidx(ev.loc[cust_side_src, "src"])
@@ -49,24 +48,38 @@ def build_ai1_features(w: World) -> pd.DataFrame:
 
     is_p2p = (et == "p2p") & cust_side_src & cust_side_dst
     out_any = cust_side_src & np.isin(et, ["p2p", "qr_pay", "bill_pay", "recharge", "cash_out"])
-    out_cnt = dense(out_any, src_i, 1.0)
-    p2p_cnt = dense(is_p2p, src_i, 1.0)
-    p2p_sum = dense(is_p2p, src_i, amt)
-    p2p_sq = dense(is_p2p, src_i, amt ** 2)
-    in_cnt = dense(is_p2p, dst_i, 1.0)
-    in_amt_all = dense(cust_side_dst, dst_i, amt)
-    out_amt_all = dense(cust_side_src & np.isin(et, ["p2p", "qr_pay", "cash_out"]), src_i, amt)
-    cashout = dense(cust_side_src & ((et == "cash_out") | ((et == "qr_pay") & (amt >= 1000))), src_i, 1.0)
     pairs = pd.DataFrame({"d": day[is_p2p], "s": src_i[is_p2p], "r": dst_i[is_p2p]}).drop_duplicates()
     sender_days = np.zeros((D, N))
     np.add.at(sender_days, (pairs["d"].to_numpy(), pairs["r"].to_numpy()), 1.0)
-
-    P = {k: _prev_sum(v, 7) for k, v in dict(out=out_cnt, inc=in_cnt, inamt=in_amt_all, outamt=out_amt_all,
-                                                 cashout=cashout, sdays=sender_days).items()}
-    c30, s30, q30 = _prev_sum(p2p_cnt, 30), _prev_sum(p2p_sum, 30), _prev_sum(p2p_sq, 30)
     dc = w.daily_customer
     bal_mat = np.zeros((D, N))
     bal_mat[dc["day"].to_numpy().astype(int), _cidx(dc["customer_id"])] = dc["balance_sod"].to_numpy(float)
+    bal_end = np.zeros(N)
+    last = dc[dc["day"] == D - 1]
+    bal_end[_cidx(last["customer_id"])] = last["balance_eod"].to_numpy(float)
+    return {
+        "D": D, "N": N, "reg": w.customers["registration_day"].to_numpy(),
+        "out_cnt": dense(out_any, src_i, 1.0), "p2p_cnt": dense(is_p2p, src_i, 1.0),
+        "p2p_sum": dense(is_p2p, src_i, amt), "p2p_sq": dense(is_p2p, src_i, amt ** 2),
+        "in_cnt": dense(is_p2p, dst_i, 1.0), "in_amt_all": dense(cust_side_dst, dst_i, amt),
+        "out_amt_all": dense(cust_side_src & np.isin(et, ["p2p", "qr_pay", "cash_out"]), src_i, amt),
+        "cashout": dense(cust_side_src & ((et == "cash_out") | ((et == "qr_pay") & (amt >= 1000))), src_i, 1.0),
+        "sender_days": sender_days, "bal_mat": bal_mat, "bal_end": bal_end,
+        "pairs": set(zip(src_i[is_p2p].tolist(), dst_i[is_p2p].tolist())),
+    }
+
+
+def build_ai1_features(w: World) -> pd.DataFrame:
+    ev = w.events
+    S = dense_state(w)
+    reg = S["reg"]
+    cust_side_dst = ev["dst_kind"].to_numpy() == 0
+    et = ev["etype"].astype(str).to_numpy()
+    is_p2p = (et == "p2p") & (ev["src_kind"].to_numpy() == 0) & cust_side_dst
+    P = {k: _prev_sum(S[v], 7) for k, v in dict(out="out_cnt", inc="in_cnt", inamt="in_amt_all", outamt="out_amt_all",
+                                                    cashout="cashout", sdays="sender_days").items()}
+    c30, s30, q30 = _prev_sum(S["p2p_cnt"], 30), _prev_sum(S["p2p_sum"], 30), _prev_sum(S["p2p_sq"], 30)
+    bal_mat = S["bal_mat"]
 
     f = ev.loc[is_p2p & (ev["mule_flow"].to_numpy() == 0),
                ["event_id", "t", "ts", "day", "src", "dst", "amount", "channel", "label_scam", "is_scam",
