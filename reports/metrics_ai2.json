@@ -1,0 +1,275 @@
+{
+  "ai": "AI-2 Scam Text Sentinel",
+  "embedder": "bge-m3",
+  "served_model_chosen_on_cv": "emb_evidential",
+  "corpus": {
+    "total": 2456,
+    "by_source": {
+      "template": 2456
+    },
+    "by_language": {
+      "bangla": 855,
+      "english": 811,
+      "banglish": 790
+    },
+    "by_label": {
+      "legit": 1217,
+      "refund_government": 239,
+      "prize_lottery": 237,
+      "investment_group": 233,
+      "otp_reversal_counter": 186,
+      "fake_customer_care": 183,
+      "gold_jar_offer": 161
+    }
+  },
+  "cv_summary_family_A": [
+    {
+      "model": "emb_evidential",
+      "macro_f1_mean": 0.7704,
+      "macro_f1_std": 0.2293,
+      "verdict_pr_auc_mean": 0.9842,
+      "verdict_pr_auc_std": 0.0341
+    },
+    {
+      "model": "emb_lr",
+      "macro_f1_mean": 0.7553,
+      "macro_f1_std": 0.1996,
+      "verdict_pr_auc_mean": 0.9811,
+      "verdict_pr_auc_std": 0.0412
+    },
+    {
+      "model": "tfidf_lr",
+      "macro_f1_mean": 0.525,
+      "macro_f1_std": 0.2087,
+      "verdict_pr_auc_mean": 0.9405,
+      "verdict_pr_auc_std": 0.095
+    }
+  ],
+  "test_heldout_style_B": [
+    {
+      "model": "tfidf_lr",
+      "macro_f1": 0.16802403839617128,
+      "verdict_pr_auc": 0.8277473186542449,
+      "verdict_roc_auc": 0.8460690549997651,
+      "verdict_ece": 0.22412956307537027,
+      "verdict_brier": 0.22480640427028886,
+      "error_at_100pct": 0.4888698630136986,
+      "error_at_80pct": 0.3950749464668094,
+      "uncertainty_flags_errors_auroc": 0.8389055610803581
+    },
+    {
+      "model": "emb_lr",
+      "macro_f1": 0.515067876296114,
+      "verdict_pr_auc": 0.7875595149454351,
+      "verdict_roc_auc": 0.7971017683528252,
+      "verdict_ece": 0.2811456297048949,
+      "verdict_brier": 0.2928731487696878,
+      "error_at_100pct": 0.3561643835616438,
+      "error_at_80pct": 0.36081370449678796,
+      "uncertainty_flags_errors_auroc": 0.6856235934942716
+    },
+    {
+      "model": "emb_evidential",
+      "macro_f1": 0.4964082516394888,
+      "verdict_pr_auc": 0.7979919929929831,
+      "verdict_roc_auc": 0.8026865811845381,
+      "verdict_ece": 0.274065194536925,
+      "verdict_brier": 0.27614472095498255,
+      "error_at_100pct": 0.36472602739726023,
+      "error_at_80pct": 0.3319057815845824,
+      "uncertainty_flags_errors_auroc": 0.7010996798400465
+    }
+  ],
+  "test_by_language_served": {
+    "bangla": {
+      "n": 413,
+      "verdict_pr_auc": 0.7654097748513978,
+      "verdict_f1_at_0.5": 0.44366197183098594
+    },
+    "banglish": {
+      "n": 375,
+      "verdict_pr_auc": 0.7350037071986911,
+      "verdict_f1_at_0.5": 0.24778761061946902
+    },
+    "english": {
+      "n": 380,
+      "verdict_pr_auc": 0.8738431327954657,
+      "verdict_f1_at_0.5": 0.7850467289719626
+    }
+  },
+  "external_uci_sms_spam": {
+    "tfidf_lr": {
+      "n": 5574,
+      "spam_share": 0.1340150699677072,
+      "verdict_pr_auc": 0.14768117558755015
+    },
+    "emb_lr": {
+      "n": 5574,
+      "spam_share": 0.1340150699677072,
+      "verdict_pr_auc": 0.6243767104212445
+    },
+    "emb_evidential": {
+      "n": 5574,
+      "spam_share": 0.1340150699677072,
+      "verdict_pr_auc": 0.5786143331661256
+    }
+  },
+  "examples": [
+    {
+      "text": "BABA BOLECHE APNAR BARIR NICHE GUPTODHON ASE. KAUKE BOLBEN NA. AJ RAATE SPECIAL DOAR JONNO 750 TK DEN",
+      "true": "gold_jar_offer",
+      "language": "banglish",
+      "p_scam": 0.15,
+      "predicted_family": "legit",
+      "highlights": [
+        {
+          "phrase": "BABA BOLECHE APNAR",
+          "drop": 0.0768,
+          "start_word": 0
+        },
+        {
+          "phrase": "NICHE GUPTODHON ASE.",
+          "drop": 0.0768,
+          "start_word": 4
+        },
+        {
+          "phrase": "ASE. KAUKE BOLBEN",
+          "drop": 0.0768,
+          "start_word": 6
+        }
+      ]
+    },
+    {
+      "text": "Sir my cousin doubled his money in 5 days with our crypto team. Minimum 500 Tk. Admin Sumi will add you. Seats limited! 📞",
+      "true": "investment_group",
+      "language": "english",
+      "p_scam": 1.0,
+      "predicted_family": "investment_group",
+      "highlights": [
+        {
+          "phrase": "cousin doubled his",
+          "drop": 0.0444,
+          "start_word": 2
+        }
+      ]
+    },
+    {
+      "text": "মোবাইল কোম্পানির ১০ম বর্ষপূর্তি উপলক্ষে আপনার নম্বর ২৫,০০০ টাকা পুরস্কার পেয়েছে! ডেলিভারি চার্জ ৩০০ টাকা দিলেই পাবেন।",
+      "true": "prize_lottery",
+      "language": "bangla",
+      "p_scam": 0.07317073170731707,
+      "predicted_family": "legit",
+      "highlights": []
+    },
+    {
+      "text": "544092 is your login code. It expires in 5 minutes. If you did not try to log in, ignore this message.",
+      "true": "legit",
+      "language": "english",
+      "p_scam": 0.07317073170731707,
+      "predicted_family": "legit",
+      "highlights": []
+    },
+    {
+      "text": "উপবৃত্তির টাকা ছাড়ের জন্য আপনার নাম তালিকায় আছে।। অফিসার Rahim-কে ৫০০ টাকা ফাইল খরচ দিলে ৩,০০০ টাকা পাবেন।।",
+      "true": "refund_government",
+      "language": "bangla",
+      "p_scam": 0.07317073170731707,
+      "predicted_family": "legit",
+      "highlights": []
+    },
+    {
+      "text": "ami deliery theke bolchi, gate er shamne asi.. order er 2,500 tk cash e diben",
+      "true": "legit",
+      "language": "banglish",
+      "p_scam": 0.07317073170731707,
+      "predicted_family": "legit",
+      "highlights": []
+    },
+    {
+      "text": "দোস্ত, পিকনিকের চাঁদা 500 টাকা দিলাম, দেখে নিস।",
+      "true": "legit",
+      "language": "bangla",
+      "p_scam": 0.07317073170731707,
+      "predicted_family": "legit",
+      "highlights": [
+        {
+          "phrase": "চাঁদা 500 টাকা",
+          "drop": 0.0732,
+          "start_word": 2
+        }
+      ]
+    },
+    {
+      "text": "955324 আপনার লগইন কোড, ৫ মিনিটে মেয়াদ শেষ। আপনি চেষ্টা না করলে মেসেজটি উপেক্ষা করুন।",
+      "true": "legit",
+      "language": "bangla",
+      "p_scam": 0.07317073170731707,
+      "predicted_family": "legit",
+      "highlights": []
+    },
+    {
+      "text": "উপবৃত্তির টাকা ছাড়ের জন্য আপনার নাম তালিকায় আছে। অফিসার Rahim-কে 200 টাা ফাইল খরচ দিলে 7,500 টাকা পাবেন।",
+      "true": "refund_government",
+      "language": "bangla",
+      "p_scam": 0.07317073170731707,
+      "predicted_family": "legit",
+      "highlights": []
+    },
+    {
+      "text": "gas bill for 22/11: 2,500 tk. you can pay it any time before the due date from your own app.",
+      "true": "legit",
+      "language": "english",
+      "p_scam": 0.0,
+      "predicted_family": "legit",
+      "highlights": []
+    },
+    {
+      "text": "🎉 U R today's mega winner!! claim ur 500 Tk + smartphone. tiny delivery charge 300 Tk only, send now to agent 0174XXXXXXX",
+      "true": "prize_lottery",
+      "language": "english",
+      "p_scam": 1.0,
+      "predicted_family": "prize_lottery",
+      "highlights": [
+        {
+          "phrase": "to agent 0174XXXXXXX",
+          "drop": 0.8333,
+          "start_word": 20
+        },
+        {
+          "phrase": "mega winner!! claim",
+          "drop": 0.4,
+          "start_word": 4
+        },
+        {
+          "phrase": "0174XXXXXXX",
+          "drop": 0.1765,
+          "start_word": 22
+        }
+      ]
+    },
+    {
+      "text": "829498 s your login code. It expires in 5 minutes. If you did not try to log in, ignore this message.",
+      "true": "legit",
+      "language": "english",
+      "p_scam": 0.15,
+      "predicted_family": "legit",
+      "highlights": [
+        {
+          "phrase": "829498 s your",
+          "drop": 0.0768,
+          "start_word": 0
+        },
+        {
+          "phrase": "your login code.",
+          "drop": 0.0768,
+          "start_word": 2
+        },
+        {
+          "phrase": "code. It expires",
+          "drop": 0.0768,
+          "start_word": 4
+        }
+      ]
+    }
+  ]
+}
