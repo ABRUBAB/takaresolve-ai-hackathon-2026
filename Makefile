@@ -6,7 +6,7 @@ setup:
 	cd frontend && npm install
 
 data:
-	python scripts/make_data.py --scale small
+	python scripts/build_dev_artifacts.py --scale small
 
 api:
 	cd backend && uvicorn app.main:app --reload --port 8000

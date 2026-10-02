@@ -25,7 +25,7 @@ export function Footer() {
           <p className="label-mono mb-3">Project</p>
           <a className="block text-muted-foreground hover:text-foreground" href={REPO} target="_blank" rel="noreferrer">Source code</a>
           <a className="block text-muted-foreground hover:text-foreground" href={`${REPO}/tree/main/notebooks`} target="_blank" rel="noreferrer">Notebooks</a>
-          <a className="block text-muted-foreground hover:text-foreground" href={`${REPO}/blob/main/docs/model_cards.md`} target="_blank" rel="noreferrer">Model cards</a>
+          <a className="block text-muted-foreground hover:text-foreground" href={`${REPO}/tree/main/docs/model_cards`} target="_blank" rel="noreferrer">Model cards</a>
         </nav>
       </div>
       <div className="border-t border-border">
