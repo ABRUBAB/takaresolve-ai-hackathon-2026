@@ -49,14 +49,18 @@ summary, and a dispute deadline clock. **The AI recommends. A person decides.**
 
 ---
 
-## One website, three areas
+## One website, three areas (and a Trust Center)
 
 | Area | Who | What they get | AI inside |
 |---|---|---|---|
-| **Homepage** `/` | Everyone | The story, a 3D view of the money network (the three layers are the three areas), a live mini Pause Check, and measured results | — |
-| **Customer** `/customer` | Rina | **Pause Check** before sending · **Scam Text Check** for suspicious SMS · **Cash-Flow Guardian** with safe savings plans | AI-1 · AI-2 · AI-3 · AI-7 |
-| **Agent** `/agent` | Karim | **Liquidity Copilot** (when to top up cash) · own activity vs peers · **QR leakage** in his zone | AI-4 · AI-5 |
-| **Operations** `/ops` | Nusrat | **Case queue** sorted by risk × confidence × deadline · **evidence graph** · **grounded brief** · **dispute clock** · **QR watchlist** · **Trust Center** | AI-5 · AI-6 · AI-7 · rules |
+| **Homepage** `/` | Everyone | The story, a live 3D Trust Field drawn from a real sample of the synthetic world (customers, agents & shops, linked cases; scam money stops at a pause ring and rises into its case), a live Pause Check against the API, and measured results | — |
+| **Customer** `/customer` | Rina | **Pause Check** before sending (pause · not sure · low risk; wait, verify, ask someone, or continue) · **Scam Text Check** for suspicious SMS · **Cash-Flow Guardian** with safe savings plans | AI-1 · AI-2 · AI-3 · AI-7 |
+| **Agent** `/agent` | Karim | **Liquidity Copilot**: cash to hold for a 90%-safe day, riskiest days, peers · **QR pressure** in his zone (zone level only) | AI-4 · AI-5 |
+| **Operations** `/ops` | Nusrat | **Case queue** by risk and deadline · replayable **money-path graph** · **grounded brief** · **dispute clock** · audited human decisions · **QR Shield watchlist** | AI-5 · AI-6 · AI-7 · rules |
+| **Trust Center** `/trust` | Judges, reviewers | Every metric with its source notebook, fairness slices, data card, live API health and limitations | all |
+
+Every area has a **“Behind the screen”** panel that shows the raw model output (score, calibrated probability, conformal
+set, unusual-input flag, TreeSHAP weights, rules fired, brief source, trace id) next to what the person sees.
 
 ---
 
@@ -220,20 +224,28 @@ cd frontend && npm install
 | `JWT_SECRET` | Signs demo-role tokens | `change-me` |
 | `ALLOWED_ORIGINS` | CORS allow-list (comma separated) | `http://localhost:3000` |
 | `MODEL_DIR` | Folder with exported model artifacts | `../artifacts` |
-| `TEXT_MODEL` | `bge` or `tfidf` (lighter) | `bge` |
-| `FORECAST_LIVE` | Run forecasts live (`true`) or serve precomputed ones | `false` |
-| `LLM_MODE` | `live`, `cached` or `template` | `cached` |
-| `GEMINI_API_KEY` | Gemini API key (optional, never commit it) | `your-gemini-api-key-here` |
-| `GEMINI_MODEL` / `GEMINI_FALLBACK_MODEL` | Gemini model IDs | `gemini-3.8-flash` / `gemini-3.5-flash-lite` |
+| `WORLD_DIR` / `WORLD_SCALE` | Where the seeded synthetic world is cached (generated on first start) | `../_outputs/world_full` / `full` |
+| `DB_PATH` | SQLite file for the audit log of human decisions | `../_outputs/uvera.db` |
+| `LLM_MODE` | `cached` (NB07 briefs, then template) or `live` (Gemini → validator → template) | `cached` |
+| `GEMINI_API_KEY` | Gemini API key, only for `LLM_MODE=live` (never commit it) | *(empty)* |
+| `GEMINI_MODEL` | Gemini model ID | `gemini-3.8-flash` |
 | `DEMO_MODE` | Seeded scenarios and demo logins | `true` |
-| `RATE_LIMIT` | API rate limit | `60/minute` |
+| `RATE_LIMIT_PER_MINUTE` | API rate limit per client | `120` |
 | `LOG_LEVEL` | Log level | `info` |
 | `NEXT_PUBLIC_API_BASE` | API URL used by the web app | `http://localhost:8000` |
 
 ## Run
 
 ```bash
-cd backend && uvicorn app.main:app --reload --port 8000
+cd backend && uvicorn app.main:app --port 8000
+```
+
+The API generates (once) and loads the seeded world, then warms up the AI engines in the background (about a minute);
+the website shows a “waking up” state meanwhile. It serves the official Kaggle results in `artifacts/`. If a notebook has
+not been run yet, build a quick local copy of every model first:
+
+```bash
+python scripts/build_dev_artifacts.py
 ```
 
 ```bash
@@ -259,7 +271,8 @@ docker build -f backend/Dockerfile -t uvera-api .
 ```
 
 ## Live deployment
-*Coming soon:* the web app on Vercel and the API on a Hugging Face Docker Space. The links will be added at the top of this file.
+The website runs on Vercel and the API on a Hugging Face Docker Space; step-by-step setup is in [docs/deploy.md](docs/deploy.md).
+The live links will be added at the top of this file.
 
 ## Testing
 
