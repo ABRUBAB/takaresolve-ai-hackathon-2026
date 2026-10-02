@@ -1,0 +1,81 @@
+"""Demo login, personas/scenarios, model metadata, homepage world sample and the Trust Center summary."""
+from __future__ import annotations
+
+from typing import Literal
+
+from fastapi import APIRouter, HTTPException, Request
+from pydantic import BaseModel, ConfigDict
+
+from app.api.v1.deps import engines, envelope
+from app.core.security import issue
+from app.core.telemetry import telemetry
+from app.state import state
+
+router = APIRouter(tags=["meta"])
+
+
+class LoginIn(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    role: Literal["customer", "agent", "ops"]
+    subject_id: str | None = None
+
+
+@router.post("/auth/demo-login")
+def demo_login(body: LoginIn) -> dict:
+    s = engines()
+    p = s.demo["personas"]
+    default = {"customer": p["rina"]["id"], "agent": p["karim"]["id"], "ops": p["nusrat"]["id"]}[body.role]
+    subject = body.subject_id or default
+    if body.role == "customer" and subject not in set(s.world.customers["customer_id"]):
+        raise HTTPException(404, "Unknown customer")
+    if body.role == "agent" and subject not in set(s.world.agents["agent_id"]):
+        raise HTTPException(404, "Unknown agent")
+    name = next((v["name"] for v in p.values() if v["id"] == subject), None)
+    return {"token": issue(body.role, subject), "role": body.role, "subject_id": subject, "display_name": name or subject,
+            "note": "Demo login for synthetic personas only."}
+
+
+@router.get("/demo")
+def demo(request: Request) -> dict:
+    s = engines()
+    return envelope(request, {"personas": s.demo["personas"], "scenarios": s.demo["scenarios"]})
+
+
+@router.get("/meta")
+def meta(request: Request) -> dict:
+    s = engines()
+    w = s.world.meta
+    return envelope(request, {
+        "world": {k: w[k] for k in ("scale", "seed", "days", "n_events", "n_scam_transfers", "n_mules", "n_disguised_merchants")},
+        "models": {"ai1": s.pause.version, "ai2": s.text.version, "ai3": s.forecasts.source["ai3"], "ai4": s.forecasts.source["ai4"],
+                   "ai5": s.qr.version, "ai6": s.cases.source, "ai7": s.briefs.mode},
+        "artifact_sources": {ai: s.store.source_of(ai) for ai in ("ai1", "ai2", "ai3", "ai4", "ai5", "ai6", "ai7")},
+    })
+
+
+@router.get("/web/world-sample")
+def world_sample() -> dict:
+    s = engines()
+    data = s.store.json("artifacts/web/world_sample.json")
+    if not data:
+        raise HTTPException(404, "World sample not built yet")
+    return data
+
+
+@router.get("/metrics/summary")
+def metrics_summary(request: Request) -> dict:
+    s = engines()
+    summary = s.store.json("reports/metrics.json", None)
+    per_ai = {k: s.store.json(f"reports/metrics_{k}.json", None) for k in ("ai1", "ai2", "ai3", "ai4", "ai5", "ai6", "ai7")}
+    data_card = s.store.json("reports/data_card_stats.json", None)
+    return envelope(request, {
+        "summary": summary or {"note": "not measured yet"}, "per_ai": per_ai, "data_card": data_card,
+        "sources": {ai: s.store.source_of(ai) for ai in ("ai1", "ai2", "ai3", "ai4", "ai5", "ai6", "ai7")},
+        "live_health": {**telemetry.summary(), "briefs": s.briefs.stats},
+        "note": "Every number here is read from files written by the notebooks. Results are on synthetic data.",
+    })
+
+
+@router.get("/health/startup")
+def startup() -> dict:
+    return {"ready": state.ready, "progress": state.progress, "error": state.error}

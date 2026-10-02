@@ -1,10 +1,8 @@
 """Liveness and readiness checks."""
-from pathlib import Path
-
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
-from app.core.config import settings
+from app.state import state
 
 router = APIRouter(prefix="/health", tags=["health"])
 
@@ -16,9 +14,7 @@ def live() -> dict[str, str]:
 
 @router.get("/ready")
 def ready() -> JSONResponse:
-    checks = {"artifact_manifest": (Path(settings.model_dir) / "manifest.json").exists()}
-    ok = all(checks.values())
-    return JSONResponse(
-        status_code=200 if ok else 503,
-        content={"status": "ready" if ok else "not_ready", "checks": checks},
-    )
+    if state.ready:
+        return JSONResponse({"status": "ready", "progress": state.progress[-1:]})
+    status = "failed" if state.error else "warming_up"
+    return JSONResponse({"status": status, "progress": state.progress[-3:]}, status_code=503)
