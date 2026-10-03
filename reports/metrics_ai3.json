@@ -3,104 +3,104 @@
   "target": "daily net flow (inflow - outflow)",
   "horizon_days": 7,
   "event": "balance below Tk 200 at the end of the next 7 days",
-  "n_series": 2000,
+  "n_series": 10000,
   "winner_on_validation": "chronos2",
   "backtest": [
     {
       "split": "test",
       "model": "chronos2",
-      "mase": 0.3961,
-      "pinball_mean": 457.4691,
-      "coverage_80": 0.8139,
-      "mean_width_80": 3313.3176
+      "mase": 0.3956,
+      "pinball_mean": 457.1516,
+      "coverage_80": 0.8136,
+      "mean_width_80": 3313.0493
     },
     {
       "split": "test",
       "model": "lightgbm_quantile",
-      "mase": 0.3827,
-      "pinball_mean": 442.3173,
-      "coverage_80": 0.7945,
-      "mean_width_80": 2504.4991
+      "mase": 0.3825,
+      "pinball_mean": 442.0434,
+      "coverage_80": 0.7958,
+      "mean_width_80": 2486.9367
     },
     {
       "split": "test",
       "model": "seasonal_naive",
-      "mase": 0.7126,
-      "pinball_mean": 794.0362,
-      "coverage_80": 0.84,
-      "mean_width_80": 7814.3101
+      "mase": 0.716,
+      "pinball_mean": 795.375,
+      "coverage_80": 0.8379,
+      "mean_width_80": 7791.1538
     },
     {
       "split": "val",
       "model": "chronos2",
-      "mase": 0.8469,
-      "pinball_mean": 911.5129,
-      "coverage_80": 0.776,
-      "mean_width_80": 5580.3333
+      "mase": 0.855,
+      "pinball_mean": 924.773,
+      "coverage_80": 0.7749,
+      "mean_width_80": 5555.1726
     },
     {
       "split": "val",
       "model": "lightgbm_quantile",
-      "mase": 0.9141,
-      "pinball_mean": 993.9938,
-      "coverage_80": 0.7676,
-      "mean_width_80": 5163.5433
+      "mase": 0.928,
+      "pinball_mean": 1003.7156,
+      "coverage_80": 0.774,
+      "mean_width_80": 5331.6114
     },
     {
       "split": "val",
       "model": "seasonal_naive",
-      "mase": 1.4062,
-      "pinball_mean": 1498.0242,
-      "coverage_80": 0.7052,
-      "mean_width_80": 7407.1497
+      "mase": 1.4228,
+      "pinball_mean": 1521.3085,
+      "coverage_80": 0.7065,
+      "mean_width_80": 7383.3455
     }
   ],
   "probability_method": "empirical normalised residuals of the 7-day sum (calibrated on validation origins)",
-  "validation_threshold": 0.4291500000000001,
+  "validation_threshold": 0.4248885,
   "threshold_rule": "best F1 on validation within an alert budget (configs/thresholds.yaml)",
-  "seven_day_sum_80pct_interval_coverage_test": 0.797,
+  "seven_day_sum_80pct_interval_coverage_test": 0.80695,
   "shortfall_probability_test": {
-    "events": 904,
-    "n": 4000,
-    "base_rate": 0.226,
-    "brier": 0.13863547014062502,
-    "brier_baseline": 0.1633691836734694,
-    "pr_auc": 0.5085123360737394,
-    "pr_auc_baseline": 0.37714711353031904,
-    "ece": 0.0365240625,
-    "at_validation_threshold": {
-      "threshold": 0.4291500000000001,
-      "recall": 0.5586283185840708,
-      "precision": 0.5383795309168443,
-      "flag_rate": 0.2345
-    },
+    "events": 4582,
+    "n": 20000,
+    "base_rate": 0.2291,
+    "brier": 0.13988929356037502,
+    "brier_baseline": 0.1631894081632653,
+    "pr_auc": 0.5157129671064361,
+    "pr_auc_baseline": 0.38992302602113316,
+    "ece": 0.0351671575,
     "at_0.5_for_reference": {
       "threshold": 0.5,
-      "recall": 0.4435840707964602,
-      "precision": 0.5663841807909604,
-      "flag_rate": 0.177
+      "recall": 0.46268005237887383,
+      "precision": 0.5654841291010936,
+      "flag_rate": 0.18745
+    },
+    "at_validation_threshold": {
+      "threshold": 0.4248885,
+      "recall": 0.5685290266259275,
+      "precision": 0.5448650909851496,
+      "flag_rate": 0.23905
     }
   },
   "shortfall_probability_test_naive_sum_of_quantiles": {
-    "events": 904,
-    "n": 4000,
-    "base_rate": 0.226,
-    "brier": 0.15154242332765996,
-    "brier_baseline": 0.1633691836734694,
-    "pr_auc": 0.5085467325397146,
-    "pr_auc_baseline": 0.37714711353031904,
-    "ece": 0.10067204127042073,
-    "at_validation_threshold": {
-      "threshold": 0.4291500000000001,
-      "recall": 0.745575221238938,
-      "precision": 0.46514837819185645,
-      "flag_rate": 0.36225
-    },
+    "events": 4582,
+    "n": 20000,
+    "base_rate": 0.2291,
+    "brier": 0.151807464113994,
+    "brier_baseline": 0.1631894081632653,
+    "pr_auc": 0.5157297793685742,
+    "pr_auc_baseline": 0.38992302602113316,
+    "ece": 0.09615345477459439,
     "at_0.5_for_reference": {
       "threshold": 0.5,
-      "recall": 0.581858407079646,
-      "precision": 0.5356415478615071,
-      "flag_rate": 0.2455
+      "recall": 0.5855521606285465,
+      "precision": 0.539404905508645,
+      "flag_rate": 0.2487
+    },
+    "at_validation_threshold": {
+      "threshold": 0.4248885,
+      "recall": 0.7459624618070712,
+      "precision": 0.4627047515906322,
+      "flag_rate": 0.36935
     }
   },
   "baseline": "historical frequency of low balance (training window)"
