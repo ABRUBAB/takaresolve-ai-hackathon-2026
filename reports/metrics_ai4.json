@@ -114,6 +114,23 @@
     },
     "chance_precision": 0.21035714285714285
   },
+  "noise_floor_perfect_knowledge": {
+    "val": {
+      "mase": 0.8545298762399849,
+      "pinball_mean": 3016.9557539682537,
+      "coverage_80": 0.8163095238095238
+    },
+    "test": {
+      "mase": 0.5787315749966283,
+      "pinball_mean": 2162.4159126984127,
+      "coverage_80": 0.8367857142857142
+    },
+    "method": "300 simulated replays of each day's cash-outs with every balance and mule cash-out known (impossible in practice): a lower bound on any forecaster's error",
+    "share_of_possible_gain_test": {
+      "mase": 0.929383586824917,
+      "pinball_mean": 0.9246849765673801
+    }
+  },
   "stockout_probability_test": {
     "events": 1767,
     "n": 8400,
