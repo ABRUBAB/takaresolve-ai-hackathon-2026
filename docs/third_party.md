@@ -38,11 +38,15 @@ committed.
 |---|---|---|---|---|
 | Next.js, React | Framework | MIT | Website | No |
 | Tailwind CSS, tw-animate-css | Library | MIT | Styling | No |
-| shadcn/ui (base-nova style: button, sheet, sonner) + `cn` | Components (copied) | MIT | UI primitives in `frontend/components/ui/` | Yes (styled) |
+| shadcn/ui (base-nova style: button, sheet, sonner) + `shadcn` package (Tailwind base CSS) | Components (copied) + library | MIT | UI primitives in `frontend/components/ui/` | Yes (styled) |
+| `cn` (github.com/shadcn-ui/cn) | Library | MIT | Tailwind class merging | No |
 | Base UI (`@base-ui/react`) | Library | MIT | Accessible primitives behind the shadcn components | No |
-| Magic UI — NumberTicker | Component (copied) | MIT | Animated numbers in `frontend/components/ui/number-ticker.tsx` | Yes (styled) |
+| Magic UI — NumberTicker, AnimatedBeam, BorderBeam, FlickeringGrid, HyperText, Marquee, BlurFade | Components (copied) | MIT | Animated numbers, the decision-flow beams, borders, footer grid, headline effect, ticker, fades (`frontend/components/ui/`) | Yes (adapted to React 19 rules, styled) |
+| Aceternity UI — 3D Card, Timeline | Components (copied) | Aceternity UI licence (free components; use in projects allowed, no resale as a library) | Homepage portal cards and the About timeline (`frontend/components/ui/3d-card.tsx`, `timeline.tsx`) | Yes (adapted, styled) |
+| React Bits — ClickSpark, Magnet | Components (copied) | MIT + Commons Clause | Click sparks on the demo phone, magnetic hero button (`frontend/components/reactbits/`) | Yes (adapted) |
+| Paper Shaders (`@paper-design/shaders-react`) — LiquidMetal | Library | Apache-2.0 | Animated logo on the About page | No |
 | class-variance-authority | Library | Apache-2.0 | Component variants | No |
-| three.js, @react-three/fiber, @react-three/postprocessing | Library | MIT | Homepage 3D Trust Field (own code in `components/home/trust-field.tsx`) | No |
+| three.js, @react-three/fiber, @react-three/postprocessing | Library | MIT | Homepage 3D Trust Field (own code and shaders in `components/home/trust-scene.tsx`) | No |
 | Motion | Library | MIT | Animations | No |
 | Lenis | Library | MIT | Smooth scrolling on the homepage | No |
 | Recharts | Library | MIT | Forecast charts | No |
@@ -56,8 +60,8 @@ committed.
 |---|---|
 | Kaggle Notebooks | Official training and evaluation runs (free GPU / CPU) |
 | GitHub | Source code and committed results |
-| Hugging Face Spaces (Docker) | API hosting |
-| Vercel | Website hosting |
+| Vercel (Hobby plan) | Website hosting |
+| Cloudflare Quick Tunnel / Tailscale Funnel (optional) | A public HTTPS address for the API running on our own computer |
 
 ## Development tools (not shipped)
 

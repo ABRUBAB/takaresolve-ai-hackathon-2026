@@ -1,87 +1,79 @@
 # Deploying UVERA
 
-**The website runs on its own.** When no live API is reachable, it plays back real responses that were recorded from the
-API for every demo scenario (`frontend/public/data/snapshot.json`, made by `scripts/export_snapshot.py`) and shows a
-"Recorded demo" badge. So the hosted demo always works, even on free static hosting. A live API is optional and adds free
-typing (any SMS, any transfer) on top of the recorded scenarios.
+**The website runs on its own.** When no live API is reachable, it plays back real responses recorded from the API for
+every demo scenario (`frontend/public/data/snapshot.json`) and shows a "Recorded demo" badge, so the hosted link always
+works. A live API adds free typing (any message, any transfer) on top.
 
 | Part | Where | Cost |
 |---|---|---|
 | Website (required) | Vercel, Hobby plan | Free |
-| Live API (optional) | Your laptop, optionally made public with a free Cloudflare Quick Tunnel | Free |
+| Live API (optional) | Our own Windows computer, made public with Tailscale Funnel (fixed address) or a Cloudflare Quick Tunnel | Free |
 
-## 1. Before you deploy: refresh the recorded responses
+Why not a free cloud server: the API needs about 1.2 GB of RAM (measured), free web-service plans offer 512 MB, and new
+Hugging Face Docker Spaces need a paid plan since July 2026.
 
-Run this after the last Kaggle results are committed, so the recordings come from the official models.
-
-```bash
-cd backend && uvicorn app.main:app --port 8000
-```
-
-In a second terminal, once `http://localhost:8000/v1/health/ready` says `ready`:
+## 1. Refresh the website data after new results
+After the last notebook results are in `artifacts/` and `reports/`:
 
 ```bash
-python scripts/export_snapshot.py
+python scripts/finalize.py
 ```
 
-```bash
-python scripts/export_web_assets.py
-```
-
-Commit both changed files in `frontend/public/data/` and push to GitHub.
+It rebuilds the results summary and model cards, runs the API in-process to record every demo response, copies the
+figures, updates the README table and commits. Then `git push` (Vercel redeploys by itself).
 
 ## 2. Website on Vercel (free)
+1. Sign in at vercel.com with GitHub → **Add New… → Project** → import `takaresolve-ai-hackathon-2026`.
+2. **Project name `uvera-ai`** (gives `https://uvera-ai.vercel.app`) and **Root Directory `frontend`**. Framework Next.js,
+   default build settings.
+3. Leave `NEXT_PUBLIC_API_BASE` **unset** for recorded mode. **Deploy.**
+4. Check: homepage → **Run a scam through it** → **Send**: the result appears and the top bar shows **Recorded demo**.
 
-1. Sign in at vercel.com with GitHub and choose **Add New… → Project**.
-2. Import the GitHub repository `takaresolve-ai-hackathon-2026`.
-3. In the import screen set **Root Directory** to `frontend` (later: Project **Settings → Build and Deployment → Root
-   Directory**). The framework is detected as **Next.js**; keep the default build settings.
-4. Environment variables (Project **Settings → Environment Variables**), Production:
-   - `NEXT_PUBLIC_SITE_URL` = the address Vercel gives you, for example `https://uvera.vercel.app` (used for share previews).
-   - `NEXT_PUBLIC_API_BASE`: leave it **unset** for recorded mode, or set it to a live API address (step 3).
-5. **Deploy.** Every push to `main` deploys again. Environment-variable changes apply only to new deployments: after
-   changing one, open **Deployments** and choose **Redeploy** on the latest one.
+Every push to `main` redeploys. Environment-variable changes apply only to new deployments: **Deployments → ⋯ → Redeploy**.
 
-Check: open the site, press **Run a scam through it** on the homepage and **Send** on the phone. The result appears and the
-top bar shows **Recorded demo**.
+## 3. Live API on a Windows computer
+Needs Python 3.12, Git and about 2 GB of free RAM; no GPU.
 
-## 3. Live API (optional)
+```powershell
+git clone https://github.com/ABRUBAB/takaresolve-ai-hackathon-2026.git C:\uvera
+cd C:\uvera
+py -3.12 -m venv .venv
+.venv\Scripts\python -m pip install -c constraints.txt -e ./ml -e ./backend
+copy .env.example .env
+```
 
-### A. On your laptop (recommended for the on-site final, 7 Oct)
+In `.env` set `ALLOWED_ORIGINS=https://uvera-ai.vercel.app,http://localhost:3000` and `RATE_LIMIT_PER_MINUTE=600`.
+Start it (it restarts itself if it stops; the first start builds the synthetic world in about 45 seconds):
 
-Nothing depends on the venue's internet except the browser:
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\start_api.ps1
+```
 
+Check `http://127.0.0.1:8000/v1/health/ready` says `ready`, then `.venv\Scripts\python scripts\smoke_api.py` prints `ALL OK`.
+Use `127.0.0.1`, not `localhost`: on Windows, `localhost` first tries IPv6 and can add about 2 seconds per request.
+
+### Make it public — option A: Tailscale Funnel (fixed address, survives restarts)
+1. Install Tailscale and sign in (free Personal plan).
+2. `tailscale funnel --bg http://127.0.0.1:8000` — if it prints a link to enable HTTPS or Funnel for your tailnet, open it,
+   approve, and run the command again.
+3. `tailscale funnel status` shows the address, `https://<computer>.<tailnet>.ts.net`.
+4. In Vercel set `NEXT_PUBLIC_API_BASE` to that address (no trailing slash) and **Redeploy**.
+5. To stop: `tailscale funnel reset`.
+
+### Option B: Cloudflare Quick Tunnel (no account; the address changes on every start)
+`cloudflared tunnel --url http://127.0.0.1:8000`, then put the printed `https://….trycloudflare.com` address in Vercel and
+redeploy. Repeat after every restart.
+
+Anyone with the address can reach the API, which serves synthetic data only, issues demo logins and is rate-limited. The
+API listens on 127.0.0.1, so no firewall port is opened. To return to recorded mode, delete `NEXT_PUBLIC_API_BASE` in
+Vercel and redeploy.
+
+## 4. Running everything on one laptop (no internet needed)
 ```bash
 cd backend && uvicorn app.main:app --port 8000
 ```
-
-Create `frontend/.env.local` with one line, `NEXT_PUBLIC_API_BASE=http://localhost:8000` (without it a production build
-uses the recordings only), then:
-
+Create `frontend/.env.local` with `NEXT_PUBLIC_API_BASE=http://127.0.0.1:8000`, then:
 ```bash
-cd frontend && npm run build && npm run start
+cd frontend && npm install && npm run build && npm run start
 ```
-
-Open `http://localhost:3000`. The site uses the live API and answers any SMS or transfer typed in. Or run both with
-`docker compose up --build` (first copy `.env.example` to `.env`).
-
-### B. Make the laptop API public for the hosted site (free, Cloudflare Quick Tunnel)
-
-The API needs about 1–2 GB of RAM, so free 512 MB hosts (Render, Koyeb) cannot run it, and new Hugging Face Docker
-Spaces need a paid plan since July 2026. A Cloudflare Quick Tunnel gives the API on your laptop a public HTTPS address
-for free, with no account. The address works only while your laptop and the tunnel are running and changes on every
-start, so use it for a live session; the recorded mode covers the rest of the time.
-
-1. Install the tunnel client once (Windows): `winget install --id Cloudflare.cloudflared`
-2. Start the API with your Vercel address allowed (PowerShell):
-   `$env:ALLOWED_ORIGINS="https://<your-site>.vercel.app"; cd backend; uvicorn app.main:app --port 8000`
-3. In a second terminal: `cloudflared tunnel --url http://localhost:8000` and copy the `https://….trycloudflare.com`
-   address it prints. Check `<that address>/v1/health/ready` says `ready`.
-4. In Vercel set `NEXT_PUBLIC_API_BASE` to that address and **Redeploy**. To go back to recorded mode, delete the
-   variable and redeploy.
-
-Anyone with the address can reach the API, which serves synthetic data only. Stop the tunnel when the session ends.
-
-## 4. After new Kaggle results
-
-Commit the new files in `artifacts/` and `reports/`, re-run step 1, push. Vercel redeploys automatically.
+Open `http://localhost:3000`. Or run both with `docker compose up --build`.

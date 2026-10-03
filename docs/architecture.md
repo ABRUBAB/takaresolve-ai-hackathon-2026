@@ -1,73 +1,75 @@
 # Architecture
 
-Rules and ML predictions are kept separate (Guideline p9 §12).
+Business rules are kept separate from model predictions (Guideline p9 §12): models estimate, YAML rules decide which
+actions are offered, and a person approves anything that holds money.
 
-### M.1 System architecture
+## 1. System
 ```mermaid
 flowchart LR
-  subgraph Web["Next.js on Vercel"]
-    C[Customer portal]:::p
-    A[Agent portal]:::p
-    O[Ops portal]:::p
+  subgraph Web["Next.js website (Vercel)"]
+    H[Homepage + 3D Trust Field]:::p
+    C[Customer]:::p
+    A[Agent]:::p
+    O[Operations]:::p
+    T[Trust Center]:::p
+    SNAP[(Recorded real API responses)]
   end
-  subgraph API["FastAPI on HF Docker Space"]
-    R[/v1 routes + JWT + rate limit/]
-    S[Services: pause, text, forecast, qr, cases]
-    P[Policy layer: thresholds, rules YAML, uncertainty routing]
-    L[Brief service: Gemini API + cache + template]
-    DB[(SQLite: cases, actions, audit, feedback)]
-    ART[(artifacts/: models, calibrators, conformal, forecasts, briefs)]
+  subgraph API["FastAPI /v1 (own computer or any Docker host)"]
+    R[/Routes · JWT roles · rate limit · trace id/]
+    S[Engines: AI-1 pause · AI-2 text · AI-3/4 forecasts · AI-5 QR · AI-6 cases]
+    P[Policy: frozen thresholds + configs/rules/*.yaml]
+    B[AI-7 brief: cache → Gemini → validator → template]
+    DB[(SQLite: case status · decisions · audit log)]
+    ART[(artifacts/ · reports/ · configs/)]
   end
   subgraph Kaggle["Kaggle notebooks NB00–NB99 (offline)"]
-    K[Train · calibrate · evaluate · export]
+    K[Generate world · train · calibrate · test once · export]
   end
-  C & A & O --> R --> S --> P
+  H & C & A & O & T -- HTTPS JSON --> R --> S --> P --> B
   S --> ART
-  P --> L
-  S --> DB
-  K -- artifacts + reports/metrics.json --> ART
-  classDef p fill:#e6f4f1,stroke:#0f766e
+  R --> DB
+  Web -. API offline or waking .-> SNAP
+  K -- artifacts + reports via GitHub --> ART
+  classDef p fill:#111,stroke:#D7FF3A,color:#FAFAFA
 ```
 
-
-### M.2 Inference flow (Pause Check)
+## 2. One Pause Check request
 ```mermaid
 sequenceDiagram
-  participant U as Customer UI
-  participant API as /v1/pause-check
-  participant F as Feature builder
-  participant M as LightGBM + isotonic + conformal
-  participant N as Novelty (IForest + range)
-  participant Pol as Policy (YAML)
-  participant B as Brief (cache/template)
-  U->>API: draft transfer (+ optional message)
-  API->>F: sender, recipient, pair features (online store)
-  F->>M: score → calibrated p → conformal set
-  F->>N: novelty flag
-  M-->>Pol: p, set, SHAP top-3
-  N-->>Pol: ood?
-  Pol->>Pol: uncertainty_state + rule_hits + recommendation + human_review
-  Pol->>B: evidence JSON
-  B->>B: cache hit? else Gemini (6 s timeout) → validator
-  B-->>API: bn/en text + card_ids (validated) or template
-  API-->>U: envelope (trace_id, model_version, 6 decision fields, evidence[])
-  Note over API: timeout 2 s → rule baseline + "basic check only"
+  participant U as Customer screen
+  participant API as POST /v1/pause-check
+  participant F as Features (19, before the transfer only)
+  participant M as LightGBM → isotonic → conformal + novelty
+  participant Pol as Policy (actions.yaml)
+  participant B as Brief (cache / Gemini / template)
+  U->>API: draft transfer (+ optional message → AI-2)
+  API->>F: sender, receiver and moment features
+  F->>M: score, calibrated probability, conformal set, unusual-input flag
+  M-->>Pol: state: low · elevated · high · not sure
+  Pol-->>API: recommended actions + human-review flag
+  API->>B: evidence JSON (exact TreeSHAP reasons, rules)
+  B-->>API: Bangla + English text (validated) or template
+  API-->>U: envelope: trace id, model and data versions, decision, reasons, brief
+  Note over API: a model error returns the transparent rule check, marked degraded
 ```
 
-
-### M.3 User flow (golden thread)
+## 3. The golden thread across the three areas
 ```mermaid
 flowchart TD
-  A[Rubab drafts ৳3,000 send] --> B{Pause Check}
-  B -- high, confident --> C[Warning + 3 reasons + actions]
-  B -- unsure --> D[Grey: soft warning + ops review if amount large]
-  C --> E[Rubab waits / verifies → stops]
-  E --> F[Mule wallet tries QR cash-out at merchant M-0417]
-  F --> G[QR Shield flags merchant: family A pattern]
-  G --> H[Case Linker joins victim + mule + merchant]
-  H --> I[Ops: one case, graph, brief, Dispute Clock]
-  I --> J{Abdur Rahman decides}
-  J --> K[Request merchant evidence / propose cap → audit log]
-  G --> L[Tanvir sees QR leakage in the zone + liquidity forecast]
-  K --> M[Outcome stored → threshold review in NB99]
+  A[Rubab drafts a Tk 3,000 'prize fee' transfer] --> B{Pause Check}
+  B -- high, confident --> C[Paused: three reasons + wait / verify / ask / continue]
+  B -- not sure --> D[Soft warning; a person reviews large amounts]
+  C --> E[The receiving mule wallet moves money on within 48 h]
+  E --> F[QR payments at a shop look like disguised cash-out]
+  F --> G[QR Shield flags the shop]
+  G --> H[Case Linker joins the linked alerts into one case, CASE-0001]
+  H --> I[Operations: graph, brief, dispute clock]
+  I --> J{Abdur Rahman decides, with a reason}
+  G --> L[Tanvir sees zone-level QR pressure + cash to hold]
 ```
+
+## 4. Hosting
+- **Website:** Vercel. With no live API connected, it plays back real responses recorded from the API for every demo
+  scenario, so the link always works.
+- **Live API:** our own computer (or any Docker host), optionally made public with a Cloudflare Quick Tunnel or
+  Tailscale Funnel. See [`deploy.md`](deploy.md).
