@@ -88,94 +88,108 @@
   },
   {
    "path": "artifacts/ai3/forecasts.parquet",
-   "bytes": 527179,
-   "sha256": "29c1fa877d46a410c35d15d2d06085c04cd142a236046d324f37b628f6646b11",
+   "bytes": 2835091,
+   "sha256": "eb3398a4ee7c4090608f141703f0a470cdae8453a0b3ce8d1504670d126ecf63",
    "notebook": "NB03",
-   "code_commit": "ef989c6b691f73f8397256d2453a7d2bc4952129"
+   "code_commit": "856988681c000618c0b7fe4ca60d11edfe204d4d"
   },
   {
    "path": "artifacts/ai3/residuals.json",
-   "bytes": 25413,
-   "sha256": "036e9d2da1813787a10e0df14050bd86cf192c79e7b4f430ee84bd1d04e6e024",
+   "bytes": 25553,
+   "sha256": "a9e1fe77c89fbdac41a399db46369c3805fee07269637f6fdddc1284006b0b65",
    "notebook": "NB03",
-   "code_commit": "ef989c6b691f73f8397256d2453a7d2bc4952129"
+   "code_commit": "856988681c000618c0b7fe4ca60d11edfe204d4d"
   },
   {
    "path": "artifacts/ai3/shortfall.parquet",
-   "bytes": 226981,
-   "sha256": "6deb7ede4abd88bcb4b4f0435329643235435aba1a88d8705be3c4fb7ef933f5",
+   "bytes": 1378827,
+   "sha256": "7c8a88d11ca6ba15af27aea2eeb43bb7cabd8758ca7d1b8f64fddaf57df5312f",
    "notebook": "NB03",
-   "code_commit": "ef989c6b691f73f8397256d2453a7d2bc4952129"
+   "code_commit": "856988681c000618c0b7fe4ca60d11edfe204d4d"
   },
   {
    "path": "artifacts/ai3/shortfall_calibrator.json",
    "bytes": 1729,
    "sha256": "239c0d0351e79eaa468e0d31534aca9bca1ce48ab7f6c9642b5fd595000d2cb0",
    "notebook": "NB03",
-   "code_commit": "ef989c6b691f73f8397256d2453a7d2bc4952129"
+   "code_commit": "856988681c000618c0b7fe4ca60d11edfe204d4d"
   },
   {
    "path": "artifacts/ai4/capacity.parquet",
    "bytes": 7962,
    "sha256": "7ddbb562c7ec5a7d607a67a782ab7c09b2d5d1f16cd4b0740fc73bef504362ce",
    "notebook": "NB04",
-   "code_commit": "ef989c6b691f73f8397256d2453a7d2bc4952129"
+   "code_commit": "856988681c000618c0b7fe4ca60d11edfe204d4d"
   },
   {
    "path": "artifacts/ai4/forecasts.parquet",
-   "bytes": 556333,
-   "sha256": "86e2918b357f2c16ed06d108f68b4ae1b4448360bd33fdf3bb9df6beb6131a16",
+   "bytes": 558874,
+   "sha256": "0266e1b4b3bace5ecc77bc3268c4248ea171574c3e5222654ea1ceaf95d040aa",
    "notebook": "NB04",
-   "code_commit": "ef989c6b691f73f8397256d2453a7d2bc4952129"
+   "code_commit": "856988681c000618c0b7fe4ca60d11edfe204d4d"
   },
   {
    "path": "artifacts/ai4/residuals.json",
-   "bytes": 25282,
-   "sha256": "30b278b128e92006e4f3758ccf9dbb20a5f4b8f4b514406bb65bc067daced39b",
+   "bytes": 25268,
+   "sha256": "8ac44ebb22129f7f77d5aa649acc3144aca85c4c9fd883b80addad12151b16f6",
    "notebook": "NB04",
-   "code_commit": "ef989c6b691f73f8397256d2453a7d2bc4952129"
+   "code_commit": "856988681c000618c0b7fe4ca60d11edfe204d4d"
   },
   {
    "path": "artifacts/ai5/calibrator.json",
    "bytes": 1920,
    "sha256": "f5c67f1393d1b4ed0b7ed044dc39cf77273ae831409323014eab22bda0a7bad3",
    "notebook": "NB05",
-   "code_commit": "a3b78aa72468e2e07a69378d54549b3eec884eb8"
+   "code_commit": "59792ea847d453077806e3dc792397cf1d79f062"
   },
   {
    "path": "artifacts/ai5/conformal.json",
    "bytes": 101,
    "sha256": "5e2c58ab709336ed6233b59031edc7c2eee9942851da00cfbe6aac20c6007b8d",
    "notebook": "NB05",
-   "code_commit": "a3b78aa72468e2e07a69378d54549b3eec884eb8"
+   "code_commit": "59792ea847d453077806e3dc792397cf1d79f062"
   },
   {
    "path": "artifacts/ai5/merchant_scores.parquet",
-   "bytes": 527237,
-   "sha256": "2c1802753e6b11881924b1563145a8bfe115b53b12790b9687298795344d8c5a",
+   "bytes": 542819,
+   "sha256": "9a5e01e282b0e28a9997b5c949621c7a06b63d977773b7e2e2cbc91489c42785",
    "notebook": "NB05",
-   "code_commit": "a3b78aa72468e2e07a69378d54549b3eec884eb8"
+   "code_commit": "59792ea847d453077806e3dc792397cf1d79f062"
   },
   {
    "path": "artifacts/ai5/model.txt",
    "bytes": 525623,
    "sha256": "543077913785d27a48bba7e08de5c634ed73ce1aa7e5a1e71ba84325bda38f9f",
    "notebook": "NB05",
-   "code_commit": "a3b78aa72468e2e07a69378d54549b3eec884eb8"
+   "code_commit": "59792ea847d453077806e3dc792397cf1d79f062"
   },
   {
    "path": "artifacts/ai5/thresholds.json",
    "bytes": 229,
    "sha256": "6747e64f0a1e691845b949c7a705e0b3fa789ee1f55748f51063438636c0edc3",
    "notebook": "NB05",
-   "code_commit": "a3b78aa72468e2e07a69378d54549b3eec884eb8"
+   "code_commit": "59792ea847d453077806e3dc792397cf1d79f062"
   },
   {
    "path": "artifacts/ai5/zone_summary.parquet",
    "bytes": 3762,
-   "sha256": "534a67d52b9277abe3273534cac733774aec8543e30a3a5b930056128d3c30c7",
+   "sha256": "4a050f378c1135da82d457c30956a5cbfaacb38b4fc3815ac55bbc5f8f663f97",
    "notebook": "NB05",
-   "code_commit": "a3b78aa72468e2e07a69378d54549b3eec884eb8"
+   "code_commit": "59792ea847d453077806e3dc792397cf1d79f062"
+  },
+  {
+   "path": "artifacts/ai6/cases.json",
+   "bytes": 248080,
+   "sha256": "2649cecbeb0e81017cc819ab3a820bf37913432b058b78fe757e1326fa08425e",
+   "notebook": "NB06",
+   "code_commit": "856988681c000618c0b7fe4ca60d11edfe204d4d"
+  },
+  {
+   "path": "artifacts/ai7/briefs_cache.json",
+   "bytes": 450298,
+   "sha256": "b9911f8e9b1200df66cb3c157cea6909fcb5eb900412248b6cda907a1afd1673",
+   "notebook": "NB07",
+   "code_commit": "393877746daa9c714b0dce9995736dfb435b3d71"
   },
   {
    "path": "artifacts/web/world_sample.json",
