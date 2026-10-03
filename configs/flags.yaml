@@ -1,7 +1,0 @@
-# Feature flags (config-driven behaviour for fast final-day changes).
-text_model: bge            # bge | tfidf
-forecast_live: false
-llm_mode: cached           # live | cached | template
-homepage_3d: true
-ops_graph_3d: false
-scenario_switcher: true

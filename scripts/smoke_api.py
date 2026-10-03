@@ -1,6 +1,6 @@
 """Call every API endpoint once against a running server and print a short report.
 
-    python scripts/smoke_api.py http://localhost:8000
+    python scripts/smoke_api.py http://127.0.0.1:8000
 """
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import time
 import urllib.error
 import urllib.request
 
-BASE = (sys.argv[1] if len(sys.argv) > 1 else "http://localhost:8000").rstrip("/") + "/v1"
+BASE = (sys.argv[1] if len(sys.argv) > 1 else "http://127.0.0.1:8000").rstrip("/") + "/v1"
 
 
 def call(method, path, token=None, body=None):
@@ -55,8 +55,8 @@ def main():
         ok &= st == 200
         print(f"{st} {dt * 1000:6.0f} ms  {sid:<28} {line}")
     for path, role in [("/cases?limit=5", "ops"), ("/qr/merchants?limit=5", "ops"), ("/metrics/summary", "ops"),
-                       ("/agents/" + demo["personas"]["karim"]["id"] + "/area", "agent"), ("/meta", "ops"), ("/web/world-sample", "ops"),
-                       ("/customers/" + demo["personas"]["rina"]["id"] + "/profile", "customer")]:
+                       ("/agents/" + demo["personas"]["agent"]["id"] + "/area", "agent"), ("/meta", "ops"), ("/web/world-sample", "ops"),
+                       ("/customers/" + demo["personas"]["customer"]["id"] + "/profile", "customer")]:
         st, d, dt = call("GET", path, tok[role])
         ok &= st == 200
         print(f"{st} {dt * 1000:6.0f} ms  GET {path}")

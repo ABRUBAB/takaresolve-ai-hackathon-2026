@@ -46,6 +46,21 @@ def mask(value: str) -> str:
     return value if len(value) < 5 else value[:3] + "***" + value[-2:]
 
 
+LOOPBACK = {"127.0.0.1", "::1", "localhost"}
+
+
+def client_key(request: Request) -> str:
+    """Who is calling, for the rate limit. Behind a local tunnel (Cloudflare, Tailscale) every request arrives from
+    127.0.0.1, so use the visitor address the tunnel adds: CF-Connecting-IP, else the LAST X-Forwarded-For entry
+    (the one our own proxy appended; earlier entries can be forged by the caller)."""
+    host = request.client.host if request.client else "unknown"
+    if host in LOOPBACK:
+        forwarded = request.headers.get("cf-connecting-ip") or request.headers.get("x-forwarded-for", "").split(",")[-1].strip()
+        if forwarded:
+            return forwarded
+    return host
+
+
 class TraceMiddleware(BaseHTTPMiddleware):
     def __init__(self, app):
         super().__init__(app)
@@ -54,8 +69,11 @@ class TraceMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         trace = request.headers.get("x-trace-id") or uuid.uuid4().hex[:16]
         request.state.trace_id = trace
-        client = request.client.host if request.client else "unknown"
+        client = client_key(request)
         now = time.time()
+        if len(self.hits) > 5000:  # forget idle clients so the table cannot grow without bound
+            for k in [k for k, v in self.hits.items() if not v or now - v[-1] > 60]:
+                del self.hits[k]
         q = self.hits[client]
         while q and now - q[0] > 60:
             q.popleft()

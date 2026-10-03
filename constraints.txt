@@ -1,0 +1,7 @@
+# Exact library versions used by the Kaggle notebook runs (see reports/versions_nb*.json), so the saved models
+# load and score exactly as they were tested. Needs Python 3.12. Install with:
+#   pip install -c constraints.txt -e "./ml[dev]" -e "./backend[dev]"
+numpy==2.0.2
+pandas==2.3.3
+scikit-learn==1.6.1
+lightgbm==4.6.0

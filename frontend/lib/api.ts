@@ -4,13 +4,13 @@ import { useSyncExternalStore } from "react";
 
 /**
  * API client. Two modes:
- *  - live: calls the FastAPI service at NEXT_PUBLIC_API_BASE (local dev defaults to http://localhost:8000);
+ *  - live: calls the FastAPI service at NEXT_PUBLIC_API_BASE (local dev defaults to http://127.0.0.1:8000);
  *  - recorded: plays back real responses recorded from that API for every demo scenario (public/data/snapshot.json,
  *    made by scripts/export_snapshot.py). Used when no API is configured, or as a fallback while the live API is
  *    offline or waking up, so the hosted demo always works.
  */
 const RAW_BASE = process.env.NEXT_PUBLIC_API_BASE?.trim();
-export const API_BASE = (RAW_BASE && RAW_BASE !== "snapshot" ? RAW_BASE : process.env.NODE_ENV === "development" ? "http://localhost:8000" : "").replace(/\/$/, "");
+export const API_BASE = (RAW_BASE && RAW_BASE !== "snapshot" ? RAW_BASE : process.env.NODE_ENV === "development" ? "http://127.0.0.1:8000" : "").replace(/\/$/, "");
 export const RECORDED_ONLY = !API_BASE;
 
 export type Role = "customer" | "agent" | "ops";
@@ -167,8 +167,8 @@ async function call<T>(path: string, role: Role | null, init: RequestInit = {}, 
     return out;
   } catch (e) {
     const err = e instanceof ApiError ? e : new ApiError(0, String(e));
-    // offline or waking up: answer from the recordings when this exact request was recorded
-    if (err.status === 0 || err.status === 503 || err.status >= 500) {
+    // offline, waking up or rate-limited: answer from the recordings when this exact request was recorded
+    if (err.status === 0 || err.status === 429 || err.status === 503 || err.status >= 500) {
       const hit = await fromRecording<T>(method, path, body);
       if (hit) return hit;
       if (err.status === 0) throw new ApiError(0, OFFLINE);
