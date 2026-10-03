@@ -1,8 +1,8 @@
 {
-  "amber_score": 0.7828436438801122,
-  "red_score": 0.880732614794035,
+  "amber_score": 0.7732703381071903,
+  "red_score": 0.8878330134357006,
   "frozen": true,
   "rule": "validation split: amber = 10%, red = 2% of honest merchant-weeks flagged",
-  "amber_p": 0.03571428571428571,
-  "red_p": 0.08333333333333333
+  "amber_p": 0.032,
+  "red_p": 0.0975609756097561
 }

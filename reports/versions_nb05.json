@@ -14,5 +14,5 @@
   "google.genai": "1.68.0",
   "cuda": false,
   "gpu": null,
-  "uvera_commit": "4599b2e045ce415250a97248dadafe2687288f8b"
+  "uvera_commit": "a3b78aa72468e2e07a69378d54549b3eec884eb8"
 }
