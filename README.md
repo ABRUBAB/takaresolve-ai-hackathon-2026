@@ -142,7 +142,7 @@ flowchart LR
     A[Agent]:::p
     O[Operations]:::p
   end
-  subgraph API["FastAPI on a Hugging Face Space"]
+  subgraph API["FastAPI (laptop or any Docker host)"]
     R[/v1 routes · JWT · rate limit/]
     S[Model services]
     P[Policy · YAML rules]
@@ -174,7 +174,7 @@ More diagrams: [`docs/architecture.md`](docs/architecture.md).
 | API | FastAPI · Pydantic v2 · Uvicorn · SQLite |
 | Web | Next.js 16 · React 19 · TypeScript · Tailwind CSS · shadcn/ui · Magic UI · Motion · GSAP · React Three Fiber · Paper Shaders · Recharts · Cytoscape.js |
 | Training | Kaggle notebooks (CPU / T4 GPU) |
-| Hosting | Vercel (web) · Hugging Face Docker Space (API) |
+| Hosting | Vercel (web, with recorded real API responses) · FastAPI on a laptop or Docker host, optionally via a Cloudflare Quick Tunnel |
 | Quality | pytest · ruff · ESLint · Playwright · GitHub Actions |
 
 Every third-party resource and its license is listed in [`docs/third_party.md`](docs/third_party.md).
@@ -273,7 +273,7 @@ docker build -f backend/Dockerfile -t uvera-api .
 ## Live deployment
 The website runs on Vercel. When no live API is reachable it plays back real responses recorded from the API for every demo
 scenario (badge: "Recorded demo"), so the hosted demo always works; a live API adds free typing on top. Step-by-step setup,
-including the live API on a laptop or a Hugging Face Docker Space, is in [docs/deploy.md](docs/deploy.md).
+including the live API on a laptop (optionally public through a free Cloudflare Quick Tunnel), is in [docs/deploy.md](docs/deploy.md).
 
 ## Testing
 

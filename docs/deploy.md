@@ -8,7 +8,7 @@ typing (any SMS, any transfer) on top of the recorded scenarios.
 | Part | Where | Cost |
 |---|---|---|
 | Website (required) | Vercel, Hobby plan | Free |
-| Live API (optional) | Your laptop (best for the on-site final) or a Hugging Face Docker Space | Free / Hugging Face PRO ($9 per month) |
+| Live API (optional) | Your laptop, optionally made public with a free Cloudflare Quick Tunnel | Free |
 
 ## 1. Before you deploy: refresh the recorded responses
 
@@ -65,23 +65,23 @@ cd frontend && npm run build && npm run start
 Open `http://localhost:3000`. The site uses the live API and answers any SMS or transfer typed in. Or run both with
 `docker compose up --build` (first copy `.env.example` to `.env`).
 
-### B. Hugging Face Docker Space (needs a Hugging Face PRO plan)
+### B. Make the laptop API public for the hosted site (free, Cloudflare Quick Tunnel)
 
-Since July 2026 Hugging Face requires a paid plan (PRO, $9/month for a personal account) to create new Docker Spaces.
+The API needs about 1–2 GB of RAM, so free 512 MB hosts (Render, Koyeb) cannot run it, and new Hugging Face Docker
+Spaces need a paid plan since July 2026. A Cloudflare Quick Tunnel gives the API on your laptop a public HTTPS address
+for free, with no account. The address works only while your laptop and the tunnel are running and changes on every
+start, so use it for a live session; the recorded mode covers the rest of the time.
 
-1. Create a Space: **New Space → SDK: Docker → Blank**, hardware **CPU basic** (2 vCPU, 16 GB RAM).
-2. Upload `deploy/huggingface/Dockerfile` and `deploy/huggingface/README.md` to the Space (**Files → Add file → Upload files**).
-   The README header sets `sdk: docker` and `app_port: 7860`. The Dockerfile clones this public GitHub repository, installs
-   the library versions the Kaggle notebooks used, and rebuilds the seeded synthetic world inside the image.
-3. Space **Settings → Variables and secrets**: variable `ALLOWED_ORIGINS` = your Vercel address; secret `JWT_SECRET` = a long
-   random string.
-4. Wait for the build, then check `https://<user>-<space>.hf.space/v1/health/ready` (about a minute after each start).
-5. In Vercel set `NEXT_PUBLIC_API_BASE` = `https://<user>-<space>.hf.space` and redeploy.
+1. Install the tunnel client once (Windows): `winget install --id Cloudflare.cloudflared`
+2. Start the API with your Vercel address allowed (PowerShell):
+   `$env:ALLOWED_ORIGINS="https://<your-site>.vercel.app"; cd backend; uvicorn app.main:app --port 8000`
+3. In a second terminal: `cloudflared tunnel --url http://localhost:8000` and copy the `https://….trycloudflare.com`
+   address it prints. Check `<that address>/v1/health/ready` says `ready`.
+4. In Vercel set `NEXT_PUBLIC_API_BASE` to that address and **Redeploy**. To go back to recorded mode, delete the
+   variable and redeploy.
 
-Free-hardware Spaces sleep when unused; while the API wakes up, the website keeps answering from the recordings.
-`.github/workflows/keepwarm.yml` pings the API every 6 hours once you add the repository secret `API_HEALTH_URL`.
+Anyone with the address can reach the API, which serves synthetic data only. Stop the tunnel when the session ends.
 
 ## 4. After new Kaggle results
 
-Commit the new files in `artifacts/` and `reports/`, re-run step 1, push. Vercel redeploys automatically; a Hugging Face
-Space rebuilds from GitHub with **Settings → Factory rebuild**.
+Commit the new files in `artifacts/` and `reports/`, re-run step 1, push. Vercel redeploys automatically.
