@@ -1,6 +1,6 @@
 # Model card — AI-6 Case Linker
 
-*Notebook `NB06` · code commit `—` · results `reports/metrics_ai6.json` · synthetic data only.*
+*Notebook `NB06` · code commit `856988681c` · results `reports/metrics_ai6.json` · synthetic data only.*
 
 | | |
 |---|---|
@@ -15,7 +15,10 @@
 
 ## Measured results (test data the model never saw)
 
-- Not measured yet: run `NB06`.
+- 377 alerts → 197 cases: **47.7% fewer items** to open.
+- Alert pairs paid to the same mule that were linked: 100.0%; mean case purity 90.1%.
+- Real scam alerts inside the top 5 / 10 / 20 cases: 94.0% / 96.0% / 98.0%.
+- Cash-outs found for detected cases: 72.4%.
 
 ## Limitations
 

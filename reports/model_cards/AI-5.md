@@ -1,6 +1,6 @@
 # Model card — AI-5 QR Shield
 
-*Notebook `NB05` · code commit `a3b78aa724` · results `reports/metrics_ai5.json` · synthetic data only.*
+*Notebook `NB05` · code commit `59792ea847` · results `reports/metrics_ai5.json` · synthetic data only.*
 
 | | |
 |---|---|

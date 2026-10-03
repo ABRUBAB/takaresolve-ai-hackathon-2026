@@ -5,8 +5,8 @@
     "AI-3 Cash-Flow Guardian": true,
     "AI-4 Agent Liquidity Copilot": true,
     "AI-5 QR Shield": true,
-    "AI-6 Case Linker": false,
-    "AI-7 Grounded Brief": false
+    "AI-6 Case Linker": true,
+    "AI-7 Grounded Brief": true
   },
   "headline": {
     "ai1": {
@@ -98,43 +98,43 @@
       }
     },
     "ai3": {
-      "winner": "chronos2",
+      "winner": "lightgbm_quantile",
       "winner_test": {
         "split": "test",
-        "model": "chronos2",
-        "mase": 0.3961,
-        "pinball_mean": 457.4691,
-        "coverage_80": 0.8139,
-        "mean_width_80": 3313.3176
+        "model": "lightgbm_quantile",
+        "mase": 0.3827,
+        "pinball_mean": 441.9165,
+        "coverage_80": 0.7963,
+        "mean_width_80": 2493.6963
       },
       "naive_test": {
         "split": "test",
         "model": "seasonal_naive",
-        "mase": 0.7126,
-        "pinball_mean": 794.0362,
-        "coverage_80": 0.84,
-        "mean_width_80": 7814.3101
+        "mase": 0.716,
+        "pinball_mean": 795.375,
+        "coverage_80": 0.8379,
+        "mean_width_80": 7791.1538
       },
       "shortfall": {
-        "events": 904,
-        "n": 4000,
-        "base_rate": 0.226,
-        "brier": 0.13863547014062502,
-        "brier_baseline": 0.1633691836734694,
-        "pr_auc": 0.5085123360737394,
-        "pr_auc_baseline": 0.37714711353031904,
-        "ece": 0.0365240625,
-        "at_validation_threshold": {
-          "threshold": 0.4291500000000001,
-          "recall": 0.5586283185840708,
-          "precision": 0.5383795309168443,
-          "flag_rate": 0.2345
-        },
+        "events": 4582,
+        "n": 20000,
+        "base_rate": 0.2291,
+        "brier": 0.142751406480125,
+        "brier_baseline": 0.1631894081632653,
+        "pr_auc": 0.4996750021971808,
+        "pr_auc_baseline": 0.38992302602113316,
+        "ece": 0.0311769225,
         "at_0.5_for_reference": {
           "threshold": 0.5,
-          "recall": 0.4435840707964602,
-          "precision": 0.5663841807909604,
-          "flag_rate": 0.177
+          "recall": 0.49257965953731997,
+          "precision": 0.5208862220170782,
+          "flag_rate": 0.21665
+        },
+        "at_validation_threshold": {
+          "threshold": 0.3649,
+          "recall": 0.6625927542557835,
+          "precision": 0.474375,
+          "flag_rate": 0.32
         }
       }
     },
@@ -156,7 +156,29 @@
         "coverage_80": 0.8067,
         "mean_width_80": 37500.7656
       },
-      "cash_to_hold": "not measured yet",
+      "cash_to_hold": {
+        "target_days_short": 0.1,
+        "usual_cash": {
+          "days_short_of_cash": 0.21035714285714285,
+          "mean_cash_bdt": 15543.771412760416,
+          "extra_vs_usual_bdt": 0.0
+        },
+        "forecast_q90": {
+          "days_short_of_cash": 0.12630952380952382,
+          "mean_cash_bdt": 20463.468410608813,
+          "extra_vs_usual_bdt": 4919.6969978484
+        },
+        "same_extra_cash_spread_flat": {
+          "days_short_of_cash": 0.12880952380952382,
+          "mean_cash_bdt": 20463.46831632778,
+          "extra_vs_usual_bdt": 4919.696903567368
+        },
+        "seasonal_naive_q90": {
+          "days_short_of_cash": 0.062142857142857146,
+          "mean_cash_bdt": 31550.848844633558,
+          "extra_vs_usual_bdt": 16007.07743187314
+        }
+      },
       "stockout": {
         "events": 1767,
         "n": 8400,
@@ -166,17 +188,28 @@
         "pr_auc": 0.26606464379072914,
         "pr_auc_baseline": 0.21059263670226708,
         "ece": 0.04269152494331065,
-        "at_validation_threshold": {
-          "threshold": 0.4774392857142857,
-          "recall": 0.003395585738539898,
-          "precision": 0.3333333333333333,
-          "flag_rate": 0.002142857142857143
-        },
         "at_0.5_for_reference": {
           "threshold": 0.5,
           "recall": 0.001697792869269949,
           "precision": 0.3,
           "flag_rate": 0.0011904761904761906
+        }
+      },
+      "noise_floor": {
+        "val": {
+          "mase": 0.8545298762399849,
+          "pinball_mean": 3016.9557539682537,
+          "coverage_80": 0.8163095238095238
+        },
+        "test": {
+          "mase": 0.5787315749966283,
+          "pinball_mean": 2162.4159126984127,
+          "coverage_80": 0.8367857142857142
+        },
+        "method": "300 simulated replays of each day's cash-outs with every balance and mule cash-out known (impossible in practice): a lower bound on any forecaster's error",
+        "share_of_possible_gain_test": {
+          "mase": 0.929383586824917,
+          "pinball_mean": 0.9246849765673801
         }
       }
     },
@@ -193,14 +226,49 @@
       "fpr_honest_round_price": 0.05942622950819672,
       "fpr_honest_all": 0.10168067226890756
     },
-    "ai6": "not measured yet",
+    "ai6": {
+      "n_cases": 197,
+      "n_alerts": 377,
+      "alerts_per_case": 1.9137055837563453,
+      "analyst_items_reduction": 0.47745358090185674,
+      "same_mule_pairs_linked": 1.0,
+      "same_mule_pairs": 365,
+      "case_purity_mean": 0.9008547008547008,
+      "cashouts_found_for_detected_cases": 0.7241379310344828,
+      "cases_with_true_scam": 9,
+      "real_scam_alerts_in_top_cases": {
+        "5": 0.9403973509933775,
+        "10": 0.9602649006622517,
+        "20": 0.9801324503311258
+      },
+      "top_cases_with_real_scam": {
+        "5": 5,
+        "10": 6,
+        "20": 7
+      }
+    },
     "ai7": {
-      "validator_pass_rate_llm": "not measured yet",
-      "fallback_rate": "not measured yet",
-      "shown_text_valid_rate": "not measured yet",
-      "injection_raw_success_rate": "not measured yet",
-      "injection_shown_success_rate": "not measured yet",
-      "llm": "not measured yet"
+      "validator_pass_rate_llm": 0.9785714285714285,
+      "fallback_rate": 0.02142857142857143,
+      "shown_text_valid_rate": 1.0,
+      "injection_raw_success_rate": 0.1,
+      "injection_shown_success_rate": 0.0,
+      "llm": {
+        "model": "gemini-3.5-flash-lite",
+        "fallback_models": [
+          "gemini-3.5-flash",
+          "gemini-3.8-flash",
+          "gemini-2.5-flash",
+          "gemini-2.5-flash-lite"
+        ],
+        "calls": 194,
+        "cache_hits": 0,
+        "failures": 0,
+        "paused_models": [
+          "gemini-3.5-flash",
+          "gemini-3.8-flash"
+        ]
+      }
     }
   },
   "fairness": [
@@ -502,50 +570,50 @@
     {
       "split": "test",
       "model": "chronos2",
-      "mase": 0.3961,
-      "pinball_mean": 457.4691,
-      "coverage_80": 0.8139,
-      "mean_width_80": 3313.3176
+      "mase": 0.3956,
+      "pinball_mean": 457.1516,
+      "coverage_80": 0.8136,
+      "mean_width_80": 3313.0493
     },
     {
       "split": "test",
       "model": "lightgbm_quantile",
       "mase": 0.3827,
-      "pinball_mean": 442.3173,
-      "coverage_80": 0.7945,
-      "mean_width_80": 2504.4991
+      "pinball_mean": 441.9165,
+      "coverage_80": 0.7963,
+      "mean_width_80": 2493.6963
     },
     {
       "split": "test",
       "model": "seasonal_naive",
-      "mase": 0.7126,
-      "pinball_mean": 794.0362,
-      "coverage_80": 0.84,
-      "mean_width_80": 7814.3101
+      "mase": 0.716,
+      "pinball_mean": 795.375,
+      "coverage_80": 0.8379,
+      "mean_width_80": 7791.1538
     },
     {
       "split": "val",
       "model": "chronos2",
-      "mase": 0.8469,
-      "pinball_mean": 911.5129,
-      "coverage_80": 0.776,
-      "mean_width_80": 5580.3333
+      "mase": 0.855,
+      "pinball_mean": 924.773,
+      "coverage_80": 0.7749,
+      "mean_width_80": 5555.1726
     },
     {
       "split": "val",
       "model": "lightgbm_quantile",
-      "mase": 0.9141,
-      "pinball_mean": 993.9938,
-      "coverage_80": 0.7676,
-      "mean_width_80": 5163.5433
+      "mase": 0.7524,
+      "pinball_mean": 764.8785,
+      "coverage_80": 0.8014,
+      "mean_width_80": 5283.7034
     },
     {
       "split": "val",
       "model": "seasonal_naive",
-      "mase": 1.4062,
-      "pinball_mean": 1498.0242,
-      "coverage_80": 0.7052,
-      "mean_width_80": 7407.1497
+      "mase": 1.4228,
+      "pinball_mean": 1521.3085,
+      "coverage_80": 0.7065,
+      "mean_width_80": 7383.3455
     }
   ],
   "backtest_ai4": [
@@ -629,9 +697,11 @@
   "run_commits": {
     "AI-1 Pause Check": "4599b2e045ce415250a97248dadafe2687288f8b",
     "AI-2 Scam Text Sentinel": "ef989c6b691f73f8397256d2453a7d2bc4952129",
-    "AI-3 Cash-Flow Guardian": "ef989c6b691f73f8397256d2453a7d2bc4952129",
-    "AI-4 Agent Liquidity Copilot": "ef989c6b691f73f8397256d2453a7d2bc4952129",
-    "AI-5 QR Shield": "a3b78aa72468e2e07a69378d54549b3eec884eb8"
+    "AI-3 Cash-Flow Guardian": "856988681c000618c0b7fe4ca60d11edfe204d4d",
+    "AI-4 Agent Liquidity Copilot": "856988681c000618c0b7fe4ca60d11edfe204d4d",
+    "AI-5 QR Shield": "59792ea847d453077806e3dc792397cf1d79f062",
+    "AI-6 Case Linker": "856988681c000618c0b7fe4ca60d11edfe204d4d",
+    "AI-7 Grounded Brief": "393877746daa9c714b0dce9995736dfb435b3d71"
   },
   "note": "All results are on synthetic data: they show that the pipeline works, not real-world accuracy."
 }

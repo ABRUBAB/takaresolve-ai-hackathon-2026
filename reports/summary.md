@@ -10,17 +10,18 @@ All results are on synthetic data: they show that the pipeline works, not real-w
 | AI-1 Pause Check | Calibration error (ECE) | 0.002 | — |
 | AI-2 Scam Text | Verdict PR-AUC, unseen writing style (served model: tfidf_lr) | 0.986 | — |
 | AI-2 Scam Text | Scam-family macro F1, unseen writing style | 0.855 | — |
-| AI-3 Cash-Flow | Forecast error, MASE (chronos2) | 0.396 | 0.713 |
-| AI-3 Cash-Flow | 80% range holds the truth (target 0.80) | 0.814 | 0.840 |
-| AI-3 Cash-Flow | Shortfall warning PR-AUC (vs history) | 0.509 | 0.377 |
+| AI-3 Cash-Flow | Forecast error, MASE (lightgbm_quantile) | 0.383 | 0.716 |
+| AI-3 Cash-Flow | 80% range holds the truth (target 0.80) | 0.796 | 0.838 |
+| AI-3 Cash-Flow | Shortfall warning PR-AUC (vs history) | 0.500 | 0.390 |
 | AI-4 Liquidity | Forecast error, MASE (lightgbm_quantile) | 0.604 | 0.931 |
-| AI-4 Liquidity | Days short of cash: hold the 90% forecast (vs usual cash) | — | — |
+| AI-4 Liquidity | Days short of cash: hold the 90% forecast (vs usual cash) | 12.6% | 21.0% |
+| AI-4 Liquidity | Share of the best possible gain over naive reached (perfect-knowledge limit = 100%) | 92.5% | — |
 | AI-5 QR Shield | Real cash-out shops among the 20 reviewed each week | 92.5% | — |
 | AI-5 QR Shield | Honest round-price shops wrongly flagged | 5.9% | — |
 | AI-5 QR Shield | Recall on a disguise type never seen in training | 42.1% | — |
-| AI-6 Case Linker | Fewer items for analysts (alerts → cases) | — | — |
-| AI-6 Case Linker | Real scam alerts inside the top 5 cases | — | — |
-| AI-7 Grounded Brief | Prompt-injection attacks shown to users | — | — |
+| AI-6 Case Linker | Fewer items for analysts (alerts → cases) | 47.7% | — |
+| AI-6 Case Linker | Real scam alerts inside the top 5 cases | 94.0% | — |
+| AI-7 Grounded Brief | Prompt-injection attacks shown to users | 0.0% | — |
 
 Baselines: AI-1 a simple rule (large amount to a new receiver) flagging the same number of transfers; AI-3/AI-4 seasonal-naive forecasts and historical frequencies; AI-4 'usual cash' = the agent's normal cash on hand.
 Each AI's details are in [`model_cards/`](model_cards) and fairness slices in [`fairness.md`](fairness.md).

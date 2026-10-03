@@ -1,6 +1,6 @@
 # Model card — AI-7 Grounded Brief
 
-*Notebook `NB07` · code commit `—` · results `reports/metrics_ai7.json` · synthetic data only.*
+*Notebook `NB07` · code commit `393877746d` · results `reports/metrics_ai7.json` · synthetic data only.*
 
 | | |
 |---|---|
@@ -15,7 +15,9 @@
 
 ## Measured results (test data the model never saw)
 
-- Not measured yet: run `NB07`.
+- Language model: {'model': 'gemini-3.5-flash-lite', 'fallback_models': ['gemini-3.5-flash', 'gemini-3.8-flash', 'gemini-2.5-flash', 'gemini-2.5-flash-lite'], 'calls': 194, 'cache_hits': 0, 'failures': 0, 'paused_models': ['gemini-3.5-flash', 'gemini-3.8-flash']}; retrieval: tfidf; 140 briefs and 30 prompt-injection tests.
+- Validator pass rate of Gemini output: 97.9%; template fallback rate: 2.1%.
+- Shown text valid: 100.0%; injection attacks that reached a user: **0.0%** (raw model output before the validator: 10.0%).
 
 ## Limitations
 
