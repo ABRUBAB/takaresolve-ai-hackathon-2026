@@ -101,8 +101,8 @@ class ForecastEngine:
             days.append({"date": str(date.date()), "weekday": date.day_name(), "q10": float(r.q10), "q50": float(r.q50),
                          "q90": float(r.q90), "p_stockout": float(pr_), "cash_to_hold_90pct_bdt": float(round(r.q90 / 500) * 500),
                          "topup_bdt": need})
-        for i in np.argsort([-d["p_stockout"] for d in days])[:2]:  # highlight the two riskiest days of the week
-            days[int(i)]["highlight"] = True
+        for d in days:  # no day is singled out: day-level ranking was no better than chance on test (NB04)
+            d["highlight"] = False
         ag = self.w.agents.set_index("agent_id").loc[aid]
         peers = self.w.agents[(self.w.agents["zone"] == ag["zone"]) & (self.w.agents["size"] == ag["size"])]["agent_id"]
         recent = self.agents[self.agents["day"] >= self.D - 28]
@@ -112,8 +112,8 @@ class ForecastEngine:
         return {
             "agent_id": aid, "zone": ag["zone"], "size": ag["size"], "model": "lightgbm-quantile (live)",
             "validated_winner": self.winner["ai4"], "source": self.source["ai4"], "capacity_bdt": cap,
-            "guidance": "Hold enough cash for a 90%-safe day; the two riskiest days are highlighted. Day-level stock-out "
-                        "prediction is only modestly better than history, so no yes/no alarm is shown.",
+            "guidance": "Hold enough cash for a 90%-safe day. Which day runs short could not be predicted better than chance on "
+                        "test weeks, so no day is flagged and no yes/no alarm is shown.",
             "event": "cash-out demand above cash on hand",
             "history": [{"date": str(r.date.date()), "cash_out": float(r.target), "cash_in": float(r.cash_in)} for r in hist.tail(35).itertuples()],
             "forecast": days,

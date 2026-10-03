@@ -55,7 +55,7 @@ summary, and a dispute deadline clock. **The AI recommends. A person decides.**
 |---|---|---|---|
 | **Homepage** `/` | Everyone | The story, a live 3D Trust Field drawn from a real sample of the synthetic world (customers, agents & shops, linked cases; scam money stops at a pause ring and rises into its case), a live Pause Check against the API, and measured results | — |
 | **Customer** `/customer` | Rubab | **Pause Check** before sending (pause · not sure · low risk; wait, verify, ask someone, or continue) · **Scam Text Check** for suspicious SMS · **Cash-Flow Guardian** with safe savings plans | AI-1 · AI-2 · AI-3 · AI-7 |
-| **Agent** `/agent` | Tanvir | **Liquidity Copilot**: cash to hold for a 90%-safe day, riskiest days, peers · **QR pressure** in the zone (zone level only) | AI-4 · AI-5 |
+| **Agent** `/agent` | Tanvir | **Liquidity Copilot**: cash to hold for a 90%-safe day, demand forecast with an honest range, peers · **QR pressure** in the zone (zone level only) | AI-4 · AI-5 |
 | **Operations** `/ops` | Abdur Rahman | **Case queue** by risk and deadline · replayable **money-path graph** · **grounded brief** · **dispute clock** · audited human decisions · **QR Shield watchlist** | AI-5 · AI-6 · AI-7 · rules |
 | **Trust Center** `/trust` | Judges, reviewers | Every metric with its source notebook, fairness slices, data card, live API health and limitations | all |
 

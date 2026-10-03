@@ -20,7 +20,7 @@ const ACTS = [
     who: "Tanvir · agent",
     time: "Monday",
     title: "How much cash will the week ask for?",
-    body: "Tanvir sees a 7-day forecast with an honest range, how much cash to hold for a 90%-safe day, and the two riskiest days marked — not a false yes/no alarm.",
+    body: "Tanvir sees a 7-day forecast with an honest range, and how much cash to hold for a 90%-safe day — not a false yes/no alarm.",
     ais: ["AI-4 Liquidity", "AI-5 QR Shield (zone)"],
     href: "/agent",
     cta: "Open Tanvir's week",
@@ -102,10 +102,7 @@ function FanVisual() {
         <p className="text-sm font-medium">Cash-out demand · next 7 days</p>
         <p className="label-mono">Tk thousand</p>
       </div>
-      <svg viewBox={`0 0 ${W} ${H}`} className="mt-3 w-full" role="img" aria-label="Illustration of a 7-day forecast band with the two riskiest days highlighted">
-        {[0, 1].map((i) => (
-          <rect key={i} x={x(i) - 18} y={16} width={36} height={H - 46} rx={8} className="fill-volt/15" />
-        ))}
+      <svg viewBox={`0 0 ${W} ${H}`} className="mt-3 w-full" role="img" aria-label="Illustration of a 7-day cash-out forecast band and the usual cash on hand">
         <motion.path d={band} className="fill-foreground/10" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }} />
         <motion.path
           d={mid}

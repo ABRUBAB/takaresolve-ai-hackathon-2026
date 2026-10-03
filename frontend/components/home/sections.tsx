@@ -115,7 +115,7 @@ function MiniGauge() {
 
 const PORTALS = [
   { href: "/customer", who: "Rubab", role: "Customer", text: "Send with a Pause Check, check an SMS, see the week ahead.", Visual: MiniDial },
-  { href: "/agent", who: "Tanvir", role: "Agent", text: "Cash to hold each day and the riskiest days.", Visual: MiniBars },
+  { href: "/agent", who: "Tanvir", role: "Agent", text: "Cash to hold each day, with an honest range.", Visual: MiniBars },
   { href: "/ops", who: "Abdur Rahman", role: "Operations", text: "One case with evidence, a brief and a deadline clock.", Visual: MiniGraph },
   { href: "/trust", who: "Judges", role: "Trust Center", text: "Every metric, fairness slice and limitation.", Visual: MiniGauge },
 ];

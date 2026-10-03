@@ -155,7 +155,9 @@ export default function TrustCenter() {
                     ["AI-1", "ai1", t1?.model?.at_5pct_alert_rate?.recall, "scams caught at 5%", "pct"],
                     ["AI-2", "ai2", Math.max(0, ...((a2?.test_heldout_style_B as J[]) ?? []).map((r) => r.verdict_pr_auc ?? 0)), "PR-AUC, unseen style", "num"],
                     ["AI-3", "ai3", (a3?.backtest as J[] | undefined)?.find((r) => r.split === "test" && r.model === a3?.winner_on_validation)?.coverage_80, "80% band coverage", "num"],
-                    ["AI-4", "ai4", (a4?.backtest as J[] | undefined)?.find((r) => r.split === "test" && r.model === a4?.winner_on_validation)?.coverage_80, "80% band coverage", "num"],
+                    a4?.cash_to_hold_test
+                      ? ["AI-4", "ai4", a4.cash_to_hold_test.forecast_q90?.days_short_of_cash, `days short of cash (usual cash: ${Math.round((a4.cash_to_hold_test.usual_cash?.days_short_of_cash ?? 0) * 100)}%)`, "pct"]
+                      : ["AI-4", "ai4", (a4?.backtest as J[] | undefined)?.find((r) => r.split === "test" && r.model === a4?.winner_on_validation)?.coverage_80, "80% band coverage", "num"],
                     ["AI-5", "ai5", a5?.weekly_precision_at_k, "top-20 precision", "pct"],
                     ["AI-6", "ai6", a6?.linking?.analyst_items_reduction, "fewer analyst items", "pct"],
                     ["AI-7", "ai7", a7?.injection_shown_success_rate, "injections shown", "pct"],
@@ -370,6 +372,30 @@ export default function TrustCenter() {
                               ["Calibration error", f3(pr.ece), ""],
                             ]}
                           />
+                        );
+                      })()}
+                      {name === "AI-4" && (a as J)?.cash_to_hold_test && (() => {
+                        const c = (a as J).cash_to_hold_test as J;
+                        const row = (label: string, r?: J) =>
+                          r ? [label, `${(r.days_short_of_cash * 100).toFixed(1)}%`, tk(r.mean_cash_bdt), r.extra_vs_usual_bdt > 0 ? `+${tk(r.extra_vs_usual_bdt)}` : "—"] : null;
+                        return (
+                          <>
+                            <Table
+                              cols={["Cash to hold (test weeks)", "Days short of cash", "Mean cash", "Extra"]}
+                              highlight={1}
+                              rows={[
+                                row("Usual cash on hand", c.usual_cash),
+                                row("Hold the 90% forecast (UVERA)", c.forecast_q90),
+                                row("Same extra cash, spread flat", c.same_extra_cash_spread_flat),
+                                row("Seasonal-naive 90% level", c.seasonal_naive_q90),
+                              ].filter(Boolean) as string[][]}
+                            />
+                            <p className="text-sm text-muted-foreground">
+                              Holding the 90% forecast cuts days without enough cash from about one in five to one in eight. A flat top-up with the
+                              same total cash does about as well, so in this synthetic world the value is in sizing the buffer, not in predicting
+                              which day runs short; that is why the agent page flags no single day.
+                            </p>
+                          </>
                         );
                       })()}
                     </div>

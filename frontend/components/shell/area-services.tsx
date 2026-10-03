@@ -43,7 +43,7 @@ export const AREAS: Record<"customer" | "agent" | "ops", Area> = {
     role: "Agent",
     blurb: "Runs a cash-in / cash-out point. Needs enough cash every day, without holding too much.",
     services: [
-      { href: "/agent#cash", icon: Banknote, title: "Cash to hold each day", what: "How much cash keeps each day 90% safe; riskiest days marked.", ai: "Liquidity Copilot · AI-4" },
+      { href: "/agent#cash", icon: Banknote, title: "Cash to hold each day", what: "How much cash keeps each day 90% safe, and how much more than usual.", ai: "Liquidity Copilot · AI-4" },
       { href: "/agent#forecast", icon: BarChart3, title: "Demand forecast", what: "Cash-out demand for the next 7 days with an honest range.", ai: "Liquidity Copilot · AI-4" },
       { href: "/agent#peers", icon: Users, title: "Compare with similar agents", what: "Is my activity normal for an agent of my size and area?", ai: "Peer comparison" },
       { href: "/agent#qr", icon: Store, title: "QR cash-out in my area", what: "How many shops nearby misuse QR for cash — zone level only.", ai: "QR Shield · AI-5" },

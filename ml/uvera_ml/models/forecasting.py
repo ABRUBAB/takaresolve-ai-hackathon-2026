@@ -57,15 +57,18 @@ def best_threshold(p: np.ndarray, y: np.ndarray, beta: float = 1.0, max_flag_rat
     return best_t
 
 
-def _prob_metrics(p: np.ndarray, y: np.ndarray, base: np.ndarray, thr: float) -> dict:
+def _prob_metrics(p: np.ndarray, y: np.ndarray, base: np.ndarray, thr: float | None) -> dict:
     def at(t):
         flag = p >= t
         return {"threshold": float(t), "recall": float(flag[y == 1].mean()) if y.any() else None,
                 "precision": float(y[flag].mean()) if flag.any() else None, "flag_rate": float(flag.mean())}
 
-    return {"events": int(y.sum()), "n": int(len(y)), "base_rate": float(y.mean()), "brier": M.brier(y, p),
-            "brier_baseline": M.brier(y, base), "pr_auc": M.pr_auc(y, p), "pr_auc_baseline": M.pr_auc(y, base),
-            "ece": M.ece(y, p), "at_validation_threshold": at(thr), "at_0.5_for_reference": at(0.5)}
+    out = {"events": int(y.sum()), "n": int(len(y)), "base_rate": float(y.mean()), "brier": M.brier(y, p),
+           "brier_baseline": M.brier(y, base), "pr_auc": M.pr_auc(y, p), "pr_auc_baseline": M.pr_auc(y, base),
+           "ece": M.ece(y, p), "at_0.5_for_reference": at(0.5)}
+    if thr is not None:
+        out["at_validation_threshold"] = at(thr)
+    return out
 
 
 def _cross_fit(val: pd.DataFrame, z_col: str, upper_tail: bool) -> np.ndarray:
@@ -174,20 +177,50 @@ def run_ai4(world, out: str | Path, use_chronos: bool = True) -> dict:
     p["topup_needed_bdt"] = np.maximum(0, np.round((p["q0.9"] - p["capacity"]) / 500) * 500)
 
     val, te = p[p["split"] == "val"].copy(), p[p["split"] == "test"].copy()
-    val["p_stockout"] = _cross_fit(val, "z", upper_tail=True)
-    # a missed stock-out (agent cannot pay customers) costs more than an extra top-up check -> recall-weighted F2
-    budget = load_config("thresholds").get("ai4_liquidity", {}).get("max_warning_rate", 0.25)
-    thr = best_threshold(val["p_stockout"].to_numpy(), val["actual_stockout"].to_numpy(), beta=2.0, max_flag_rate=budget)
     R = np.sort(val["r"].to_numpy())
     te["p_stockout"] = 1 - ecdf(R, te["z"])
     y = te["actual_stockout"].to_numpy()
-    band = (te["q0.9"] > te["capacity"]).to_numpy()  # action rule: plan for the bad-but-plausible day
-    band_rule = {"rule": "top up when the 90% forecast exceeds cash on hand", "recall": float(band[y == 1].mean()) if y.any() else None,
-                 "precision": float(y[band].mean()) if band.any() else None, "flag_rate": float(band.mean())}
     tr = s[s["day"] < org["train_end"]].assign(dow=lambda d: d["date"].dt.dayofweek, cap=lambda d: d["id"].map(cap))
     freq = (tr["target"] > tr["cap"]).groupby([tr["id"], tr["dow"]]).mean()
     dows = (pd.Timestamp(world.meta["start"]) + pd.to_timedelta(te["day"], unit="D")).dt.dayofweek
     base = freq.reindex(pd.MultiIndex.from_arrays([te["id"], dows])).fillna(0).to_numpy()
+    te["p_history"] = base
+
+    # What the product does (API + agent page): recommend cash to hold for a 90%-safe day. No probability cut-off is
+    # used: stock-out rates differ a lot between weeks (validation 39% vs test 21% of agent-days here), so a cut-off
+    # frozen on validation does not transfer. Two diagnostics below show where the stock-out probability has skill.
+    def two_riskiest(col: str) -> np.ndarray:  # within one agent's week: which days run short?
+        r = te.groupby(["id", "origin"])[col].rank(method="first", ascending=False)
+        return (r <= 2).to_numpy()
+
+    def top_share(col: str, share: float = 0.2) -> np.ndarray:  # across all agents in a week: who runs short?
+        r = te.groupby("origin")[col].rank(method="first", ascending=False, pct=True)
+        return (r <= share).to_numpy()
+
+    def hit_rate(flag: np.ndarray) -> dict:
+        return {"recall": float(flag[y == 1].mean()) if y.any() else None, "precision": float(y[flag].mean()) if flag.any() else None,
+                "flag_rate": float(flag.mean())}
+
+    day_ranking = {"question": "within one agent-week, are the two highest-probability days the ones that run short?",
+                   "model": hit_rate(two_riskiest("p_stockout")), "history_baseline": hit_rate(two_riskiest("p_history")),
+                   "chance_precision": float(y.mean()),
+                   "finding": "no better than chance, so the product does not flag days"}
+    agent_ranking = {"question": "across all agents each week, do the top 20% agent-days by probability run short more often?",
+                     "model": hit_rate(top_share("p_stockout")), "history_baseline": hit_rate(top_share("p_history")),
+                     "chance_precision": float(y.mean())}
+
+    def hold(cash: np.ndarray) -> dict:
+        cash = np.asarray(cash, float)
+        return {"days_short_of_cash": float((te["actual"].to_numpy() > cash).mean()), "mean_cash_bdt": float(cash.mean()),
+                "extra_vs_usual_bdt": float((cash - te["capacity"].to_numpy()).mean())}
+
+    q90 = te["q0.9"].to_numpy()
+    cash_to_hold = {"target_days_short": 0.10, "usual_cash": hold(te["capacity"]), "forecast_q90": hold(q90),
+                    "same_extra_cash_spread_flat": hold(te["capacity"].to_numpy() * q90.mean() / te["capacity"].mean())}
+    if "seasonal_naive" in preds and winner != "seasonal_naive":
+        sn = preds["seasonal_naive"]
+        sn = te[["id", "day", "origin"]].merge(sn[sn["split"] == "test"][["id", "day", "origin", "q0.9"]], on=["id", "day", "origin"], how="left")
+        cash_to_hold["seasonal_naive_q90"] = hold(sn["q0.9"].fillna(te["capacity"].mean()).to_numpy())
 
     ex = s["id"].iloc[0]
     o0 = te["origin"].min()
@@ -202,17 +235,18 @@ def run_ai4(world, out: str | Path, use_chronos: bool = True) -> dict:
 
     te.drop(columns=["r"]).to_parquet(art / "forecasts.parquet", index=False)
     write_json(art / "residuals.json", {"method": "empirical normalised daily residuals (validation origins)",
-                                        "quantiles": residual_quantiles(R), "threshold": thr})
+                                        "quantiles": residual_quantiles(R), "threshold": None})
     pd.DataFrame({"agent_id": cap.index, "capacity_bdt": cap.round(0).to_numpy()}).to_parquet(art / "capacity.parquet", index=False)
     summary = {"ai": "AI-4 Agent Liquidity Copilot", "target": "daily cash-out demand per agent", "horizon_days": F.HORIZON,
                "event": "cash-out demand above the agent's cash on hand on that day",
                "n_agents": int(s["id"].nunique()), "winner_on_validation": winner, "backtest": _summarise(res),
                "capacity_rule": "agent_capacity_factor x mean daily demand in the training window [ASSUMPTION]",
                "probability_method": "empirical normalised residuals (calibrated on validation origins)",
-               "validation_threshold": thr, "threshold_rule": "best F2 on validation within an alert budget (configs/thresholds.yaml)",
-               "action_rule_test": band_rule,
-               "stockout_probability_test": _prob_metrics(te["p_stockout"].to_numpy(), y, base, thr),
-               "stockout_probability_test_naive_normal": _prob_metrics(te["p_naive"].to_numpy(), y, base, thr),
+               "operating_rule": "hold the 90% forecast (cash to hold); no day-level yes/no alarm", "stockout_base_rate": {"validation": float(val["actual_stockout"].mean()),
+                                                                           "test": float(y.mean())},
+               "cash_to_hold_test": cash_to_hold, "day_ranking_test": day_ranking, "agent_ranking_test": agent_ranking,
+               "stockout_probability_test": _prob_metrics(te["p_stockout"].to_numpy(), y, base, None),
+               "stockout_probability_test_naive_normal": _prob_metrics(te["p_naive"].to_numpy(), y, base, None),
                "baseline": "historical stock-out frequency per agent and weekday (training window)"}
     write_json(rep / "metrics_ai4.json", summary)
     res.to_csv(rep / "ai4_backtest.csv", index=False)

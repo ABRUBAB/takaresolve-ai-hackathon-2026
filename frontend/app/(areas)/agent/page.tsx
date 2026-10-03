@@ -34,11 +34,12 @@ export default function AgentPage() {
             Cash for the week, <span className="italic">at a glance</span>.
           </>
         }
-        text="Tanvir runs a cash-in / cash-out point near Rubab's home. Running out of cash turns customers away; holding too much is risky. Each column is how much cash to hold for a 90%-safe day; the two riskiest days are marked."
+        text="Tanvir runs a cash-in / cash-out point near Rubab's home. Running out of cash turns customers away; holding too much is risky. Each column is how much cash to hold for a 90%-safe day; the bright part is the extra cash above what Tanvir usually holds."
       />
       <Guard q={liq}>
         {(l) => {
-          const top = [...l.forecast].sort((a, b) => b.cash_to_hold_90pct_bdt - a.cash_to_hold_90pct_bdt)[0];
+          const avgHold = l.forecast.reduce((s, f) => s + f.cash_to_hold_90pct_bdt, 0) / Math.max(1, l.forecast.length);
+          const extra = Math.max(0, avgHold - l.capacity_bdt);
           const max = Math.max(...l.forecast.map((f) => f.cash_to_hold_90pct_bdt), l.capacity_bdt) * 1.08;
           const sel = day != null ? l.forecast[day] : null;
           const chart = [
@@ -50,12 +51,17 @@ export default function AgentPage() {
             <div className="mt-8 space-y-8">
               <div className="flex flex-wrap items-end justify-between gap-4">
                 <p className="text-lg text-muted-foreground">
-                  Busiest day: <span className="font-medium text-foreground">{top.weekday}</span> — hold{" "}
-                  <span className="num font-mono font-semibold text-foreground">{tk(top.cash_to_hold_90pct_bdt)}</span>
+                  This week: hold about <span className="num font-mono font-semibold text-foreground">{tk(Math.round(avgHold / 500) * 500)}</span> a day
+                  {extra > 0 && (
+                    <>
+                      {" "}
+                      — <span className="num font-mono text-foreground">{tk(Math.round(extra / 500) * 500)}</span> more than usual
+                    </>
+                  )}
                 </p>
                 <p className="flex items-center gap-4 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1.5">
-                    <span className="h-3 w-3 rounded-sm bg-volt-ink dark:bg-volt" /> riskiest days
+                    <span className="h-3 w-3 rounded-sm bg-volt-ink dark:bg-volt" /> extra cash above usual
                   </span>
                   <span className="flex items-center gap-1.5">
                     <span className="w-4 border-t-2 border-dashed border-risk" /> usual cash on hand
@@ -68,25 +74,33 @@ export default function AgentPage() {
                 {l.forecast.map((f, i) => {
                   const h = (f.cash_to_hold_90pct_bdt / max) * 100;
                   const cap = (l.capacity_bdt / max) * 100;
+                  const base = Math.min(h, cap);
                   const on = day === i;
                   return (
                     <button key={f.date} onClick={() => setDay(on ? null : i)} aria-pressed={on} className="group flex flex-col items-center gap-2">
                       <div
                         className={cn(
                           "relative h-[clamp(220px,38vh,340px)] w-full overflow-hidden rounded-2xl border bg-card transition-all group-hover:-translate-y-1 group-hover:shadow-lg group-hover:shadow-black/20 md:rounded-3xl",
-                          f.highlight ? "border-volt-ink dark:border-volt" : "border-border",
+                          "border-border",
                           on && "ring-2 ring-foreground/60",
                         )}
                       >
+                        {/* grey = cash Tanvir usually holds; volt = the extra the 90% forecast asks for */}
                         <motion.div
-                          className={cn(
-                            "absolute inset-x-0 bottom-0",
-                            f.highlight ? "bg-gradient-to-t from-volt-ink/70 to-volt dark:from-volt/50 dark:to-volt" : "bg-gradient-to-t from-muted-foreground/20 to-muted-foreground/45",
-                          )}
+                          className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-muted-foreground/20 to-muted-foreground/45"
                           initial={{ height: 0 }}
-                          animate={{ height: `${h}%` }}
+                          animate={{ height: `${base}%` }}
                           transition={{ duration: 1, delay: i * 0.06, ease: [0.2, 0.8, 0.2, 1] }}
                         />
+                        {h > cap && (
+                          <motion.div
+                            className="absolute inset-x-0 bg-gradient-to-t from-volt-ink/70 to-volt dark:from-volt/50 dark:to-volt"
+                            style={{ bottom: `${cap}%` }}
+                            initial={{ height: 0 }}
+                            animate={{ height: `${h - cap}%` }}
+                            transition={{ duration: 0.7, delay: 0.9 + i * 0.06, ease: [0.2, 0.8, 0.2, 1] }}
+                          />
+                        )}
                         <div className="absolute inset-x-0 border-t-2 border-dashed border-risk" style={{ bottom: `${cap}%` }} />
                         <p className="absolute inset-x-0 top-3 text-center"><span className="num rounded-full bg-background/85 px-2 py-0.5 font-mono text-xs font-semibold md:text-sm">{k(f.cash_to_hold_90pct_bdt)}</span></p>
                       </div>
@@ -226,8 +240,9 @@ export default function AgentPage() {
                 <InspectorSection title="Chance demand exceeds cash on hand" chip={<OutputChip type="model">Model estimate</OutputChip>}>
                   <KV rows={l.forecast.map((f) => [`${f.weekday.slice(0, 3)} ${shortDate(f.date)}`, pct(f.p_stockout)] as [string, string])} />
                   <p className="text-sm text-muted-foreground">
-                    Shown for transparency only. On test weeks these day-level probabilities were only modestly better than history, so no yes/no
-                    stock-out alarm is raised; the two riskiest days are marked instead.
+                    Shown for transparency only. On test weeks the model could not tell which day of an agent&apos;s week runs short better than
+                    chance, so no day is flagged and no yes/no alarm is raised. What works is the cash amount: holding the 90% forecast cut days
+                    short of cash from about 21% to 12%.
                   </p>
                 </InspectorSection>
                 <InspectorSection title="Cash to hold" chip={<OutputChip type="rule">Rule on model output</OutputChip>}>
