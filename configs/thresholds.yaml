@@ -1,18 +1,11 @@
-# Decision thresholds. Chosen on the VALIDATION split by NB01 / NB05, then frozen.
-# Never tuned on the test set.
-frozen: false
+# Decision-threshold settings. The thresholds themselves are chosen by the notebooks on the VALIDATION split and
+# frozen in artifacts/ai1/thresholds.json and artifacts/ai5/thresholds.json; the test set is never used to tune them.
 ai1_pause_check:
-  target_false_alert_rate: 0.01   # [TARGET]
-  alert_rate_budget: 0.05
-  conformal_alpha: 0.10
-  amber: null    # filled by NB01
-  red: null
+  alert_rate_budget: 0.05         # amber ("some warning signs"): 5% of normal validation transfers
+  target_false_alert_rate: 0.01   # red (pause): 1% of normal validation transfers
+  conformal_alpha: 0.10           # 90% conformal sets -> "not sure" when both labels remain
 ai5_qr_shield:
   review_capacity_per_week: 20    # precision@k: analysts review the top 20 merchant-weeks each week
   conformal_alpha: 0.10
-  amber: null
-  red: null
 ai3_cashflow:
   max_warning_rate: 0.30          # warn at most 30% of customer-weeks (alert budget)
-ai4_liquidity:
-  max_warning_rate: 0.25          # warn at most 25% of agent-days (alert budget)

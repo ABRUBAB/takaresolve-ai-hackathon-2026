@@ -1,5 +1,11 @@
-# PLACEHOLDER — replace with upay's real cash-out tariff. Used only for the
-# "estimated cash-out fee leakage" figure (suspected amount x fee rate).
+# Fee rate used only for the "estimated cash-out fee leakage" figure (suspected QR volume x fee rate).
+# Basis: publicly listed mobile-money cash-out charges in Bangladesh in 2026 range from Tk 12.99 per Tk 1,000
+# (Nagad app) to Tk 18.50 per Tk 1,000 (bKash standard agent cash-out), i.e. 1.30%-1.85%. We use 1.5%, inside
+# that range. It is a modelling assumption for the synthetic world, not any provider's tariff.
 fee_rate: 0.015
-verified: false
-note: "[ASSUMPTION] placeholder; a Sept 2026 press report mentions Tk 12-18 per cash-out - check the unit/basis before quoting."
+verified: false   # true only for a provider's own tariff; this is an assumption inside the public range
+public_range: [0.0130, 0.0185]
+note: "Assumed 1.5%, inside the publicly listed 2026 cash-out charges of Tk 12.99-18.50 per Tk 1,000 (1.30%-1.85%)."
+sources:
+  - https://www.thedailystar.net/business/organisation-news/news/bkash-reduces-cash-out-charge-tk-1395-4222326
+  - https://www.bkash.com/en/products-services/cashout-from-agent

@@ -1,8 +1,14 @@
 # Dispute Clock rules — BUSINESS RULES, not AI (Guideline p9 §12).
-# Source: press report (The Daily Star, Sept 2026) on Bangladesh Bank's Bangla QR dispute guideline.
-# VERIFY every number against the original circular before showing it as fact.
+# Source: Bangladesh Bank, "Guidelines on Dispute Resolution for Bangla QR (Merchant Payment) Transactions",
+# issued 27 Sep 2026, effective 1 Dec 2026. All eight limits below match two independent press reports of the
+# guideline (sources). The circular's own text was not available to us, so `verified` stays false.
+issued: 2026-09-27
 effective_from: 2026-12-01
 verified: false
+checked_against: press_reports
+sources:
+  - https://www.thedailystar.net/business/news/bb-sets-strict-timelines-bangla-qr-payment-dispute-resolution-4284271
+  - https://www.tbsnews.net/economy/banking/cenbank-sets-deadlines-resolving-bangla-qr-payment-disputes-1555591
 clocks:
   failed_payment_auto_refund:          {limit: 30, unit: minutes}
   customer_complaint_window:           {limit: 45, unit: days}
@@ -12,5 +18,5 @@ clocks:
   suspected_fraud_investigation:       {limit: 30, unit: days}
   reimbursement_if_institution_fault:  {limit: 3,  unit: business_days}
   merchant_refund_request:             {limit: 60, unit: days}
-reason_codes: []   # read the eight standard codes from the circular; do NOT invent them
+reason_codes: []   # the guideline defines eight chargeback reason codes; the press reports do not list them, so none are used
 warn_when_remaining_fraction: 0.25

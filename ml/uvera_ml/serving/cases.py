@@ -104,4 +104,6 @@ class CaseEngine:
                 "merchant_ids": c["merchants"], "agent_ids": c["agents"], "forwarded_share": c["forwarded_share"],
                 "graph": self.graph(c), "dispute_clock": self.clock(c),
                 "dispute_rules_verified": bool(self.rules.get("verified", False)),
-                "dispute_rules_note": "Deadlines come from configs/rules/dispute.yaml (a press report). Verify against the official circular."}
+                "dispute_rules_note": "Deadlines follow Bangladesh Bank's Bangla QR dispute guideline (issued 27 Sep 2026, effective "
+                                      "1 Dec 2026) as reported by The Daily Star and The Business Standard; all eight limits match "
+                                      "both reports. The circular's own text was not checked."}

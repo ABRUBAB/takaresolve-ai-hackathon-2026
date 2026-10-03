@@ -34,18 +34,18 @@ def build(world, pause, forecasts, qr, cases) -> dict:
     # Rubab: newish, unseen-test-group customer with a usable balance
     cand = [c for c in test_ids if D - reg[int(c[1:])] < 200 and 4000 <= bal[int(c[1:])] <= 40000
             and not truth.loc[c, "is_mule"]][:40]
-    rina, mule, best = None, None, -1.0
+    golden_customer, mule, best = None, None, -1.0
     for c in cand:
         for m in mules:
             r = pause.check(c, m, 3000, hour=19.5, minutes_since_cash_in=25)
             score = r["model_score"] + (1.0 if r["state"].startswith("confident_high") else 0)
             if score > best:
-                rina, mule, best = c, m, score
+                golden_customer, mule, best = c, m, score
         if best > 1.0:
             break
-    rina = rina or test_ids.iloc[0]
+    golden_customer = golden_customer or test_ids.iloc[0]
     mule = mule or mules[0]
-    rid = int(rina[1:])
+    rid = int(golden_customer[1:])
     contacts = sorted(r for (s, r) in pause.pairs if s == rid)
     friend = f"C{contacts[0]:06d}" if contacts else world.customers["customer_id"].iloc[1]
 
@@ -57,9 +57,9 @@ def build(world, pause, forecasts, qr, cases) -> dict:
         for amount in (2500, 5000):
             for r in pool:
                 rec = f"C{r:06d}"
-                if rec == rina or truth.loc[rec, "is_mule"]:
+                if rec == golden_customer or truth.loc[rec, "is_mule"]:
                     continue
-                res = pause.check(rina, rec, amount, with_counterfactual=False, hour=hour)
+                res = pause.check(golden_customer, rec, amount, with_counterfactual=False, hour=hour)
                 if res["state"] == "unsure" and not res["ood_flag"]:
                     unsure = {"recipient": rec, "amount": amount, "hour": hour}
                     break
@@ -71,7 +71,7 @@ def build(world, pause, forecasts, qr, cases) -> dict:
     # a customer likely to run short this week (for the Cash-Flow Guardian)
     full = world.daily_customer.groupby("customer_id")["day"].min() == 0
     low = [c for c in full[full].index if not truth.loc[c, "is_mule"] and bal[int(c[1:])] < 1500][:25]
-    short_c, short_p = rina, -1.0
+    short_c, short_p = golden_customer, -1.0
     for c in low:
         try:
             p = forecasts.customer(c)["p_shortfall_7d"]
@@ -80,8 +80,8 @@ def build(world, pause, forecasts, qr, cases) -> dict:
         if p > short_p:
             short_c, short_p = c, p
 
-    agent = cust.loc[rina, "home_agent"]
-    zone = cust.loc[rina, "zone"]
+    agent = cust.loc[golden_customer, "home_agent"]
+    zone = cust.loc[golden_customer, "zone"]
     golden_case = case_wallets.get(mule) or (cases.cases[0]["case_key"] if cases.cases else None)
     shop = next((m for m in (cases.by_key.get(golden_case, {}).get("merchants") or []) if qr.state_of(m)), None)
     if shop is None:
@@ -89,7 +89,7 @@ def build(world, pause, forecasts, qr, cases) -> dict:
         shop = wl[0]["merchant_id"] if wl else None
 
     personas = {
-        "customer": {"name": "Rubab", "role": "customer", "id": rina, "zone": zone, "language": cust.loc[rina, "language"],
+        "customer": {"name": "Rubab", "role": "customer", "id": golden_customer, "zone": zone, "language": cust.loc[golden_customer, "language"],
                  "tenure_days": int(D - reg[rid]), "story": "Garment worker, wallet user for a few months."},
         "agent": {"name": "Tanvir", "role": "agent", "id": agent, "zone": zone, "story": "Agent near Rubab's home."},
         "ops": {"name": "Abdur Rahman", "role": "ops", "id": "OPS-01", "story": "Operations analyst."},
@@ -97,15 +97,15 @@ def build(world, pause, forecasts, qr, cases) -> dict:
     scenarios = [
         {"id": "golden_prize_scam", "title": "Prize scam (the golden thread)", "area": "customer",
          "story": "Rubab is told about a prize that needs a Tk 3,000 fee. Rubab cashed in at an agent 25 minutes ago.",
-         "request": {"sender_id": rina, "recipient_wallet": mule, "amount": 3000, "hour": 19.5, "channel": "app",
+         "request": {"sender_id": golden_customer, "recipient_wallet": mule, "amount": 3000, "hour": 19.5, "channel": "app",
                      "note": PRIZE_SMS_BN, "simulated_context": {"minutes_since_cash_in": 25}},
          "links": {"case": golden_case, "agent": agent, "merchant": shop}},
         {"id": "normal_user", "title": "Normal transfer to family", "area": "customer",
          "story": "Rubab sends Tk 500 to someone paid often.",
-         "request": {"sender_id": rina, "recipient_wallet": friend, "amount": 500, "hour": 12.0, "channel": "app"}},
+         "request": {"sender_id": golden_customer, "recipient_wallet": friend, "amount": 500, "hour": 12.0, "channel": "app"}},
         {"id": "new_device_takeover", "title": "New phone + PIN reset: the AI is not sure", "area": "customer",
          "story": "Someone set up Rubab's account on a new phone and reset the PIN, then tries to send Tk 9,000 late at night. This pattern is unusual, so the AI says it is not sure and asks a person to check.",
-         "request": {"sender_id": rina, "recipient_wallet": mules[min(1, len(mules) - 1)], "amount": 9000, "hour": 23.0,
+         "request": {"sender_id": golden_customer, "recipient_wallet": mules[min(1, len(mules) - 1)], "amount": 9000, "hour": 23.0,
                      "channel": "app", "simulated_context": {"device_changed_recently": True, "pin_reset_recently": True}}},
         {"id": "text_prize", "title": "Check a prize SMS", "area": "customer_text", "request": {"text": PRIZE_SMS_EN}},
         {"id": "text_injection", "title": "SMS that tries to trick the AI", "area": "customer_text", "request": {"text": INJECTION_SMS}},
@@ -119,6 +119,6 @@ def build(world, pause, forecasts, qr, cases) -> dict:
     if unsure:
         scenarios.insert(2, {"id": "unsure_conflicting_signals", "title": "Mixed signals: the AI is not sure", "area": "customer",
                              "story": "A late transfer to a busy wallet. Some signals look risky, others look normal.",
-                             "request": {"sender_id": rina, "recipient_wallet": unsure["recipient"], "amount": unsure["amount"],
+                             "request": {"sender_id": golden_customer, "recipient_wallet": unsure["recipient"], "amount": unsure["amount"],
                                          "hour": unsure["hour"], "channel": "app"}})
     return {"personas": personas, "scenarios": scenarios}
