@@ -1,0 +1,113 @@
+{
+  "ai": "AI-4 Agent Liquidity Copilot",
+  "target": "daily cash-out demand per agent",
+  "horizon_days": 7,
+  "event": "cash-out demand above the agent's cash on hand on that day",
+  "n_agents": 600,
+  "winner_on_validation": "lightgbm_quantile",
+  "backtest": [
+    {
+      "split": "test",
+      "model": "chronos2",
+      "mase": 0.6081,
+      "pinball_mean": 2323.9703,
+      "coverage_80": 0.7413,
+      "mean_width_80": 24282.2002
+    },
+    {
+      "split": "test",
+      "model": "lightgbm_quantile",
+      "mase": 0.6036,
+      "pinball_mean": 2280.6155,
+      "coverage_80": 0.7696,
+      "mean_width_80": 20207.3508
+    },
+    {
+      "split": "test",
+      "model": "seasonal_naive",
+      "mase": 0.9312,
+      "pinball_mean": 3731.818,
+      "coverage_80": 0.8067,
+      "mean_width_80": 37500.7656
+    },
+    {
+      "split": "val",
+      "model": "chronos2",
+      "mase": 0.9194,
+      "pinball_mean": 3300.0049,
+      "coverage_80": 0.732,
+      "mean_width_80": 29089.3066
+    },
+    {
+      "split": "val",
+      "model": "lightgbm_quantile",
+      "mase": 0.8994,
+      "pinball_mean": 3186.3153,
+      "coverage_80": 0.7833,
+      "mean_width_80": 31716.0995
+    },
+    {
+      "split": "val",
+      "model": "seasonal_naive",
+      "mase": 1.252,
+      "pinball_mean": 4861.2623,
+      "coverage_80": 0.6963,
+      "mean_width_80": 35944.2891
+    }
+  ],
+  "capacity_rule": "agent_capacity_factor x mean daily demand in the training window [ASSUMPTION]",
+  "probability_method": "empirical normalised residuals (calibrated on validation origins)",
+  "validation_threshold": 0.4774392857142857,
+  "threshold_rule": "best F2 on validation within an alert budget (configs/thresholds.yaml)",
+  "action_rule_test": {
+    "rule": "top up when the 90% forecast exceeds cash on hand",
+    "recall": 0.8834182229767968,
+    "precision": 0.22357490690346604,
+    "flag_rate": 0.8311904761904761
+  },
+  "stockout_probability_test": {
+    "events": 1767,
+    "n": 8400,
+    "base_rate": 0.21035714285714285,
+    "brier": 0.166283727600961,
+    "brier_baseline": 0.18132857142857145,
+    "pr_auc": 0.26606464379072914,
+    "pr_auc_baseline": 0.21059263670226708,
+    "ece": 0.04269152494331065,
+    "at_validation_threshold": {
+      "threshold": 0.4774392857142857,
+      "recall": 0.003395585738539898,
+      "precision": 0.3333333333333333,
+      "flag_rate": 0.002142857142857143
+    },
+    "at_0.5_for_reference": {
+      "threshold": 0.5,
+      "recall": 0.001697792869269949,
+      "precision": 0.3,
+      "flag_rate": 0.0011904761904761906
+    }
+  },
+  "stockout_probability_test_naive_normal": {
+    "events": 1767,
+    "n": 8400,
+    "base_rate": 0.21035714285714285,
+    "brier": 0.17194038455316638,
+    "brier_baseline": 0.18132857142857145,
+    "pr_auc": 0.2661280714394993,
+    "pr_auc_baseline": 0.21059263670226708,
+    "ece": 0.08235112733343794,
+    "at_validation_threshold": {
+      "threshold": 0.4774392857142857,
+      "recall": 0.005659309564233163,
+      "precision": 0.3125,
+      "flag_rate": 0.0038095238095238095
+    },
+    "at_0.5_for_reference": {
+      "threshold": 0.5,
+      "recall": 0.003395585738539898,
+      "precision": 0.35294117647058826,
+      "flag_rate": 0.0020238095238095236
+    }
+  },
+  "baseline": "historical stock-out frequency per agent and weekday (training window)"
+}
