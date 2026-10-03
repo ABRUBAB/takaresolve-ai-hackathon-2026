@@ -113,13 +113,17 @@ def link_cases(world, scored_transfers: pd.DataFrame, merchant_scores: pd.DataFr
         received = sum(float(m.amount) for m in members)
         forwarded = sum(x["amount"] for x in edges if x["hop"] >= 1)
         fwd_share = min(1.0, forwarded / max(received, 1.0))
-        pmax = float(max(m.p_calibrated for m in members))
+        # an estimate is never certain: isotonic calibration can return exactly 1.0 for its top bin, which would also make
+        # every such case score 1.0 regardless of the rest of its evidence
+        p_top = float(max(m.p_calibrated for m in members))
+        pmax = min(p_top, 0.99)
         n_flagged = sum(mm in flagged_merchants for mm in merchants)
         qr_flag = n_flagged > 0
         # transparent chain score (weights are design assumptions, shown to the analyst)
         score = 1 - (1 - pmax) * (1 - 0.15 * min(len(victims) - 1, 3)) * (1 - 0.5 * fwd_share) * (1 - (0.3 if qr_flag else 0))
         evidence = [
-            {"id": "E1", "type": "model", "text": f"Highest AI-1 scam probability among linked transfers: {pmax:.2f}", "value": pmax},
+            {"id": "E1", "type": "model", "text": "Highest AI-1 scam probability among linked transfers: "
+                                                  + ("above 0.99" if p_top > 0.99 else f"{p_top:.2f}"), "value": pmax},
             {"id": "E2", "type": "model", "text": f"{len(victims)} customer(s) sent money into the same wallet chain", "value": len(victims)},
             {"id": "E3", "type": "model", "text": f"{fwd_share:.0%} of the money moved on within 48 hours", "value": fwd_share},
         ]
