@@ -1,11 +1,13 @@
 """Demo login, personas/scenarios, model metadata, homepage world sample and the Trust Center summary."""
 from __future__ import annotations
 
+from functools import lru_cache
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, ConfigDict
-from uvera_ml.eval.report import AIS, fairness_summary, headline
+from uvera_ml.common import repo_root
+from uvera_ml.eval.report import AIS, fairness_summary, headline, served_text_by_language
 
 from app.api.v1.deps import engines, envelope
 from app.core.security import issue
@@ -13,6 +15,13 @@ from app.core.telemetry import telemetry
 from app.state import state
 
 router = APIRouter(tags=["meta"])
+
+
+@lru_cache(maxsize=1)
+def _served_text_by_language() -> dict | None:
+    """Per-language results of the text model the API actually serves (scored once on the held-out style)."""
+    out = served_text_by_language(repo_root())
+    return {k: v for k, v in out.items() if k not in ("model", "overall")} if out else None
 
 
 class LoginIn(BaseModel):
@@ -68,6 +77,8 @@ def metrics_summary(request: Request) -> dict:
     s = engines()
     per_ai = {k: s.store.json(f"reports/metrics_{k}.json", None) for k in AIS}
     found = {k: v for k, v in per_ai.items() if v}
+    if "ai2" in found and s.store.source_of("ai2") == "official" and (by_lang := _served_text_by_language()):
+        found["ai2"] = {**found["ai2"], "served_by_language": by_lang}
     # Built per AI from the newest available file (official Kaggle run first), so official and dev never mix in one number.
     summary = {"available": {AIS[k]: k in found for k in AIS}, "headline": headline(found), "fairness": fairness_summary(found),
                "note": "All results are on synthetic data: they show that the pipeline works, not real-world accuracy."}

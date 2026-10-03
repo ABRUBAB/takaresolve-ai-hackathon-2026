@@ -124,7 +124,8 @@ def run_ai2(out: str | Path, corpus: pd.DataFrame, uci: pd.DataFrame | None = No
     cv_df = pd.DataFrame(cv_rows)
     cv_summary = cv_df.groupby("model")[["macro_f1", "verdict_pr_auc"]].agg(["mean", "std"]).round(4)
     cv_summary.columns = ["_".join(c) for c in cv_summary.columns]
-    served = str(cv_summary["verdict_pr_auc_mean"].idxmax())  # chosen on CV, never on the test set
+    best_on_cv = str(cv_summary["verdict_pr_auc_mean"].idxmax())  # chosen on CV, never on the test set
+    served = "tfidf_lr"  # the live API serves the CPU model; per-language results and examples are for this model
 
     # ---- final models on the whole pool; verdict calibrators fitted on out-of-fold predictions
     y_bin_pool = (yp != LEGIT_IDX).astype(int)
@@ -150,12 +151,17 @@ def run_ai2(out: str | Path, corpus: pd.DataFrame, uci: pd.DataFrame | None = No
         p_scam = calib[name].predict(_verdict(pr))
         preds[name] = (pr, p_scam, conf)
         test_rows.append(_metrics(yt, pr, p_scam, conf, name))
-    by_lang = {}
+    def by_language(name: str) -> dict:
+        _, ps, _ = preds[name]
+        out = {}
+        for lang, idx in test.groupby("language").indices.items():
+            yb = (yt[idx] != LEGIT_IDX).astype(int)
+            out[lang] = {"n": int(len(idx)), "verdict_pr_auc": M.pr_auc(yb, ps[idx]),
+                         "verdict_f1_at_0.5": float(f1_score(yb, (ps[idx] >= 0.5).astype(int)))}
+        return out
+
+    by_lang, by_lang_cv = by_language(served), by_language(best_on_cv)
     pr, p_scam, _ = preds[served]
-    for lang, idx in test.groupby("language").indices.items():
-        yb = (yt[idx] != LEGIT_IDX).astype(int)
-        by_lang[lang] = {"n": int(len(idx)), "verdict_pr_auc": M.pr_auc(yb, p_scam[idx]),
-                         "verdict_f1_at_0.5": float(f1_score(yb, (p_scam[idx] >= 0.5).astype(int)))}
     external = None
     if uci is not None and len(uci):
         Xu = emb.encode(uci["text"])
@@ -187,20 +193,21 @@ def run_ai2(out: str | Path, corpus: pd.DataFrame, uci: pd.DataFrame | None = No
     joblib.dump(final["tfidf_lr"], art / "tfidf_lr.joblib")
     np.savez_compressed(art / "emb_lr.npz", coef=final["emb_lr"].coef_, intercept=final["emb_lr"].intercept_)
     final["emb_evidential"].save(str(art / "emb_evidential.pt"))
-    write_json(art / "model_info.json", {"classes": CLASSES, "served_model": served, "embedder": emb.kind,
+    write_json(art / "model_info.json", {"classes": CLASSES, "served_model": served, "best_on_cv": best_on_cv, "embedder": emb.kind,
                                          "sklearn_version": sklearn.__version__, "evidential_u_threshold_90pct": u_thr,
                                          "verdict_calibrators": {m: c.to_json() for m, c in calib.items()},
                                          "states": {"likely_scam": "p_scam >= 0.7", "likely_safe": "p_scam <= 0.3",
                                                     "unsure": "otherwise, or evidential u above threshold"}})
     corpus.to_parquet(art / "corpus.parquet", index=False)
-    summary = {"ai": "AI-2 Scam Text Sentinel", "embedder": emb.kind, "served_model_chosen_on_cv": served,
+    summary = {"ai": "AI-2 Scam Text Sentinel", "embedder": emb.kind, "served_model_chosen_on_cv": best_on_cv, "served_live_model": served,
                "diagnostics": {"embedder": emb.kind, "embedder_error": emb.error,
                                "intended_pipeline_ran": emb.kind == "bge-m3" and bool((corpus["source"] == "gemini").any()),
                                **(diagnostics or {})},
                "corpus": {"total": int(len(corpus)), "by_source": corpus["source"].value_counts().to_dict(),
                           "by_language": corpus["language"].value_counts().to_dict(), "by_label": corpus["label"].value_counts().to_dict()},
                "cv_summary_family_A": cv_summary.reset_index().to_dict("records"),
-               "test_heldout_style_B": test_rows, "test_by_language_served": by_lang,
+               "test_heldout_style_B": test_rows, "test_by_language_served": by_lang, "test_by_language_best_on_cv": by_lang_cv,
+               "served_by_language": by_lang,
                "external_uci_sms_spam": external, "examples": examples}
     write_json(rep / "metrics_ai2.json", summary)
     cv_df.to_csv(rep / "ai2_cv_folds.csv", index=False)

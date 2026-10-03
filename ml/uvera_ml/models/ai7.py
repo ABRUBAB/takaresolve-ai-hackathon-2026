@@ -19,6 +19,46 @@ FAMILY_TAG = {"recipient_age_days": "mule_signals", "recipient_sender_days_7d": 
               "recipient_in_count_7d": "mule_signals", "device_change_72h": "fake_customer_care", "pin_reset_72h": "fake_customer_care"}
 
 
+def demo_briefs(gemini) -> tuple[dict, dict]:
+    """Gemini briefs for the website's demo transfers, built exactly the way the API builds them (same engines, same
+    evidence), so the API serves them from the cache. Extra to the measured sample; never raises."""
+    if gemini is None:
+        return {}, {"skipped": "Gemini not available"}
+    try:
+        from uvera_ml.common import repo_root
+        from uvera_ml.serving.briefs import BriefEngine
+        from uvera_ml.serving.pause import PauseCheckEngine
+        from uvera_ml.serving.store import ArtifactStore
+        from uvera_ml.sim.world import load_or_generate
+
+        root = repo_root()
+        demo = json.loads((root / "frontend" / "public" / "data" / "snapshot.json").read_text(encoding="utf-8"))["responses"]["GET /demo"]
+        world_dir = Path("/tmp/world_full") if Path("/tmp/world_full", "meta.json").exists() else root / "_outputs" / "world_full"
+        store = ArtifactStore([root])
+        pause = PauseCheckEngine(load_or_generate(world_dir, scale="full"), store)
+        engine = BriefEngine(store, mode="cached")
+        engine.cache, engine.gemini = {}, gemini  # only new briefs, through the same render + validator path as the API
+        out, stats = {}, {"transfers": 0, "gemini": 0, "template": 0}
+        for sc in demo["scenarios"]:
+            if sc.get("area") != "customer":
+                continue
+            req = sc["request"]
+            r = pause.check(req["sender_id"], req["recipient_wallet"], req["amount"], hour=req.get("hour", 19.0),
+                            channel=req.get("channel", "app"), **(req.get("simulated_context") or {}))
+            brief = engine.for_transfer(r, req["amount"], req.get("note"))
+            stats["transfers"] += 1
+            ev = brief.pop("evidence_object")
+            if brief.get("source") == "gemini":
+                key = __import__("hashlib").sha256(json.dumps(ev, sort_keys=True, ensure_ascii=False).encode()).hexdigest()[:20]
+                out[key] = {"evidence": ev, "brief": brief}
+                stats["gemini"] += 1
+            else:
+                stats["template"] += 1
+        return out, stats
+    except Exception as e:  # noqa: BLE001 - optional extra; the measured results never depend on it
+        return {}, {"error": str(e)[:300]}
+
+
 def _decision(row, thr, rules):
     return decide(float(row["raw_score"]), "unsure" if row["unsure"] else row["conformal_state"], bool(row["ood"]), thr,
                   float(row["amount"]), rules)
@@ -88,6 +128,8 @@ def run_ai7(out: str | Path, scored: pd.DataFrame, thresholds: dict, cases: list
         "top_validator_problems": res["problems"].explode().dropna().value_counts().head(8).to_dict(),
         "median_latency_s": float(res["latency_s"].median()),
     }
+    extra, summary["demo_briefs"] = demo_briefs(gemini)
+    cache.update(extra)
     (art / "briefs_cache.json").write_text(json.dumps(cache, ensure_ascii=False, indent=1), encoding="utf-8")
     res.to_csv(rep / "ai7_results.csv", index=False)
     write_json(rep / "metrics_ai7.json", summary)
