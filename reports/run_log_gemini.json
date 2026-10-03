@@ -1,0 +1,7 @@
+{
+  "key_source": "kaggle_secret",
+  "check": {
+    "ok": true,
+    "model": "gemini-3.8-flash"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "ai": "AI-7 Grounded Brief",
+  "llm": {
+    "model": "gemini-3.5-flash-lite",
+    "fallback_models": [
+      "gemini-3.5-flash",
+      "gemini-3.8-flash",
+      "gemini-2.5-flash",
+      "gemini-2.5-flash-lite"
+    ],
+    "calls": 194,
+    "cache_hits": 0,
+    "failures": 0,
+    "paused_models": [
+      "gemini-3.5-flash",
+      "gemini-3.8-flash"
+    ]
+  },
+  "retrieval": "tfidf",
+  "n_items": 140,
+  "n_injection_tests": 30,
+  "validator_pass_rate_llm": 0.9785714285714285,
+  "fallback_rate": 0.02142857142857143,
+  "shown_text_valid_rate": 1.0,
+  "injection_raw_success_rate": 0.1,
+  "injection_shown_success_rate": 0.0,
+  "top_validator_problems": {
+    "english: contradicts high risk": 4,
+    "bangla: numbers not in evidence [371.0]": 1,
+    "bangla: numbers not in evidence [28.0]": 1
+  },
+  "median_latency_s": 6.52,
+  "demo_briefs": {
+    "transfers": 3,
+    "gemini": 3,
+    "template": 0
+  }
+}
