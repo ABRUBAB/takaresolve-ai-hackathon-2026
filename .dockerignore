@@ -1,4 +1,4 @@
-# Keep the API image small: only ml/, backend/, configs, policy cards, scenarios, artifacts and reports are needed.
+# Keep the API image small: only ml/, backend/, configs, policy cards, artifacts and reports are needed.
 frontend/
 notebooks/
 docs/

@@ -2,14 +2,14 @@
 .PHONY: setup data api web test lint check
 
 setup:
-	pip install -e "./ml[dev]" -e "./backend[dev]"
+	pip install -c constraints.txt -e "./ml[dev]" -e "./backend[dev]"
 	cd frontend && npm install
 
 data:
-	python scripts/build_dev_artifacts.py --scale small
+	python scripts/build_dev_artifacts.py
 
 api:
-	cd backend && uvicorn app.main:app --reload --port 8000
+	cd backend && uvicorn app.main:app --port 8000
 
 web:
 	cd frontend && npm run dev

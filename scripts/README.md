@@ -1,5 +1,11 @@
 # scripts/
 
-- `make_data.py` — generate the synthetic world (`--scale small|full`)
-- `export_openapi.py` — write the API contract for the typed frontend client
-- `smoke.sh` — hit the deployed endpoints
+| Script | What it does |
+|---|---|
+| `add_result.py` | Adds a Kaggle result zip (`NBxx_outputs.zip`) to `artifacts/` and `reports/` and commits it |
+| `finalize.py` | After the last results: summary + model cards, records the API responses for the website (in-process), copies figures, writes the artifact manifest and the README results table, commits |
+| `export_snapshot.py` | Records the website's API responses from an API that is already running (`--api http://127.0.0.1:8000`) |
+| `export_web_assets.py` | Copies the homepage world sample and the notebook figures into the website |
+| `smoke_api.py` | End-to-end check of every endpoint and demo scenario against a running API |
+| `start_api.ps1` | Starts the API on Windows (127.0.0.1:8000) and restarts it if it stops |
+| `build_dev_artifacts.py` | Quick local copy of every model, for development before the notebooks have run |

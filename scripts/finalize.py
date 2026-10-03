@@ -8,11 +8,12 @@
 2. The API runs in-process (no server, no second terminal) and every response the website needs is recorded into
    frontend/public/data/snapshot.json (the hosted site plays these back when no live API is connected).
 3. The homepage world sample and the notebook figures are copied into the website.
-4. The results table in README.md is replaced with the current numbers.
+4. artifacts/manifest.json lists every model file with its SHA-256 and run commit; the README results table is refreshed.
 5. One commit (nothing is pushed).
 """
 from __future__ import annotations
 
+import logging
 import os
 import re
 import subprocess
@@ -25,6 +26,9 @@ sys.path[:0] = [str(ROOT / "ml"), str(ROOT / "backend"), str(ROOT / "scripts")]
 os.environ.setdefault("UVERA_ROOT", str(ROOT))
 os.environ["RATE_LIMIT_PER_MINUTE"] = "100000"  # the in-process recorder makes ~200 calls; the limit is for visitors
 os.environ.setdefault("LLM_MODE", "cached")  # recordings use the stored briefs, never a live Gemini call
+
+
+logging.getLogger("httpx").setLevel(logging.WARNING)  # one line per recorded request is just noise
 
 
 def step(msg: str) -> None:
@@ -73,6 +77,31 @@ def record_snapshot() -> None:
         export_snapshot.write(export_snapshot.record(call))
 
 
+NOTEBOOK_OF = {"ai1": "NB01", "ai2": "NB02", "ai3": "NB03", "ai4": "NB04", "ai5": "NB05", "ai6": "NB06", "ai7": "NB07", "web": "NB00"}
+
+
+def write_manifest() -> None:
+    """artifacts/manifest.json: every exported file with its size, SHA-256, the notebook that wrote it and that run's commit."""
+    import hashlib
+    import json
+
+    commits = {}
+    for v in (ROOT / "reports").glob("versions_nb*.json"):
+        commits[v.stem.replace("versions_", "").upper()] = json.loads(v.read_text(encoding="utf-8")).get("uvera_commit")
+    world = json.loads((ROOT / "reports" / "world_meta.json").read_text(encoding="utf-8")) if (ROOT / "reports" / "world_meta.json").exists() else {}
+    rows = []
+    for f in sorted((ROOT / "artifacts").rglob("*")):
+        if not f.is_file() or f.name in ("manifest.json", "README.md"):
+            continue
+        rel = f.relative_to(ROOT / "artifacts").as_posix()
+        nb = NOTEBOOK_OF.get(rel.split("/")[0], "?")
+        rows.append({"path": f"artifacts/{rel}", "bytes": f.stat().st_size, "sha256": hashlib.sha256(f.read_bytes()).hexdigest(),
+                     "notebook": nb, "code_commit": commits.get(nb)})
+    out = {"version": 2, "data_version": (world.get("meta", {}).get("hashes", {}).get("events") or "")[:12], "artifacts": rows}
+    (ROOT / "artifacts" / "manifest.json").write_text(json.dumps(out, indent=1), encoding="utf-8")
+    print(f"artifacts/manifest.json: {len(rows)} files")
+
+
 def update_readme() -> None:
     summary = (ROOT / "reports" / "summary.md").read_text(encoding="utf-8")
     table = "\n".join(line for line in summary.splitlines() if line.startswith("|"))
@@ -89,7 +118,7 @@ def update_readme() -> None:
 
 
 def commit() -> None:
-    paths = ["reports", "frontend/public", "README.md"]
+    paths = ["reports", "frontend/public", "README.md", "artifacts/manifest.json"]
     subprocess.run(["git", "-C", str(ROOT), "add", *paths], check=True)
     if subprocess.run(["git", "-C", str(ROOT), "diff", "--cached", "--quiet"]).returncode == 0:
         print("Nothing changed; no commit needed.")
@@ -111,7 +140,8 @@ def main() -> None:
     import export_web_assets
 
     export_web_assets.main()
-    step("4/5 README results table")
+    step("4/5 artifact manifest and README results table")
+    write_manifest()
     update_readme()
     step("5/5 commit")
     commit()

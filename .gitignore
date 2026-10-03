@@ -21,9 +21,7 @@ node_modules/
 .next/
 out/
 
-# --- generated data (regenerate with `make data`; never commit large data)
-data/*
-!data/README.md
+# --- generated data (never commit large data)
 *.parquet
 !artifacts/**/*.parquet
 *.csv.gz

@@ -18,7 +18,6 @@ RUN pip install ./ml ./backend
 
 COPY configs/ configs/
 COPY policy_cards/ policy_cards/
-COPY scenarios/ scenarios/
 COPY artifacts/ artifacts/
 COPY reports/ reports/
 
