@@ -18,9 +18,9 @@ const NODES: Record<string, NodeInfo> = {
   doubt: { id: "doubt", label: "Doubt check", sub: "conformal + novelty", icon: Sparkles, text: "If both answers are plausible, or the case is unlike anything seen before, the answer becomes “not sure”." },
   policy: { id: "policy", label: "Rules", sub: "config, not model", icon: FileCog, text: "Business rules in a YAML file pick the actions. The customer is never blocked.", tone: "rule" },
   brief: { id: "brief", label: "AI-7 Brief", sub: "grounded, validated", icon: Sparkles, text: "Gemini may only reword the facts above; a validator rejects anything new.", tone: "gen" },
-  rina: { id: "rina", label: "Rubab decides", sub: "wait · verify · send", icon: UserCheck, text: "Rubab sees why, in Bangla, and chooses. Nothing is blocked." },
+  decide: { id: "decide", label: "Rubab decides", sub: "wait · verify · send", icon: UserCheck, text: "Rubab sees why, in Bangla, and chooses. Nothing is blocked." },
   ai6: { id: "ai6", label: "AI-6 Linker", sub: "money paths → case", icon: Network, text: "Paused transfers that share mule wallets or shops are joined into one case." },
-  nusrat: { id: "nusrat", label: "Abdur Rahman reviews", sub: "a person decides holds", icon: Users, text: "Operations sees one case with evidence and a deadline clock, and signs every decision." },
+  review: { id: "review", label: "Abdur Rahman reviews", sub: "a person decides holds", icon: Users, text: "Operations sees one case with evidence and a deadline clock, and signs every decision." },
 };
 
 const Node = forwardRef<HTMLButtonElement, { n: NodeInfo; active: boolean; onPick: () => void }>(function Node({ n, active, onPick }, ref) {
@@ -51,9 +51,9 @@ export function DecisionFlow() {
   const r_doubt = useRef<HTMLButtonElement>(null);
   const r_policy = useRef<HTMLButtonElement>(null);
   const r_brief = useRef<HTMLButtonElement>(null);
-  const r_rina = useRef<HTMLButtonElement>(null);
+  const r_decide = useRef<HTMLButtonElement>(null);
   const r_ai6 = useRef<HTMLButtonElement>(null);
-  const r_nusrat = useRef<HTMLButtonElement>(null);
+  const r_review = useRef<HTMLButtonElement>(null);
   const [active, setActive] = useState("ai1");
   const { animate } = useMotionPref();
   const beam = (from: RefObject<HTMLButtonElement | null>, to: RefObject<HTMLButtonElement | null>, delay: number, curvature = 0, volt = false) => (
@@ -104,8 +104,8 @@ export function DecisionFlow() {
               <Node ref={r_ai6} n={NODES.ai6} active={active === "ai6"} onPick={pick("ai6")} />
             </div>
             <div className="flex flex-col items-center gap-12">
-              <Node ref={r_rina} n={NODES.rina} active={active === "rina"} onPick={pick("rina")} />
-              <Node ref={r_nusrat} n={NODES.nusrat} active={active === "nusrat"} onPick={pick("nusrat")} />
+              <Node ref={r_decide} n={NODES.decide} active={active === "decide"} onPick={pick("decide")} />
+              <Node ref={r_review} n={NODES.review} active={active === "review"} onPick={pick("review")} />
             </div>
           </div>
           <span key="transfer-ai1">{beam(r_transfer, r_ai1, 0, 0, true)}</span>
@@ -116,8 +116,8 @@ export function DecisionFlow() {
           <span key="doubt-policy">{beam(r_doubt, r_policy, 1.1)}</span>
           <span key="policy-brief">{beam(r_policy, r_brief, 1.4, -10, true)}</span>
           <span key="policy-ai6">{beam(r_policy, r_ai6, 1.6, 10)}</span>
-          <span key="brief-rina">{beam(r_brief, r_rina, 1.9, 0, true)}</span>
-          <span key="ai6-nusrat">{beam(r_ai6, r_nusrat, 2.1)}</span>
+          <span key="brief-decide">{beam(r_brief, r_decide, 1.9, 0, true)}</span>
+          <span key="ai6-review">{beam(r_ai6, r_review, 2.1)}</span>
         </div>
         <AnimatePresence mode="wait">
           <motion.div

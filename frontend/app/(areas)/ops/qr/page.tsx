@@ -128,7 +128,7 @@ function MerchantDrawer({ id, onClose }: { id: string | null; onClose: () => voi
                 </section>
                 <p className="flex gap-1.5 rounded-2xl border border-dashed border-border p-3 text-xs text-muted-foreground">
                   <Info className="mt-0.5 size-3.5 shrink-0" />
-                  Fee leakage uses an assumed fee rate of {pct(m.fee_assumption.fee_rate, 1)} (not verified). {m.fee_assumption.note}
+                  Fee leakage is an estimate: suspected QR volume × an assumed cash-out fee. {m.fee_assumption.note}
                 </p>
               </>
             )}

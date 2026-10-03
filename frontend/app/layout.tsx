@@ -10,7 +10,9 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 const instrument = Instrument_Serif({ variable: "--font-instrument", subsets: ["latin"], weight: "400", style: ["normal", "italic"] });
 const anek = Anek_Bangla({ variable: "--font-anek", subsets: ["bengali", "latin"] });
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const SITE =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000");
 const DESCRIPTION =
   "UVERA is a trust layer for mobile money: it pauses a scam before the money moves, helps agents hold enough cash, spots QR codes used as hidden cash-out and joins alerts into one case. Synthetic demo data.";
 

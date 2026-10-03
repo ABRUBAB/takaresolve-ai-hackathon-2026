@@ -25,7 +25,7 @@ const COLUMNS = [
     title: "Evidence",
     links: [
       { href: `${REPO}/tree/main/notebooks`, label: "Kaggle notebooks" },
-      { href: `${REPO}/tree/main/docs/model_cards`, label: "Model cards" },
+      { href: `${REPO}/tree/main/reports/model_cards`, label: "Model cards" },
       { href: `${REPO}/blob/main/docs/data_card.md`, label: "Data card" },
       { href: `${REPO}/blob/main/docs/system_card.md`, label: "System card" },
       { href: `${REPO}/blob/main/docs/threat_model.md`, label: "Threat model" },

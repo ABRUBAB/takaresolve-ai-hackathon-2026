@@ -25,6 +25,13 @@ const mase = (a: J) => {
   return best && naive ? ([`${best.mase.toFixed(2)}`, `forecast error (MASE) vs ${naive.mase.toFixed(2)} for the naive baseline`] as [string, string]) : null;
 };
 
+const cashToHold = (a: J) => {
+  const c = a?.cash_to_hold_test as J | undefined;
+  const ours = c?.forecast_q90?.days_short_of_cash;
+  const usual = c?.usual_cash?.days_short_of_cash;
+  return isNum(ours) && isNum(usual) ? ([`${Math.round(ours * 100)}%`, `of days short of cash when holding the forecast amount (usual cash: ${Math.round(usual * 100)}%)`] as [string, string]) : null;
+};
+
 const AIS: Ai[] = [
   {
     id: "AI-1", name: "Pause Check", how: "LightGBM vs XGBoost, CatBoost, logistic regression and a rule · grouped CV × 5 seeds · isotonic calibration · conformal “not sure” · TreeSHAP reasons", who: "Customer", out: "model",
@@ -40,13 +47,12 @@ const AIS: Ai[] = [
     id: "AI-2", name: "Scam Text Check", how: "TF-IDF vs BGE-M3 embeddings vs an evidential head · tested on a held-out writing style · phrase occlusion", who: "Customer", out: "model",
     what: "Reads an SMS in Bangla, Banglish or English, names the scam family and highlights the words that matter.",
     metric: (m) => {
-      const rows = ((m.per_ai.ai2 as J)?.test_heldout_style_B as J[]) ?? [];
-      const best = Math.max(...rows.map((r) => r.verdict_pr_auc ?? 0));
-      return rows.length ? [best.toFixed(2), "PR-AUC on a writing style it never saw"] : null;
+      const served = (((m.per_ai.ai2 as J)?.test_heldout_style_B as J[]) ?? []).find((r) => r.model === "tfidf_lr");
+      return isNum(served?.verdict_pr_auc) ? [served.verdict_pr_auc.toFixed(2), "PR-AUC on a writing style it never saw (served model)"] : null;
     },
   },
   { id: "AI-3", name: "Cash-Flow Guardian", how: "Seasonal-naive vs LightGBM-quantile vs Chronos-2 · rolling-origin backtest · empirical probability", who: "Customer", out: "model", what: "Forecasts the week of money in and out and warns early if the balance may run low.", metric: (m) => mase(m.per_ai.ai3) },
-  { id: "AI-4", name: "Liquidity Copilot", how: "Quantile forecasts · interval coverage · no yes/no alarm where the evidence is weak", who: "Agent", out: "model", what: "Tells an agent how much cash to hold for a 90%-safe day, with the riskiest days marked.", metric: (m) => mase(m.per_ai.ai4) },
+  { id: "AI-4", name: "Liquidity Copilot", how: "Quantile forecasts · interval coverage · no yes/no alarm where the evidence is weak", who: "Agent", out: "model", what: "Tells an agent how much cash to hold for a 90%-safe day.", metric: (m) => cashToHold(m.per_ai.ai4) ?? mase(m.per_ai.ai4) },
   {
     id: "AI-5", name: "QR Shield", how: "LightGBM + Isolation Forest rank fusion · unseen scheme tested separately · size-fairness check", who: "Operations · Agent zone", out: "model",
     what: "Finds shops whose QR payments look like hidden cash-out, compared with shops of the same type, area and size.",

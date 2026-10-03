@@ -113,8 +113,8 @@ function Bars({ rows, max = 1 }: { rows: [string, number][]; max?: number }) {
 const LIMITS = [
   "All data is synthetic. The results show the method works end to end; they are not real-world accuracy.",
   "Scam patterns were designed by the team, so the models may find them easier than real scams. Honest look-alikes, label noise and a leakage guard reduce, but do not remove, this risk.",
-  "Dispute deadlines come from a press report and are labelled “unverified” until checked against the official circular.",
-  "Fee leakage uses an assumed fee rate; it is a placeholder, not a reported figure.",
+  "Dispute deadlines follow Bangladesh Bank’s Bangla QR guideline (27 Sep 2026) as reported by two newspapers; all eight limits match both reports, but the circular’s own text was not checked.",
+  "Fee leakage uses an assumed cash-out fee of 1.5%, inside the publicly listed 2026 charges of 1.30–1.85%; it is an estimate for the synthetic world, not a reported figure.",
   "Agent cash on hand is an assumption (1.5 × average daily cash-out) because real float data is not available.",
   "Gemini rewrites facts only; when it is unavailable or a check fails, a template is shown. Only synthetic data is ever sent to it.",
   "Holds and account actions always need a person. The customer is never blocked by the model.",
@@ -310,8 +310,8 @@ export default function TrustCenter() {
                     rows={(m.summary.fairness as J[]).filter((r) => r.ai === "AI-5").map((r) => [r.group, p1(r.fpr)])}
                   />
                   <Table
-                    cols={["AI-2 · language", "n", "Verdict PR-AUC"]}
-                    rows={(m.summary.fairness as J[]).filter((r) => r.ai === "AI-2").map((r) => [r.group, num(r.n), f3(r.verdict_pr_auc)])}
+                    cols={["AI-2 · language (served model)", "n", "Verdict PR-AUC", "F1 at 0.5"]}
+                    rows={(m.summary.fairness as J[]).filter((r) => r.ai === "AI-2").map((r) => [r.group, num(r.n), f3(r.verdict_pr_auc), f3(r["verdict_f1_at_0.5"])])}
                   />
                 </div>
               </Section>
