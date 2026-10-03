@@ -55,11 +55,12 @@ const snapKey = (method: string, path: string, body?: unknown) => `${method} ${p
 
 let usedRecorded = false;
 const listeners = new Set<() => void>();
-function markRecorded() {
-  if (usedRecorded) return;
-  usedRecorded = true;
+function setRecorded(on: boolean) {
+  if (usedRecorded === on) return;
+  usedRecorded = on;
   listeners.forEach((fn) => fn());
 }
+const markRecorded = () => setRecorded(true);
 
 /** True once any response on this page came from the recordings (shown as a badge in the top bar). */
 export function useRecordedMode() {
@@ -161,7 +162,9 @@ async function call<T>(path: string, role: Role | null, init: RequestInit = {}, 
     throw new ApiError(404, OFFLINE);
   }
   try {
-    return await live<T>(path, role, init, subject);
+    const out = await live<T>(path, role, init, subject);
+    setRecorded(false); // the live API answered: drop the "Recorded demo" badge
+    return out;
   } catch (e) {
     const err = e instanceof ApiError ? e : new ApiError(0, String(e));
     // offline or waking up: answer from the recordings when this exact request was recorded

@@ -46,12 +46,12 @@ export function TopBar({ floating = false }: { floating?: boolean }) {
                 href={a.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "rounded-full px-3 py-1.5 text-[13px] transition-colors",
+                  "whitespace-nowrap rounded-full px-3 py-1.5 text-[13px] transition-colors",
                   active ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 {a.label}
-                {a.who && <span className={cn("ml-1.5 text-xs", active ? "text-background/60" : "text-faint")}>{a.who}</span>}
+                {a.who && <span className={cn("ml-1.5 hidden text-xs xl:inline", active ? "text-background/60" : "text-faint")}>{a.who}</span>}
               </Link>
             );
           })}
