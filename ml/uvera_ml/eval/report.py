@@ -60,7 +60,8 @@ def headline(m: dict) -> dict:
         "ai3": {"winner": w3 or NM, "winner_test": _test_backtest(a3, w3) or NM, "naive_test": _test_backtest(a3, "seasonal_naive") or NM,
                 "shortfall": _get(a3, "shortfall_probability_test")},
         "ai4": {"winner": w4 or NM, "winner_test": _test_backtest(a4, w4) or NM, "naive_test": _test_backtest(a4, "seasonal_naive") or NM,
-                "cash_to_hold": _get(a4, "cash_to_hold_test"), "stockout": _get(a4, "stockout_probability_test")},
+                "cash_to_hold": _get(a4, "cash_to_hold_test"), "stockout": _get(a4, "stockout_probability_test"),
+                "noise_floor": _get(a4, "noise_floor_perfect_knowledge")},
         "ai5": {"pr_auc_seen": _get(a5, "test", "pr_auc_seen_families"), "precision_at_k": _get(a5, "test", "weekly_precision_at_k"),
                 "unseen_family_D": _get(a5, "test", "unseen_family_D"),
                 "recall_family_D": _get(a5, "test", "recall_by_family", "D_rotating_ring"),
@@ -184,6 +185,7 @@ def to_markdown(s: dict) -> str:
     h = s["headline"]
     a3w, a3n, a4w, a4n = h["ai3"]["winner_test"], h["ai3"]["naive_test"], h["ai4"]["winner_test"], h["ai4"]["naive_test"]
     c4 = h["ai4"]["cash_to_hold"] if isinstance(h["ai4"]["cash_to_hold"], dict) else {}
+    nf4 = h["ai4"]["noise_floor"] if isinstance(h["ai4"]["noise_floor"], dict) else {}
     sh = h["ai3"]["shortfall"] if isinstance(h["ai3"]["shortfall"], dict) else {}
     a6 = h["ai6"] if isinstance(h["ai6"], dict) else {}
     top5 = _get(a6, "real_scam_alerts_in_top_cases", "5")
@@ -200,6 +202,8 @@ def to_markdown(s: dict) -> str:
         ("AI-4 Liquidity", f"Forecast error, MASE ({h['ai4']['winner']})", _get(a4w, "mase"), _get(a4n, "mase"), "num"),
         ("AI-4 Liquidity", "Days short of cash: hold the 90% forecast (vs usual cash)",
          _get(c4, "forecast_q90", "days_short_of_cash"), _get(c4, "usual_cash", "days_short_of_cash"), "pct"),
+        ("AI-4 Liquidity", "Share of the best possible gain over naive reached (perfect-knowledge limit = 100%)",
+         _get(nf4, "share_of_possible_gain_test", "pinball_mean"), None, "pct"),
         ("AI-5 QR Shield", "Real cash-out shops among the 20 reviewed each week", h["ai5"]["precision_at_k"], None, "pct"),
         ("AI-5 QR Shield", "Honest round-price shops wrongly flagged", h["ai5"]["fpr_honest_round_price"], None, "pct"),
         ("AI-5 QR Shield", "Recall on a disguise type never seen in training", h["ai5"]["recall_family_D"], None, "pct"),
@@ -269,7 +273,7 @@ CARD_FACTS = {
     "ai3": {
         "task": "7-day forecast of a customer's net cash flow and the chance the balance ends the week below a safety floor.",
         "inputs": "Daily money in and out per customer + calendar covariates (weekday, day of month, salary week, month end, festival).",
-        "model": "Chronos-2 (zero-shot foundation model), LightGBM-quantile (lags 7–28 days) and seasonal-naive, compared by rolling-origin backtest; the winner is chosen on validation pinball loss.",
+        "model": "Chronos-2 (zero-shot foundation model), LightGBM-quantile (lags 7–28 days plus the same calendar day 1 and 2 months back, because pay day and bill day repeat monthly) and seasonal-naive, compared by rolling-origin backtest; the winner is chosen on validation pinball loss. The live API serves LightGBM-quantile (CPU-only server).",
         "baseline": "Seasonal-naive forecast; historical low-balance frequency for the warning.",
         "uncertainty": "10/50/90% quantile bands; the shortfall probability comes from the empirical distribution of validation residuals.",
         "explanation": "Heaviest spending weeks; the forecast band itself.",
@@ -356,9 +360,16 @@ def _metrics_lines(k: str, a: dict) -> list[str]:
         lines = [f"- Winner on validation: **{w or '—'}**. Test backtest:"]
         for r in [r for r in a.get("backtest", []) if r.get("split") == "test"]:
             lines.append(f"  - {r['model']}: MASE {_fmt(r.get('mase'))}, pinball {_fmt(r.get('pinball_mean'), 'int')}, 80% coverage {_fmt(r.get('coverage_80'))}")
+        lines.append("- Validation backtest (chooses the winner; " + ("its weeks include pay days" if k == "ai3" else "busier weeks") + "):")
+        for r in [r for r in a.get("backtest", []) if r.get("split") == "val"]:
+            lines.append(f"  - {r['model']}: MASE {_fmt(r.get('mase'))}, pinball {_fmt(r.get('pinball_mean'), 'int')}, 80% coverage {_fmt(r.get('coverage_80'))}")
         if k == "ai3":
             lines.append(f"- Shortfall probability (test): PR-AUC {g('shortfall_probability_test', 'pr_auc')} vs history {g('shortfall_probability_test', 'pr_auc_baseline')}; "
                          f"Brier {g('shortfall_probability_test', 'brier')} vs {g('shortfall_probability_test', 'brier_baseline')}; ECE {g('shortfall_probability_test', 'ece')}.")
+            sv = a.get("served_live_model")
+            if sv and sv != w and a.get("shortfall_probability_test_served"):
+                lines.append(f"- Served live ({sv}): shortfall PR-AUC {g('shortfall_probability_test_served', 'pr_auc')}; "
+                             f"ECE {g('shortfall_probability_test_served', 'ece')}.")
         else:
             c = a.get("cash_to_hold_test") or {}
             for key, label in (("usual_cash", "usual cash on hand"), ("forecast_q90", "hold the 90% forecast (served)"),
@@ -371,6 +382,12 @@ def _metrics_lines(k: str, a: dict) -> list[str]:
             if a.get("agent_ranking_test"):
                 lines.append(f"- Ranking agents most at risk each week (top 20%): precision {g('agent_ranking_test', 'model', 'precision', kind='pct')} vs history "
                              f"{g('agent_ranking_test', 'history_baseline', 'precision', kind='pct')}.")
+            nf = a.get("noise_floor_perfect_knowledge") or {}
+            if isinstance(nf.get("test"), dict):
+                lines.append(f"- Best possible forecast (a simulated forecaster that knows every balance and mule cash-out on the day): test MASE "
+                             f"{_fmt(nf['test'].get('mase'))}, pinball {_fmt(nf['test'].get('pinball_mean'), 'int')}. UVERA reaches "
+                             f"**{g('noise_floor_perfect_knowledge', 'share_of_possible_gain_test', 'pinball_mean', kind='pct')}** of the possible "
+                             "improvement over seasonal-naive; the rest is chance that no model can predict.")
         return lines
     if k == "ai5":
         lines = [f"- Test: {g('test', 'n_merchant_weeks', kind='int')} merchant-weeks, {g('test', 'disguised_weeks', kind='int')} disguised.",

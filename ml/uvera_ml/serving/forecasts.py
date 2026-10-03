@@ -30,7 +30,7 @@ class ForecastEngine:
         dc["target"] = dc["inflow"] - dc["outflow"]
         self.cust = F.add_calendar(dc[["id", "day", "date", "target", "inflow", "outflow", "balance_sod", "balance_eod"]], self.fest)
         sample = F.customer_series(world, n_fit_customers)
-        self.cust_model = F.LGBQuantile().fit(sample)
+        self.cust_model = F.LGBQuantile(monthly=True).fit(sample)  # same model as NB03 (pay day / bill day repeat monthly)
         self.agents = F.agent_series(world)
         self.agent_model = F.LGBQuantile().fit(self.agents)
         cap = store.parquet("artifacts/ai4/capacity.parquet")

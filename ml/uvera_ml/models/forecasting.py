@@ -1,5 +1,9 @@
 """AI-3 Cash-Flow Guardian and AI-4 Agent Liquidity Copilot (both use uvera_ml.forecast).
 
+AI-3's LightGBM also sees the same calendar day 1 and 2 months back (pay day and bill day repeat monthly): on the
+validation weeks, which contain pay days, this cut the LightGBM pinball loss by about a quarter. AI-4 does not use it
+(it made validation slightly worse for agents).
+
 Event probabilities ("balance below the floor at the end of the next 7 days", "cash demand above the agent's cash on
 hand") are NOT obtained by adding daily quantiles (quantiles of a sum are not the sum of quantiles). Instead we use an
 empirical, conformal-style method: on validation origins we record how real outcomes scattered around the forecast,
@@ -83,18 +87,11 @@ def _cross_fit(val: pd.DataFrame, z_col: str, upper_tail: bool) -> np.ndarray:
     return out
 
 
-def run_ai3(world, out: str | Path, n_customers: int = 2000, use_chronos: bool = True) -> dict:
-    out = Path(out)
-    art, rep = out / "artifacts" / "ai3", out / "reports"
-    art.mkdir(parents=True, exist_ok=True)
-    (rep / "figures").mkdir(parents=True, exist_ok=True)
-    floor = load_config("assumptions").get("shortfall_floor_bdt", 200)
+SERVED_FORECASTER = "lightgbm_quantile"  # the API forecasts live on a CPU-only server (uvera_ml.serving.forecasts)
 
-    s = F.customer_series(world, n_customers)
-    res, preds = F.backtest(s, world.n_days, use_chronos)
-    winner = F.pick_winner(res)
-    p = preds[winner]
 
+def _shortfall(s: pd.DataFrame, p: pd.DataFrame, floor: float, budget: float) -> dict:
+    """7-day shortfall probability for one forecaster: calibrated on the validation origins, reported on the test origins."""
     # event: balance below the floor at the END of the next 7 days
     actual = s.set_index(["id", "day"])["target"]
     p = p.assign(actual=actual.reindex(pd.MultiIndex.from_arrays([p["id"], p["day"]])).to_numpy())
@@ -113,12 +110,31 @@ def run_ai3(world, out: str | Path, n_customers: int = 2000, use_chronos: bool =
 
     val, te = agg[agg["split"] == "val"].copy(), agg[agg["split"] == "test"].copy()
     val["p_shortfall"] = _cross_fit(val, "z", upper_tail=False)
-    budget = load_config("thresholds").get("ai3_cashflow", {}).get("max_warning_rate", 0.30)
     thr = best_threshold(val["p_shortfall"].to_numpy(), val["actual_shortfall"].to_numpy(), beta=1.0, max_flag_rate=budget)
     R = np.sort(val["r"].to_numpy())
     te["p_shortfall"] = ecdf(R, te["z"])
     lo_r, hi_r = np.quantile(R, [0.1, 0.9])
     interval_cov = float(((te["actual_sum"] >= te["mu"] + lo_r * te["scale"]) & (te["actual_sum"] <= te["mu"] + hi_r * te["scale"])).mean())
+    return {"p": p, "te": te, "R": R, "thr": thr, "interval_cov": interval_cov}
+
+
+def run_ai3(world, out: str | Path, n_customers: int = 2000, use_chronos: bool = True) -> dict:
+    out = Path(out)
+    art, rep = out / "artifacts" / "ai3", out / "reports"
+    art.mkdir(parents=True, exist_ok=True)
+    (rep / "figures").mkdir(parents=True, exist_ok=True)
+    floor = load_config("assumptions").get("shortfall_floor_bdt", 200)
+    budget = load_config("thresholds").get("ai3_cashflow", {}).get("max_warning_rate", 0.30)
+
+    s = F.customer_series(world, n_customers)
+    # customers' money follows the calendar month (pay day, bill day): LightGBM also sees the same day 1-2 months back
+    res, preds = F.backtest(s, world.n_days, use_chronos, monthly=True)
+    winner = F.pick_winner(res)
+    served = SERVED_FORECASTER if SERVED_FORECASTER in preds else winner
+    sf = {winner: _shortfall(s, preds[winner], floor, budget)}
+    if served != winner:  # the live warning uses the served model's own residuals, measured the same way
+        sf[served] = _shortfall(s, preds[served], floor, budget)
+    p, te, R, thr, interval_cov = (sf[winner][k] for k in ("p", "te", "R", "thr", "interval_cov"))
 
     y = te["actual_shortfall"].to_numpy()
     hist = s[s["day"] < F.origins(world.n_days)["train_end"]].groupby("id")["balance_eod"].apply(lambda b: (b < floor).mean())
@@ -137,17 +153,24 @@ def run_ai3(world, out: str | Path, n_customers: int = 2000, use_chronos: bool =
 
     p[p["split"] == "test"].drop(columns=["actual"]).to_parquet(art / "forecasts.parquet", index=False)
     te.drop(columns=["r", "actual_sum"]).to_parquet(art / "shortfall.parquet", index=False)
+    sv = sf[served]
+    sv_y = sv["te"]["actual_shortfall"].to_numpy()
+    sv_base = sv["te"]["id"].map(hist).fillna(0).to_numpy()
+    # the API applies these residuals to its own live forecasts, so they come from the SERVED forecaster
     write_json(art / "residuals.json", {"method": "empirical normalised 7-day-sum residuals (validation origins)",
-                                        "quantiles": residual_quantiles(R), "threshold": thr, "floor_bdt": floor,
-                                        "horizon_days": F.HORIZON})
+                                        "model": served, "quantiles": residual_quantiles(sv["R"]), "threshold": sv["thr"],
+                                        "floor_bdt": floor, "horizon_days": F.HORIZON})
     summary = {"ai": "AI-3 Cash-Flow Guardian", "target": "daily net flow (inflow - outflow)", "horizon_days": F.HORIZON,
                "event": f"balance below Tk {floor} at the end of the next {F.HORIZON} days",
-               "n_series": int(s["id"].nunique()), "winner_on_validation": winner, "backtest": _summarise(res),
+               "n_series": int(s["id"].nunique()), "winner_on_validation": winner, "served_live_model": served,
+               "backtest": _summarise(res),
                "probability_method": "empirical normalised residuals of the 7-day sum (calibrated on validation origins)",
                "validation_threshold": thr, "threshold_rule": "best F1 on validation within an alert budget (configs/thresholds.yaml)",
                "seven_day_sum_80pct_interval_coverage_test": interval_cov,
                "shortfall_probability_test": _prob_metrics(te["p_shortfall"].to_numpy(), y, base, thr),
                "shortfall_probability_test_naive_sum_of_quantiles": _prob_metrics(te["p_naive"].to_numpy(), y, base, thr),
+               "served_seven_day_sum_80pct_interval_coverage_test": sv["interval_cov"],
+               "shortfall_probability_test_served": _prob_metrics(sv["te"]["p_shortfall"].to_numpy(), sv_y, sv_base, sv["thr"]),
                "baseline": "historical frequency of low balance (training window)"}
     write_json(rep / "metrics_ai3.json", summary)
     res.to_csv(rep / "ai3_backtest.csv", index=False)
@@ -233,6 +256,22 @@ def run_ai4(world, out: str | Path, use_chronos: bool = True) -> dict:
                        "normal approximation (naive)": M.reliability_table(y, te["p_naive"])},
                       rep / "figures" / "ai4_stockout_reliability.png", "AI-4 stock-out probability calibration (test)")
 
+    # how good could ANY forecast be? a simulated forecaster with perfect same-day knowledge sets the noise floor
+    try:
+        from uvera_ml.eval.noise_floor import agent_cashout_floor, share_of_possible_gain
+
+        floor_m = agent_cashout_floor(world)
+        t = res[res["split"] == "test"].groupby("model")[["mase", "pinball_mean"]].mean()
+        if "seasonal_naive" in t.index:
+            floor_m["share_of_possible_gain_test"] = {
+                k: share_of_possible_gain(t.at["seasonal_naive", k], t.at[winner, k], floor_m["test"][k]) for k in ("mase", "pinball_mean")}
+    except Exception as e:  # noqa: BLE001 - an extra analysis; the measured results never depend on it
+        floor_m = {"error": str(e)[:200]}
+    print("Noise floor (perfect same-day knowledge):", floor_m)
+    print("Days short of cash on test weeks: usual cash {:.1%} -> hold the 90% forecast {:.1%} (extra Tk {:,.0f} per day)".format(
+        cash_to_hold["usual_cash"]["days_short_of_cash"], cash_to_hold["forecast_q90"]["days_short_of_cash"],
+        cash_to_hold["forecast_q90"]["extra_vs_usual_bdt"]))
+
     te.drop(columns=["r"]).to_parquet(art / "forecasts.parquet", index=False)
     write_json(art / "residuals.json", {"method": "empirical normalised daily residuals (validation origins)",
                                         "quantiles": residual_quantiles(R), "threshold": None})
@@ -245,6 +284,7 @@ def run_ai4(world, out: str | Path, use_chronos: bool = True) -> dict:
                "operating_rule": "hold the 90% forecast (cash to hold); no day-level yes/no alarm", "stockout_base_rate": {"validation": float(val["actual_stockout"].mean()),
                                                                            "test": float(y.mean())},
                "cash_to_hold_test": cash_to_hold, "day_ranking_test": day_ranking, "agent_ranking_test": agent_ranking,
+               "noise_floor_perfect_knowledge": floor_m,
                "stockout_probability_test": _prob_metrics(te["p_stockout"].to_numpy(), y, base, None),
                "stockout_probability_test_naive_normal": _prob_metrics(te["p_naive"].to_numpy(), y, base, None),
                "baseline": "historical stock-out frequency per agent and weekday (training window)"}

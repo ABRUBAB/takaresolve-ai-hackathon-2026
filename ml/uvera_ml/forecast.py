@@ -61,36 +61,48 @@ def seasonal_naive(ctx: pd.DataFrame, future: pd.DataFrame) -> pd.DataFrame:
     return pd.concat(out, ignore_index=True)
 
 
-def _lag_frame(s: pd.DataFrame) -> pd.DataFrame:
+def _lag_frame(s: pd.DataFrame, monthly: bool = False) -> pd.DataFrame:
     s = s.sort_values(["id", "day"]).copy()
     g = s.groupby("id")["target"]
     for L in LAGS:
         s[f"lag{L}"] = g.shift(L)
     s["lag_mean"] = s[[f"lag{L}" for L in LAGS]].mean(axis=1)
     s["lag_std"] = s[[f"lag{L}" for L in LAGS]].std(axis=1)
+    if monthly:  # same calendar day 1 and 2 months earlier: salary, bills and remittances repeat on a fixed day of the month
+        known = s.set_index(["id", "date"])["target"]
+        dates = pd.Series(s["date"].unique())
+        for k in (1, 2):
+            back = dict(zip(dates, dates - pd.DateOffset(months=k)))
+            s[f"same_day_{k}m"] = known.reindex(pd.MultiIndex.from_arrays([s["id"], s["date"].map(back)])).to_numpy()
     return s
 
 
 LGB_FEATS = [f"lag{L}" for L in LAGS] + ["lag_mean", "lag_std"] + COVARIATES
+MONTHLY_FEATS = ["same_day_1m", "same_day_2m"]
 
 
 class LGBQuantile:
-    """Global LightGBM, one model per quantile. All lags >= 7 days, so a 7-day horizon needs no recursion."""
+    """Global LightGBM, one model per quantile. All lags >= 7 days (monthly lags >= 28), so a 7-day horizon needs no
+    recursion. `monthly=True` adds the same calendar day 1 and 2 months back (used for customers, AI-3)."""
+
+    def __init__(self, monthly: bool = False):
+        self.monthly = monthly
+        self.feats = LGB_FEATS + (MONTHLY_FEATS if monthly else [])
 
     def fit(self, hist: pd.DataFrame, seed: int = 42) -> "LGBQuantile":
-        X = _lag_frame(hist).dropna(subset=[f"lag{L}" for L in LAGS])
+        X = _lag_frame(hist, self.monthly).dropna(subset=[f"lag{L}" for L in LAGS])
         self.models = {q: lgb.train({"objective": "quantile", "alpha": q, "learning_rate": 0.05, "num_leaves": 31,
                                      "min_child_samples": 30, "verbose": -1, "seed": seed},
-                                    lgb.Dataset(X[LGB_FEATS], X["target"]), 300) for q in QUANTILES}
+                                    lgb.Dataset(X[self.feats], X["target"]), 300) for q in QUANTILES}
         return self
 
     def predict(self, ctx: pd.DataFrame, future: pd.DataFrame) -> pd.DataFrame:
         both = pd.concat([ctx, future.assign(target=np.nan)], ignore_index=True)
-        X = _lag_frame(both)
+        X = _lag_frame(both, self.monthly)
         X = X[X["day"].isin(future["day"].unique()) & X.set_index(["id", "day"]).index.isin(future.set_index(["id", "day"]).index)]
         out = X[["id", "day"]].copy()
         for q, m in self.models.items():
-            out[f"q{q}"] = m.predict(X[LGB_FEATS])
+            out[f"q{q}"] = m.predict(X[self.feats])
         out[["q0.1", "q0.5", "q0.9"]] = np.sort(out[["q0.1", "q0.5", "q0.9"]].to_numpy(), axis=1)  # no quantile crossing
         return out.reset_index(drop=True)
 
@@ -155,7 +167,8 @@ def origins(n_days: int) -> dict:
     return {"val": val, "test": test, "train_end": b["train_end"]}
 
 
-def backtest(series: pd.DataFrame, n_days: int, use_chronos: bool = True, seed: int = 42) -> tuple[pd.DataFrame, dict]:
+def backtest(series: pd.DataFrame, n_days: int, use_chronos: bool = True, seed: int = 42,
+             monthly: bool = False) -> tuple[pd.DataFrame, dict]:
     """Rolling-origin backtest for every available model; returns per-origin metrics and test predictions."""
     org = origins(n_days)
     models = {"seasonal_naive": None, "lightgbm_quantile": None}
@@ -171,7 +184,7 @@ def backtest(series: pd.DataFrame, n_days: int, use_chronos: bool = True, seed: 
         for o in origin_list:
             ctx = series[series["day"] < o]
             fut = series[(series["day"] >= o) & (series["day"] < o + HORIZON)]
-            lgbq = LGBQuantile().fit(ctx, seed)
+            lgbq = LGBQuantile(monthly).fit(ctx, seed)
             for name in models:
                 if name == "seasonal_naive":
                     p = seasonal_naive(ctx, fut)
