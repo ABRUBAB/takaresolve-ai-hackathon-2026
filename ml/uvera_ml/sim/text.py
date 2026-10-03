@@ -201,6 +201,8 @@ def load_uci_sms(path: str | None = None) -> pd.DataFrame:
         "/kaggle/input/sms-spam-collection-dataset/spam.csv",
         "/kaggle/input/sms-spam-collection/SMSSpamCollection",
     ]
+    if not path and Path("/kaggle/input").exists():  # newer Kaggle images mount datasets one folder deeper
+        candidates += [str(p) for name in ("spam.csv", "SMSSpamCollection") for p in Path("/kaggle/input").glob(f"**/{name}")]
     for p in candidates:
         if p and Path(p).exists():
             if p.endswith(".csv"):

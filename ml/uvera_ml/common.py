@@ -84,9 +84,15 @@ def sha256_file(path: str | Path) -> str:
 
 
 def sha256_frame(df) -> str:
-    """Stable content hash of a DataFrame (order-sensitive)."""
+    """Stable content hash of a DataFrame (order-sensitive).
+
+    Datetimes are hashed at nanosecond resolution: pandas 3 stores them in microseconds, which would otherwise change
+    the hash of identical data."""
     import pandas as pd
 
+    dt = [c for c in df.columns if pd.api.types.is_datetime64_any_dtype(df[c])]
+    if dt:
+        df = df.astype({c: "datetime64[ns]" for c in dt})
     return hashlib.sha256(pd.util.hash_pandas_object(df, index=False).values.tobytes()).hexdigest()
 
 
