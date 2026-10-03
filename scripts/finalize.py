@@ -18,6 +18,7 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -26,6 +27,7 @@ sys.path[:0] = [str(ROOT / "ml"), str(ROOT / "backend"), str(ROOT / "scripts")]
 os.environ.setdefault("UVERA_ROOT", str(ROOT))
 os.environ["RATE_LIMIT_PER_MINUTE"] = "100000"  # the in-process recorder makes ~200 calls; the limit is for visitors
 os.environ.setdefault("LLM_MODE", "cached")  # recordings use the stored briefs, never a live Gemini call
+os.environ["DB_PATH"] = str(Path(tempfile.mkdtemp()) / "recording.db")  # a fresh case database: no test decisions leak in
 
 
 logging.getLogger("httpx").setLevel(logging.WARNING)  # one line per recorded request is just noise

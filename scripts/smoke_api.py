@@ -1,6 +1,7 @@
 """Call every API endpoint once against a running server and print a short report.
 
-    python scripts/smoke_api.py http://127.0.0.1:8000
+    python scripts/smoke_api.py http://127.0.0.1:8000            # read-only
+    python scripts/smoke_api.py http://127.0.0.1:8000 --write    # also records one case decision
 """
 from __future__ import annotations
 
@@ -10,7 +11,8 @@ import time
 import urllib.error
 import urllib.request
 
-BASE = (sys.argv[1] if len(sys.argv) > 1 else "http://127.0.0.1:8000").rstrip("/") + "/v1"
+ARGS = [a for a in sys.argv[1:] if not a.startswith("--")]
+BASE = (ARGS[0] if ARGS else "http://127.0.0.1:8000").rstrip("/") + "/v1"
 
 
 def call(method, path, token=None, body=None):
@@ -61,8 +63,9 @@ def main():
         ok &= st == 200
         print(f"{st} {dt * 1000:6.0f} ms  GET {path}")
     case = sc["ops_case"]["request"]["case_key"]
-    st, d, _ = call("POST", f"/cases/{case}/actions", tok["ops"], {"action": "request_evidence", "reason": "Smoke test: ask the shop for sale evidence"})
-    print(st, "POST action ->", d.get("status") if isinstance(d, dict) else d)
+    if "--write" in sys.argv:  # opt-in: this records a decision in the case audit log (visible on the case page)
+        st, d, _ = call("POST", f"/cases/{case}/actions", tok["ops"], {"action": "request_evidence", "reason": "Smoke test: ask the shop for sale evidence"})
+        print(st, "POST action ->", d.get("status") if isinstance(d, dict) else d)
     st, _, _ = call("GET", "/cases", tok["customer"])
     print(st, "customer reading /cases (should be 403)")
     print("ALL OK" if ok else "SOME FAILED")
