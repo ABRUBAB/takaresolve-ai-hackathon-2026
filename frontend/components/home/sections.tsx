@@ -21,7 +21,7 @@ export function Principles() {
   const [open, setOpen] = useState(0);
   return (
     <section className="border-b border-border" aria-labelledby="principles-title">
-      <div className="mx-auto max-w-7xl px-4 py-24 md:px-6 md:py-32">
+      <div className="mx-auto max-w-[1760px] px-4 py-24 md:px-8 xl:px-12 md:py-32">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
             <p className="label-mono">Responsible by design</p>
@@ -114,16 +114,16 @@ function MiniGauge() {
 }
 
 const PORTALS = [
-  { href: "/customer", who: "Rina", role: "Customer", text: "Send with a Pause Check, check an SMS, see the week ahead.", Visual: MiniDial },
-  { href: "/agent", who: "Karim", role: "Agent", text: "Cash to hold each day and the riskiest days.", Visual: MiniBars },
-  { href: "/ops", who: "Nusrat", role: "Operations", text: "One case with evidence, a brief and a deadline clock.", Visual: MiniGraph },
+  { href: "/customer", who: "Rubab", role: "Customer", text: "Send with a Pause Check, check an SMS, see the week ahead.", Visual: MiniDial },
+  { href: "/agent", who: "Tanvir", role: "Agent", text: "Cash to hold each day and the riskiest days.", Visual: MiniBars },
+  { href: "/ops", who: "Abdur Rahman", role: "Operations", text: "One case with evidence, a brief and a deadline clock.", Visual: MiniGraph },
   { href: "/trust", who: "Judges", role: "Trust Center", text: "Every metric, fairness slice and limitation.", Visual: MiniGauge },
 ];
 
 export function Portals() {
   return (
     <section aria-labelledby="portals-title">
-      <div className="mx-auto max-w-7xl px-4 py-24 md:px-6 md:py-32">
+      <div className="mx-auto max-w-[1760px] px-4 py-24 md:px-8 xl:px-12 md:py-32">
         <p className="label-mono">One website · four doors</p>
         <h2 id="portals-title" className="mt-4 font-serif text-5xl leading-[1] md:text-6xl">
           Walk in as <span className="italic">anyone</span>.

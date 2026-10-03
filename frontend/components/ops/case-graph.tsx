@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { tk } from "@/lib/format";
 import type { GraphEdge, GraphNode } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { TapHint } from "@/components/ui/tap-hint";
 
 type Picked = { id: string; role: string; qr: string | null; sentIn: number; sentOut: number; links: number } | null;
 
@@ -121,6 +122,9 @@ export function CaseGraph({ nodes, edges }: { nodes: GraphNode[]; edges: GraphEd
       <div className="absolute right-3 top-3 rounded-full border border-border bg-background/80 px-3 py-1.5 font-mono text-[11px] backdrop-blur">
         hop ≤ {hop}
         <input type="range" min={0} max={maxHop} value={hop} onChange={(e) => setHop(Number(e.target.value))} className="ml-2 w-20 align-middle" aria-label="Show money paths up to this hop" />
+      </div>
+      <div className="flex flex-wrap items-center gap-3 border-t border-border px-4 py-3">
+        <TapHint className="text-[11px]">Tap a dot for its details · drag to move · scroll to zoom · press Replay</TapHint>
       </div>
       <ul className="flex flex-wrap gap-x-4 gap-y-1 border-t border-border px-4 py-3 text-xs text-muted-foreground">
         <li className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-faint" /> Victims</li>

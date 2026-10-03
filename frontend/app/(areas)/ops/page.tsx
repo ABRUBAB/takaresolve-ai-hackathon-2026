@@ -13,6 +13,7 @@ import { num, tk } from "@/lib/format";
 import type { Cases } from "@/lib/types";
 import { useApi } from "@/lib/use-api";
 import { cn } from "@/lib/utils";
+import { TapHint } from "@/components/ui/tap-hint";
 
 export default function OpsQueue() {
   const q = useApi<Cases>("/cases?limit=60", "ops");
@@ -20,9 +21,9 @@ export default function OpsQueue() {
   const router = useRouter();
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-12">
+    <div className="mx-auto max-w-[1760px] px-4 py-8 md:px-8 xl:px-12 md:py-12">
       <AreaIntro
-        label="Operations · Nusrat · AI-6 Case Linker"
+        label="Operations · Abdur Rahman · AI-6 Case Linker"
         title={
           <>
             Many alerts, <span className="italic">one case</span>.
@@ -80,6 +81,7 @@ export default function OpsQueue() {
                 </div>
               </div>
 
+              <TapHint>Tap any case to open its workspace</TapHint>
               <div className="overflow-hidden rounded-3xl border border-border bg-card">
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-5 py-3">
                   <p className="text-sm font-medium">Case queue</p>
@@ -160,7 +162,7 @@ export default function OpsQueue() {
               <p className="flex items-center gap-1 text-sm text-muted-foreground">
                 Start with the golden thread:
                 <Link href="/ops/cases/CASE-0001" className="inline-flex items-center gap-1 font-medium text-foreground underline-offset-4 hover:underline">
-                  CASE-0001, the ring behind Rina&apos;s prize scam <ArrowUpRight className="size-3.5" />
+                  CASE-0001, the ring behind Rubab&apos;s prize scam <ArrowUpRight className="size-3.5" />
                 </Link>
               </p>
             </div>

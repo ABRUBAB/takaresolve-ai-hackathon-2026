@@ -34,13 +34,13 @@ export default function CustomerHome() {
     <CustomerShell
       intro={
         <AreaIntro
-          label="Customer · Rina · synthetic persona"
+          label="Customer · Rubab · synthetic persona"
           title={
             <>
-              Rina&apos;s wallet, with a <span className="italic">pause</span> built in.
+              Rubab&apos;s wallet, with a <span className="italic">pause</span> built in.
             </>
           }
-          text="Rina is a garment worker who has used her wallet for a few months. Every transfer is checked before it leaves; she always makes the final choice."
+          text="Rubab is a garment worker who has used a mobile wallet for a few months. Every transfer is checked before it leaves; Rubab always makes the final choice."
         />
       }
       phone={
@@ -107,7 +107,7 @@ export default function CustomerHome() {
       aside={
         <div className="space-y-8">
           <div className="rounded-3xl border border-border bg-card p-5">
-            <p className="label-mono mb-4">What happens when Rina presses send</p>
+            <p className="label-mono mb-4">What happens when Rubab presses send</p>
             <ol className="space-y-3">
               {PIPELINE.map(([k, v], i) => (
                 <li key={k} className="flex gap-3">
@@ -120,7 +120,7 @@ export default function CustomerHome() {
             </ol>
           </div>
           <div>
-          <p className="label-mono mb-3">Try a moment from Rina&apos;s evening</p>
+          <p className="label-mono mb-3">Try a moment from Rubab&apos;s evening</p>
           <div className="grid gap-3 sm:grid-cols-3">
             {TRY.map((x) => (
               <Link key={x.href} href={x.href} className="group rounded-3xl border border-border bg-card p-4 transition-colors hover:border-foreground/40">

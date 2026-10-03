@@ -4,6 +4,7 @@ import { AlertTriangle, CheckCircle2, ChevronDown, CircleDashed } from "lucide-r
 import { motion } from "motion/react";
 import { useState, type ReactNode } from "react";
 import { AreaIntro } from "@/components/customer/phone";
+import { NotebookFigures } from "@/components/trust/figures";
 import { Guard } from "@/components/shell/states";
 import { num, tk } from "@/lib/format";
 import type { MetricsSummary } from "@/lib/types";
@@ -123,7 +124,7 @@ export default function TrustCenter() {
   const q = usePublic<MetricsSummary>("/metrics/summary");
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-12">
+    <div className="mx-auto max-w-[1760px] px-4 py-8 md:px-8 xl:px-12 md:py-12">
       <AreaIntro
         label="Trust Center · for judges, reviewers and auditors"
         title={
@@ -291,6 +292,7 @@ export default function TrustCenter() {
                     </div>
                   )}
                 </div>
+                <NotebookFigures prefix={["ai1_", "summary_"]} />
               </Section>
 
               <Section id="fair" title="Fairness slices" lead="Error rates by group on the test window. Large gaps would be flagged here; they are shown even when they are not flattering.">
@@ -332,6 +334,7 @@ export default function TrustCenter() {
                     rows={Object.entries(a2.external_uci_sms_spam as Record<string, J>).map(([k, v]) => [k.replace(/_/g, " "), num(v.n), p1(v.spam_share), f3(v.verdict_pr_auc)])}
                   />
                 )}
+                <NotebookFigures prefix={["ai2_"]} />
               </Section>
 
               <Section id="ai34" title="Cash-Flow Guardian and Liquidity Copilot" lead="Rolling-origin backtests against a seasonal-naive baseline. Coverage of the 80% band should be close to 0.80.">
@@ -372,6 +375,7 @@ export default function TrustCenter() {
                     </div>
                   ))}
                 </div>
+                <NotebookFigures prefix={["ai3_", "ai4_"]} />
               </Section>
 
               <Section id="ai5" ai="AI-5" src={S.ai5} title="QR Shield" lead="Test weeks, merchants never seen in training. Scheme D (rotating ring) was held out completely to test unseen patterns.">
@@ -397,6 +401,7 @@ export default function TrustCenter() {
                     )}
                   </>
                 )}
+                <NotebookFigures prefix={["ai5_"]} />
               </Section>
 
               <Section id="ai6" ai="AI-6" src={S.ai6} title="Case Linker" lead={a6?.method}>

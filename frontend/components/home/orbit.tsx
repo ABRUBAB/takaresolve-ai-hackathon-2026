@@ -10,6 +10,7 @@ import type { MetricsSummary } from "@/lib/types";
 import { usePublic } from "@/lib/use-api";
 import { useMotionPref } from "@/lib/motion-pref";
 import { cn } from "@/lib/utils";
+import { TapHint } from "@/components/ui/tap-hint";
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- metric files are free-form JSON written by the notebooks */
 type J = any;
@@ -77,12 +78,13 @@ export function AiOrbit() {
 
   return (
     <section className="border-b border-border" aria-labelledby="orbit-title">
-      <div className="mx-auto max-w-7xl px-4 py-24 md:px-6 md:py-32">
+      <div className="mx-auto max-w-[1760px] px-4 py-24 md:px-8 xl:px-12 md:py-32">
         <p className="label-mono">Seven AIs · one trust layer</p>
         <h2 id="orbit-title" className="mt-4 max-w-2xl font-serif text-5xl leading-[1] md:text-6xl">
           Tap an AI to <span className="italic">look inside</span>.
         </h2>
-        <div className="mt-14 grid items-center gap-12 lg:grid-cols-2">
+        <TapHint className="mt-6">Tap an AI on the ring — the card on the right changes</TapHint>
+        <div className="mt-10 grid items-center gap-12 lg:grid-cols-2">
           <div className="relative mx-auto aspect-square w-full max-w-[460px]" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
             <div className="absolute inset-0 rounded-full border border-dashed border-border" />
             <div className="absolute inset-[22%] rounded-full border border-dashed border-border/70" />

@@ -14,9 +14,9 @@ const COLUMNS = [
     title: "Explore",
     links: [
       { href: "/", label: "Home" },
-      { href: "/customer", label: "Customer · Rina" },
-      { href: "/agent", label: "Agent · Karim" },
-      { href: "/ops", label: "Operations · Nusrat" },
+      { href: "/customer", label: "Customer · Rubab" },
+      { href: "/agent", label: "Agent · Tanvir" },
+      { href: "/ops", label: "Operations · Abdur Rahman" },
       { href: "/trust", label: "Trust Center" },
       { href: "/about", label: "About us" },
     ],
@@ -46,7 +46,7 @@ export function Footer() {
   const { animate } = useMotionPref();
   return (
     <footer className="relative overflow-hidden border-t border-border">
-      <div className="mx-auto grid max-w-7xl gap-12 px-4 pb-10 pt-16 md:grid-cols-[1.4fr_repeat(3,1fr)] md:px-6">
+      <div className="mx-auto grid max-w-[1760px] gap-12 px-4 pb-10 pt-16 md:grid-cols-[1.4fr_repeat(3,1fr)] md:px-8 xl:px-12">
         <div className="space-y-5">
           <Link href="/" className="inline-flex items-center gap-2 text-lg font-semibold tracking-[-0.03em]" aria-label="UVERA home">
             <Mark className="size-7" /> UVERA
@@ -95,14 +95,14 @@ export function Footer() {
         )}
         <p
           aria-hidden="true"
-          className="relative select-none whitespace-nowrap px-4 font-serif text-[clamp(6rem,24vw,22rem)] leading-[0.78] tracking-[-0.04em] text-foreground/[0.07] md:px-6"
+          className="relative select-none whitespace-nowrap px-4 font-serif text-[clamp(6rem,24vw,22rem)] leading-[0.78] tracking-[-0.04em] text-foreground/[0.07] md:px-8 xl:px-12"
         >
           UVERA
         </p>
       </div>
 
       <div className="relative border-t border-border bg-background">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-6 gap-y-3 px-4 py-5 text-xs text-muted-foreground md:px-6">
+        <div className="mx-auto flex max-w-[1760px] flex-wrap items-center gap-x-6 gap-y-3 px-4 py-5 text-xs text-muted-foreground md:px-8 xl:px-12">
           <span>© 2026 UVERA team · MIT license</span>
           <span>Not affiliated with, or endorsed by, any payment provider. Not financial advice.</span>
           <a href={REPO} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:text-foreground">

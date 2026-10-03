@@ -8,25 +8,25 @@ import { cn } from "@/lib/utils";
 
 const ACTS = [
   {
-    who: "Rina · customer",
+    who: "Rubab · customer",
     time: "19:30",
     title: "A prize message asks for a Tk 3,000 fee.",
-    body: "She cashed in 25 minutes ago and is about to send it. UVERA pauses before the money moves, tells her why in Bangla, and lets her decide. Nothing is blocked.",
+    body: "Rubab cashed in 25 minutes ago and is about to send it. UVERA pauses before the money moves, explains why in Bangla, and leaves the decision to Rubab. Nothing is blocked.",
     ais: ["AI-1 Pause Check", "AI-2 Scam Text", "AI-7 Brief"],
     href: "/customer/send?scenario=golden_prize_scam",
-    cta: "Try Rina's transfer",
+    cta: "Try Rubab's transfer",
   },
   {
-    who: "Karim · agent",
+    who: "Tanvir · agent",
     time: "Monday",
     title: "How much cash will the week ask for?",
-    body: "Karim sees a 7-day forecast with an honest range, how much cash to hold for a 90%-safe day, and the two riskiest days marked — not a false yes/no alarm.",
+    body: "Tanvir sees a 7-day forecast with an honest range, how much cash to hold for a 90%-safe day, and the two riskiest days marked — not a false yes/no alarm.",
     ais: ["AI-4 Liquidity", "AI-5 QR Shield (zone)"],
     href: "/agent",
-    cta: "Open Karim's week",
+    cta: "Open Tanvir's week",
   },
   {
-    who: "Nusrat · operations",
+    who: "Abdur Rahman · operations",
     time: "Next morning",
     title: "One hundred alerts become one case.",
     body: "Transfers, mule wallets and QR shops that share money paths are joined into one case with evidence, a dispute deadline clock and a grounded brief. A person decides every hold.",
@@ -220,7 +220,7 @@ export function Story() {
 
   return (
     <section className="border-b border-border" aria-labelledby="story-title">
-      <div className="mx-auto max-w-7xl px-4 pt-24 md:px-6 md:pt-32">
+      <div className="mx-auto max-w-[1760px] px-4 pt-24 md:px-8 xl:px-12 md:pt-32">
         <p className="label-mono">One evening, three people</p>
         <h2 id="story-title" className="mt-4 max-w-3xl font-serif text-5xl leading-[1] md:text-6xl">
           The same scam, seen from <span className="italic">every side</span> of the money.
@@ -230,7 +230,7 @@ export function Story() {
       {/* Desktop: pinned visual, text changes as you scroll */}
       <div ref={ref} className="relative hidden h-[300vh] md:block">
         <div className="sticky top-0 flex h-screen items-center">
-          <div className="mx-auto grid w-full max-w-7xl grid-cols-2 items-center gap-16 px-6">
+          <div className="mx-auto grid w-full max-w-[1760px] grid-cols-2 items-center gap-16 px-6">
             <div className="relative">
               <div className="absolute -left-6 top-0 h-full w-px bg-border">
                 <motion.div className="w-px bg-foreground" style={{ height: "100%", scaleY: scrollYProgress, transformOrigin: "top" }} />

@@ -53,7 +53,7 @@ export function Phone({ children }: { children: ReactNode }) {
 
 export function CustomerShell({ phone, inspector, intro, aside }: { phone: ReactNode; inspector: ReactNode; intro: ReactNode; aside?: ReactNode }) {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-12">
+    <div className="mx-auto max-w-[1760px] px-4 py-8 md:px-8 xl:px-12 md:py-12">
       <div className="grid items-start gap-8 lg:grid-cols-[400px_minmax(0,1fr)] lg:gap-14">
         <div className="lg:order-2 lg:pt-6">
           {intro}

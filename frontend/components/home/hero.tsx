@@ -152,7 +152,7 @@ export function Hero() {
         </p>
       </motion.div>
 
-      <div className="pointer-events-none mx-auto flex h-full max-w-7xl flex-col justify-center px-4 pb-16 pt-16 md:px-6">
+      <div className="pointer-events-none mx-auto flex h-full max-w-[1760px] flex-col justify-center px-4 pb-16 pt-16 md:px-8 xl:px-12">
         <motion.div
           className="mb-5 flex flex-wrap items-center gap-x-4 gap-y-2"
           initial={{ opacity: 0, y: 10 }}

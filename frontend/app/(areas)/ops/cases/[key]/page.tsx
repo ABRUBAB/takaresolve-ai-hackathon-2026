@@ -57,7 +57,7 @@ export default function CaseDetailPage() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10">
+    <div className="mx-auto max-w-[1760px] px-4 py-8 md:px-8 xl:px-12 md:py-10">
       <Link href="/ops" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
         <ChevronLeft className="size-4" /> Case queue
       </Link>

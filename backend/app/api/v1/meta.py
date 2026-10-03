@@ -25,7 +25,7 @@ class LoginIn(BaseModel):
 def demo_login(body: LoginIn) -> dict:
     s = engines()
     p = s.demo["personas"]
-    default = {"customer": p["rina"]["id"], "agent": p["karim"]["id"], "ops": p["nusrat"]["id"]}[body.role]
+    default = {"customer": p["customer"]["id"], "agent": p["agent"]["id"], "ops": p["ops"]["id"]}[body.role]
     subject = body.subject_id or default
     if body.role == "customer" and subject not in set(s.world.customers["customer_id"]):
         raise HTTPException(404, "Unknown customer")

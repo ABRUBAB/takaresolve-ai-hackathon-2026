@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="330" viewBox="0 0 1200 330" role="img" aria-labelledby="t d">
   <title id="t">One scam, one platform</title>
-  <desc id="d">Five steps: Rina drafts a transfer, UVERA pauses it with reasons, the mule tries a QR cash-out, QR Shield flags the shop, operations gets one linked case and a person decides.</desc>
+  <desc id="d">Five steps: Rubab drafts a transfer, UVERA pauses it with reasons, the mule tries a QR cash-out, QR Shield flags the shop, operations gets one linked case and a person decides.</desc>
   <style>
     .bg{fill:#0A0A0A}.card{fill:#111111;stroke:#262626}.n{font:700 13px Consolas,'SF Mono',Menlo,monospace;fill:#737373;letter-spacing:2px}
     .h{font:600 19px 'Segoe UI',Helvetica,Arial,sans-serif;fill:#FAFAFA}.p{font:400 14px 'Segoe UI',Helvetica,Arial,sans-serif;fill:#A3A3A3}
@@ -17,7 +17,7 @@
   <path class="line" d="M124 70H1076"/>
   <g class="s1"><circle cx="124" cy="70" r="8" fill="#FAFAFA"/>
     <rect class="card" x="24" y="104" width="208" height="196" rx="12"/>
-    <text class="n" x="44" y="134">01 · CUSTOMER</text><text class="h" x="44" y="166">Rina sends Tk 3,000</text>
+    <text class="n" x="44" y="134">01 · CUSTOMER</text><text class="h" x="44" y="166">Rubab sends Tk 3,000</text>
     <text class="p" x="44" y="194">A caller says she won a</text><text class="p" x="44" y="214">prize and must pay a fee</text><text class="p" x="44" y="234">to a 2-day-old wallet.</text>
     <text class="ai" x="44" y="276" fill="#8A8A8A">BEFORE SHE TAPS CONFIRM</text></g>
   <g class="s2"><circle cx="362" cy="70" r="8" fill="#D7FF3A"/><circle class="ring" cx="362" cy="70" r="16" fill="none" stroke="#D7FF3A" stroke-width="1.5"/>
@@ -33,11 +33,11 @@
   <g class="s4"><circle cx="838" cy="70" r="8" fill="#FAFAFA"/>
     <rect class="card" x="734" y="104" width="208" height="196" rx="12"/>
     <text class="n" x="754" y="134">04 · AGENT &amp; QR</text><text class="h" x="754" y="166">QR Shield flags it</text>
-    <text class="p" x="754" y="194">Round amounts, one-time</text><text class="p" x="754" y="214">payers, cash-in then drain.</text><text class="p" x="754" y="234">Karim sees why cash fell.</text>
+    <text class="p" x="754" y="194">Round amounts, one-time</text><text class="p" x="754" y="214">payers, cash-in then drain.</text><text class="p" x="754" y="234">Tanvir sees why cash fell.</text>
     <text class="ai" x="754" y="276" fill="#60A5FA">AI-5 · AI-4</text></g>
   <g class="s5"><circle cx="1076" cy="70" r="8" fill="#D7FF3A"/>
     <rect class="card" x="972" y="104" width="208" height="196" rx="12"/>
     <text class="n" x="992" y="134">05 · OPERATIONS</text><text class="h" x="992" y="166">One case, not five</text>
-    <text class="p" x="992" y="194">Evidence graph, brief and</text><text class="p" x="992" y="214">dispute clock. Nusrat</text><text class="p" x="992" y="234">decides. AI only advises.</text>
+    <text class="p" x="992" y="194">Evidence graph, brief and</text><text class="p" x="992" y="214">dispute clock. Abdur Rahman</text><text class="p" x="992" y="234">decides. AI only advises.</text>
     <text class="ai" x="992" y="276" fill="#60A5FA">AI-6 · AI-7 · RULES</text></g>
 </svg>

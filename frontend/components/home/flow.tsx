@@ -6,20 +6,21 @@ import { forwardRef, useRef, useState, type RefObject } from "react";
 import { AnimatedBeam } from "@/components/ui/animated-beam";
 import { useMotionPref } from "@/lib/motion-pref";
 import { cn } from "@/lib/utils";
+import { TapHint } from "@/components/ui/tap-hint";
 
 type NodeInfo = { id: string; label: string; sub: string; icon: typeof Smartphone; text: string; tone?: "volt" | "plain" | "rule" | "gen" };
 
 const NODES: Record<string, NodeInfo> = {
-  transfer: { id: "transfer", label: "Transfer", sub: "amount, receiver, moment", icon: Smartphone, text: "Rina presses send. Only the transfer facts and recent wallet behaviour are used." },
-  sms: { id: "sms", label: "Message", sub: "the SMS she got", icon: MessageSquareText, text: "If she pastes the message that asked for money, it is checked too." },
+  transfer: { id: "transfer", label: "Transfer", sub: "amount, receiver, moment", icon: Smartphone, text: "Rubab presses send. Only the transfer facts and recent wallet behaviour are used." },
+  sms: { id: "sms", label: "Message", sub: "the SMS received", icon: MessageSquareText, text: "If the customer pastes the message that asked for money, it is checked too." },
   ai1: { id: "ai1", label: "AI-1 Score", sub: "LightGBM + calibration", icon: BrainCircuit, text: "19 behaviour signals → a calibrated scam probability with exact TreeSHAP reasons.", tone: "volt" },
   ai2: { id: "ai2", label: "AI-2 Text", sub: "scam family + phrases", icon: ScanSearch, text: "Names the scam family and highlights the words that moved the verdict.", tone: "volt" },
   doubt: { id: "doubt", label: "Doubt check", sub: "conformal + novelty", icon: Sparkles, text: "If both answers are plausible, or the case is unlike anything seen before, the answer becomes “not sure”." },
   policy: { id: "policy", label: "Rules", sub: "config, not model", icon: FileCog, text: "Business rules in a YAML file pick the actions. The customer is never blocked.", tone: "rule" },
   brief: { id: "brief", label: "AI-7 Brief", sub: "grounded, validated", icon: Sparkles, text: "Gemini may only reword the facts above; a validator rejects anything new.", tone: "gen" },
-  rina: { id: "rina", label: "Rina decides", sub: "wait · verify · send", icon: UserCheck, text: "She sees why, in Bangla, and chooses. Nothing is blocked." },
+  rina: { id: "rina", label: "Rubab decides", sub: "wait · verify · send", icon: UserCheck, text: "Rubab sees why, in Bangla, and chooses. Nothing is blocked." },
   ai6: { id: "ai6", label: "AI-6 Linker", sub: "money paths → case", icon: Network, text: "Paused transfers that share mule wallets or shops are joined into one case." },
-  nusrat: { id: "nusrat", label: "Nusrat reviews", sub: "a person decides holds", icon: Users, text: "Operations sees one case with evidence and a deadline clock, and signs every decision." },
+  nusrat: { id: "nusrat", label: "Abdur Rahman reviews", sub: "a person decides holds", icon: Users, text: "Operations sees one case with evidence and a deadline clock, and signs every decision." },
 };
 
 const Node = forwardRef<HTMLButtonElement, { n: NodeInfo; active: boolean; onPick: () => void }>(function Node({ n, active, onPick }, ref) {
@@ -73,7 +74,7 @@ export function DecisionFlow() {
 
   return (
     <section className="border-b border-border" aria-labelledby="flow-title">
-      <div className="mx-auto max-w-7xl px-4 py-24 md:px-6 md:py-32">
+      <div className="mx-auto max-w-[1760px] px-4 py-24 md:px-8 xl:px-12 md:py-32">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
             <p className="label-mono">How one decision is made</p>
@@ -81,7 +82,7 @@ export function DecisionFlow() {
               From a tap on <span className="italic">send</span> to a person&apos;s choice.
             </h2>
           </div>
-          <p className="max-w-xs text-sm text-muted-foreground">Tap any step.</p>
+          <TapHint>Tap any step to see what it does</TapHint>
         </div>
 
         <div ref={box} className="relative mt-14 overflow-hidden rounded-3xl border border-border bg-card/40 px-3 py-10 md:px-10">

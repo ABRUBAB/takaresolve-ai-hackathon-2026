@@ -16,7 +16,7 @@ import { usePalette } from "@/lib/use-palette";
 import { cn } from "@/lib/utils";
 
 const WHO = [
-  { id: "C000021", label: "Rina" },
+  { id: "C000021", label: "Rubab" },
   { id: "C000125", label: "A customer about to run short" },
 ];
 

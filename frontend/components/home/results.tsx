@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
+import { NotebookFigures } from "@/components/trust/figures";
 import { DotWaffle, RiskDial } from "@/components/trust/visuals";
 import { NumberTicker } from "@/components/ui/number-ticker";
 import type { MetricsSummary } from "@/lib/types";
@@ -64,7 +65,7 @@ export function Results() {
 
   return (
     <section className="border-b border-border" aria-labelledby="results-title">
-      <div className="mx-auto max-w-7xl px-4 py-24 md:px-6 md:py-32">
+      <div className="mx-auto max-w-[1760px] px-4 py-24 md:px-8 xl:px-12 md:py-32">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
             <p className="label-mono">Measured, not claimed</p>
@@ -164,8 +165,9 @@ export function Results() {
             </Tile>
           </div>
         )}
+        <NotebookFigures prefix={["summary_", "ai1_pr_curve", "ai1_shap"]} className="mt-12" />
         <Link href="/trust" className="mt-10 inline-flex items-center gap-1 text-sm font-medium underline-offset-4 hover:underline">
-          Fairness slices, calibration, model choice and limitations in the Trust Center <ArrowUpRight className="size-4" />
+          All charts, fairness slices, calibration, model choice and limitations in the Trust Center <ArrowUpRight className="size-4" />
         </Link>
       </div>
     </section>

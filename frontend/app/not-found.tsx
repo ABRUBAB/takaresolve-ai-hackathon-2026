@@ -7,7 +7,7 @@ export default function NotFound() {
   return (
     <>
       <TopBar />
-      <main id="main" className="mx-auto flex min-h-[70svh] max-w-7xl flex-col items-start justify-center gap-6 px-4 py-24 md:px-6">
+      <main id="main" className="mx-auto flex min-h-[70svh] max-w-[1760px] flex-col items-start justify-center gap-6 px-4 py-24 md:px-8 xl:px-12">
         <Mark className="size-14" />
         <p className="label-mono">404 · page not found</p>
         <h1 className="font-serif text-6xl leading-none md:text-7xl">

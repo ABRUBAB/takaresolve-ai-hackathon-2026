@@ -15,6 +15,7 @@ import { tk } from "@/lib/format";
 import type { Demo, PauseRequest, PauseResult } from "@/lib/types";
 import { useAction, usePublic } from "@/lib/use-api";
 import { cn } from "@/lib/utils";
+import { TapHint } from "@/components/ui/tap-hint";
 
 const SHORT: Record<string, string> = {
   golden_prize_scam: "Prize scam",
@@ -44,7 +45,7 @@ export function LivePause() {
 
   return (
     <section id="live" className="scroll-mt-16 border-b border-border">
-      <div className="mx-auto max-w-7xl px-4 py-24 md:px-6 md:py-32">
+      <div className="mx-auto max-w-[1760px] px-4 py-24 md:px-8 xl:px-12 md:py-32">
         <div className="max-w-2xl">
           <p className="label-mono">Live · real model, real API</p>
           <h2 className="mt-4 font-serif text-5xl leading-[1] md:text-6xl">
@@ -105,7 +106,7 @@ export function LivePause() {
                     {req?.note && (
                       <div className="mt-6 rounded-2xl rounded-tl-sm bg-muted p-3">
                         <p className="mb-1 flex items-center gap-1 text-[11px] text-muted-foreground">
-                          <MessageSquareWarning className="size-3" /> Message Rina received
+                          <MessageSquareWarning className="size-3" /> Message Rubab received
                         </p>
                         <p className="bn line-clamp-4 text-sm">{req.note}</p>
                       </div>
@@ -119,10 +120,11 @@ export function LivePause() {
                     )}
                     <div className="mt-auto pt-8">
                       {check.error && <ErrorBox error={check.error} retry={run} />}
+                      {!check.running && <TapHint className="mb-3 w-full justify-center">Press Send to run the real check</TapHint>}
                       <button
                         onClick={run}
                         disabled={!req || check.running}
-                        className="flex h-13 w-full items-center justify-center gap-2 rounded-full bg-foreground font-medium text-background disabled:opacity-60"
+                        className="flex h-13 w-full items-center justify-center gap-2 rounded-full bg-foreground font-medium text-background transition-transform hover:scale-[1.02] disabled:opacity-60"
                       >
                         {check.running && <Loader2 className="size-4 animate-spin" />}
                         {check.warming ? "Waking the AI engines…" : check.running ? "Checking before you send…" : "Send"}
@@ -157,18 +159,29 @@ export function LivePause() {
                     {!low && <ReasonTiles reasons={r.reasons} lang={lang} className="mt-5 w-full text-left" />}
                     <div className="mt-auto w-full space-y-2 pt-6">
                       {low ? (
-                        <span className="flex h-12 items-center justify-center rounded-full bg-foreground text-sm font-medium text-background">Send now</span>
+                        <Link href={`/customer/send?scenario=${current?.id ?? ""}`} className="flex h-12 items-center justify-center rounded-full bg-foreground text-sm font-medium text-background hover:opacity-90">
+                          Send now
+                        </Link>
                       ) : (
                         r.recommendation
                           .filter((a) => a !== "continue_anyway")
                           .slice(0, 2)
                           .map((a, i) => (
-                            <span key={a} className={cn("flex h-11 items-center justify-center rounded-full text-sm", i === 0 ? "bg-foreground font-medium text-background" : "border border-border")}>
+                            <Link
+                              key={a}
+                              href={`/customer/send?scenario=${current?.id ?? ""}`}
+                              className={cn("flex h-11 items-center justify-center rounded-full text-sm transition-opacity hover:opacity-85", i === 0 ? "bg-foreground font-medium text-background" : "border border-border")}
+                            >
                               {actionText(a, lang)}
-                            </span>
+                            </Link>
                           ))
                       )}
-                      {!low && <p className="text-xs text-muted-foreground underline underline-offset-4">{lang === "bn" ? "আমি নিশ্চিত, পাঠাব" : "I'm sure, send anyway"}</p>}
+                      {!low && (
+                        <Link href={`/customer/send?scenario=${current?.id ?? ""}`} className="block text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground">
+                          {lang === "bn" ? "আমি নিশ্চিত, পাঠাব" : "I'm sure, send anyway"}
+                        </Link>
+                      )}
+                      <p className="pt-1 text-[11px] text-faint">These open the full flow in {"Rubab"}&apos;s app</p>
                       <button onClick={() => check.reset()} className="pt-1 text-xs text-faint hover:text-foreground">
                         Try again
                       </button>
@@ -212,7 +225,7 @@ export function LivePause() {
                 </div>
                 <div className="space-y-4 rounded-3xl border border-border bg-card p-6">
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium">{lang === "bn" ? "কেন এটি দেখছি?" : "Why Rina sees this"}</p>
+                    <p className="text-sm font-medium">{lang === "bn" ? "কেন এটি দেখছি?" : "Why Rubab sees this"}</p>
                     <OutputChip type="model">Model reasons</OutputChip>
                   </div>
                   <ReasonList reasons={r.reasons} lang={lang} />
@@ -290,7 +303,7 @@ export function LivePause() {
                   )}
                 </AnimatePresence>
                 <Link href={`/customer/send?scenario=${current?.id ?? ""}`} className="inline-flex items-center gap-1 text-sm font-medium underline-offset-4 hover:underline">
-                  Open it in Rina&apos;s app <ArrowUpRight className="size-3.5" />
+                  Open it in Rubab&apos;s app <ArrowUpRight className="size-3.5" />
                 </Link>
               </div>
             )}

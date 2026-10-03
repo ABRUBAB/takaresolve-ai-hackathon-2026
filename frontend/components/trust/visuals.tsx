@@ -20,6 +20,7 @@ import { useState } from "react";
 import { pct } from "@/lib/format";
 import type { Reason } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { TapHint } from "@/components/ui/tap-hint";
 
 /** A 270° gauge. Green → amber → red track, a needle-free fill and the number in the middle. */
 export function RiskDial({
@@ -110,7 +111,7 @@ export function ReasonTiles({ reasons, lang = "en", className }: { reasons: Reas
               aria-expanded={on}
               className={cn(
                 "flex min-h-24 flex-col items-center justify-center gap-1 rounded-2xl border px-1 py-3 text-center transition-colors",
-                on ? "border-foreground/50 bg-muted" : "border-border bg-background/40 hover:border-foreground/30",
+                on ? "border-foreground/50 bg-muted" : "border-border bg-background/40 hover:-translate-y-0.5 hover:border-foreground/40 hover:bg-muted/50",
               )}
             >
               <Icon className="size-5 text-risk" aria-hidden="true" />
@@ -120,10 +121,12 @@ export function ReasonTiles({ reasons, lang = "en", className }: { reasons: Reas
           );
         })}
       </div>
-      {picked && (
+      {picked ? (
         <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className={cn("rounded-xl bg-muted/60 px-3 py-2 text-sm", lang === "bn" && "bn")}>
           {lang === "bn" ? picked.text_bn : picked.text_en}
         </motion.p>
+      ) : (
+        <TapHint className="text-[11px]">Tap a reason to read it</TapHint>
       )}
     </div>
   );

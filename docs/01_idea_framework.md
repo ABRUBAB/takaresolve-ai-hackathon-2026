@@ -5,7 +5,7 @@
 
 | Step | Answer | Evidence |
 |---|---|---|
-| 1. User | Rina (first-time wallet user), Karim (agent), Nusrat (ops analyst) | README: *UVERA in 30 seconds* |
+| 1. User | Rubab (first-time wallet user), Tanvir (agent), Abdur Rahman (ops analyst) | README: *UVERA in 30 seconds* |
 | 2. Problem | Money is lost before detection; QR used as a disguised cash-out; slow, fragmented cases | README: *The problem (2026)* |
 | 3. Why now | 2026 QR misuse reports; dispute rules from 1 Dec 2026; open multilingual and forecasting models | Appendix 1 |
 | 4. Solution | One website: homepage + customer, agent and ops areas on one backend | README: *One website, three areas* |

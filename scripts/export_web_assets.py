@@ -1,4 +1,4 @@
-"""Copy the homepage world sample into the website as a small static file (no API needed for the hero visual).
+"""Copy the homepage world sample and the notebook figures into the website as static files.
 
     python scripts/export_web_assets.py
 
@@ -34,6 +34,22 @@ def main() -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text(json.dumps(out, separators=(",", ":"), ensure_ascii=False), encoding="utf-8")
     print(f"{src.relative_to(ROOT)} -> {dest.relative_to(ROOT)} ({dest.stat().st_size // 1024} KB, {len(out['nodes'])} nodes, {len(out['edges'])} edges)")
+
+    # notebook figures for the Trust Center: official Kaggle figures first, local build only where a notebook has not run
+    figs = ROOT / "frontend/public/figures"
+    figs.mkdir(parents=True, exist_ok=True)
+    manifest = []
+    names = {f.name for d in (ROOT / "reports/figures", ROOT / "_outputs/dev/reports/figures") if d.exists() for f in d.glob("*.png")}
+    for name in sorted(names):
+        official = ROOT / "reports/figures" / name
+        f = official if official.exists() else ROOT / "_outputs/dev/reports/figures" / name
+        (figs / name).write_bytes(f.read_bytes())
+        manifest.append({"file": name, "source": "official" if f == official else "dev"})
+    for stale in figs.glob("*.png"):
+        if stale.name not in names:
+            stale.unlink()
+    (figs / "manifest.json").write_text(json.dumps({"figures": manifest}, indent=1), encoding="utf-8")
+    print(f"{len(manifest)} figures -> frontend/public/figures ({sum(m['source'] == 'official' for m in manifest)} official)")
 
 
 if __name__ == "__main__":

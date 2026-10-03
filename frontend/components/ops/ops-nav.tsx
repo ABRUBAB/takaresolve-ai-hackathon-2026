@@ -13,7 +13,7 @@ export function OpsNav() {
   const path = usePathname();
   return (
     <div className="border-b border-border">
-      <nav className="no-scrollbar mx-auto flex max-w-7xl gap-6 overflow-x-auto px-4 md:px-6" aria-label="Operations">
+      <nav className="no-scrollbar mx-auto flex max-w-[1760px] gap-6 overflow-x-auto px-4 md:px-8 xl:px-12" aria-label="Operations">
         {TABS.map((t) => {
           const on = t.href === "/ops" ? path === "/ops" || path?.startsWith("/ops/cases") : path?.startsWith(t.href);
           return (
@@ -27,7 +27,7 @@ export function OpsNav() {
             </Link>
           );
         })}
-        <span className="ml-auto hidden shrink-0 items-center text-xs text-faint sm:flex">Signed in as Nusrat · operations analyst (demo)</span>
+        <span className="ml-auto hidden shrink-0 items-center text-xs text-faint sm:flex">Signed in as Abdur Rahman · operations analyst (demo)</span>
       </nav>
     </div>
   );

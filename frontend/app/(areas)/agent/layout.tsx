@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { AreaServices } from "@/components/shell/area-services";
 
 export const metadata: Metadata = {
-  title: "Agent · Karim",
+  title: "Agent · Tanvir",
   description: "Cash to hold for a 90%-safe day, the riskiest days and QR cash-out pressure in the area. Synthetic demo.",
 };
 
 export default function Layout({ children }: { children: ReactNode }) {
-  return children;
+  return (
+    <>
+      <AreaServices area="agent" />
+      {children}
+    </>
+  );
 }

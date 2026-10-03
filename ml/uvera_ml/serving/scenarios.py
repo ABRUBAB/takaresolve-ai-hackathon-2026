@@ -1,6 +1,6 @@
 """Deterministic demo personas and scenarios, picked from the synthetic world so one story runs through all areas.
 
-Rina (customer), Karim (agent) and Nusrat (operations) are display names for synthetic IDs. Each scenario is a
+Rubab (customer), Tanvir (agent) and Abdur Rahman (operations) are display names for synthetic IDs. Each scenario is a
 pre-filled request; the answer always comes from the live models (nothing is hard-coded).
 """
 from __future__ import annotations
@@ -31,7 +31,7 @@ def build(world, pause, forecasts, qr, cases) -> dict:
     mules = [m for m in truth.index[truth["is_mule"]] if m in case_wallets] or list(truth.index[truth["is_mule"]])
     mules = sorted(mules, key=lambda m: -pause.sdays7[int(m[1:])])[:8]
 
-    # Rina: newish, unseen-test-group customer with a usable balance
+    # Rubab: newish, unseen-test-group customer with a usable balance
     cand = [c for c in test_ids if D - reg[int(c[1:])] < 200 and 4000 <= bal[int(c[1:])] <= 40000
             and not truth.loc[c, "is_mule"]][:40]
     rina, mule, best = None, None, -1.0
@@ -89,28 +89,28 @@ def build(world, pause, forecasts, qr, cases) -> dict:
         shop = wl[0]["merchant_id"] if wl else None
 
     personas = {
-        "rina": {"name": "Rina", "role": "customer", "id": rina, "zone": zone, "language": cust.loc[rina, "language"],
+        "customer": {"name": "Rubab", "role": "customer", "id": rina, "zone": zone, "language": cust.loc[rina, "language"],
                  "tenure_days": int(D - reg[rid]), "story": "Garment worker, wallet user for a few months."},
-        "karim": {"name": "Karim", "role": "agent", "id": agent, "zone": zone, "story": "Agent near Rina's home."},
-        "nusrat": {"name": "Nusrat", "role": "ops", "id": "OPS-01", "story": "Operations analyst."},
+        "agent": {"name": "Tanvir", "role": "agent", "id": agent, "zone": zone, "story": "Agent near Rubab's home."},
+        "ops": {"name": "Abdur Rahman", "role": "ops", "id": "OPS-01", "story": "Operations analyst."},
     }
     scenarios = [
         {"id": "golden_prize_scam", "title": "Prize scam (the golden thread)", "area": "customer",
-         "story": "Rina is told she won a prize and must pay a Tk 3,000 fee. She cashed in at an agent 25 minutes ago.",
+         "story": "Rubab is told about a prize that needs a Tk 3,000 fee. Rubab cashed in at an agent 25 minutes ago.",
          "request": {"sender_id": rina, "recipient_wallet": mule, "amount": 3000, "hour": 19.5, "channel": "app",
                      "note": PRIZE_SMS_BN, "simulated_context": {"minutes_since_cash_in": 25}},
          "links": {"case": golden_case, "agent": agent, "merchant": shop}},
         {"id": "normal_user", "title": "Normal transfer to family", "area": "customer",
-         "story": "Rina sends Tk 500 to someone she pays often.",
+         "story": "Rubab sends Tk 500 to someone paid often.",
          "request": {"sender_id": rina, "recipient_wallet": friend, "amount": 500, "hour": 12.0, "channel": "app"}},
         {"id": "new_device_takeover", "title": "New phone + PIN reset: the AI is not sure", "area": "customer",
-         "story": "Someone set up Rina's account on a new phone and reset the PIN, then tries to send Tk 9,000 late at night. This pattern is unusual, so the AI says it is not sure and asks a person to check.",
+         "story": "Someone set up Rubab's account on a new phone and reset the PIN, then tries to send Tk 9,000 late at night. This pattern is unusual, so the AI says it is not sure and asks a person to check.",
          "request": {"sender_id": rina, "recipient_wallet": mules[min(1, len(mules) - 1)], "amount": 9000, "hour": 23.0,
                      "channel": "app", "simulated_context": {"device_changed_recently": True, "pin_reset_recently": True}}},
         {"id": "text_prize", "title": "Check a prize SMS", "area": "customer_text", "request": {"text": PRIZE_SMS_EN}},
         {"id": "text_injection", "title": "SMS that tries to trick the AI", "area": "customer_text", "request": {"text": INJECTION_SMS}},
         {"id": "text_normal", "title": "Normal family message", "area": "customer_text", "request": {"text": NORMAL_SMS}},
-        {"id": "agent_liquidity", "title": "Karim's cash for the week", "area": "agent", "request": {"agent_id": agent}},
+        {"id": "agent_liquidity", "title": "Tanvir's cash for the week", "area": "agent", "request": {"agent_id": agent}},
         {"id": "cashflow_shortfall", "title": "A customer about to run short", "area": "customer_guardian",
          "request": {"customer_id": short_c, "goal_bdt": 30000, "months": 6}, "p_shortfall": round(short_p, 3)},
         {"id": "ops_case", "title": "The linked case in operations", "area": "ops", "request": {"case_key": golden_case}},

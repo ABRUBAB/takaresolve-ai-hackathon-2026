@@ -64,7 +64,7 @@ export default function AboutPage() {
   return (
     <div>
       <section className="relative overflow-hidden border-b border-border">
-        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-20 md:px-6 lg:grid-cols-[1.3fr_1fr] lg:py-28">
+        <div className="mx-auto grid max-w-[1760px] items-center gap-10 px-4 py-20 md:px-8 xl:px-12 lg:grid-cols-[1.3fr_1fr] lg:py-28">
           <div>
             <BlurFade delay={0.05}>
               <p className="label-mono">About us</p>
@@ -102,7 +102,7 @@ export default function AboutPage() {
       </section>
 
       <section className="border-b border-border">
-        <div className="mx-auto grid max-w-7xl gap-4 px-4 py-20 md:grid-cols-3 md:px-6">
+        <div className="mx-auto grid max-w-[1760px] gap-4 px-4 py-20 md:grid-cols-3 md:px-8 xl:px-12">
           {WHY.map((w, i) => (
             <motion.div
               key={w.n}
@@ -124,7 +124,7 @@ export default function AboutPage() {
       </section>
 
       <section className="border-b border-border">
-        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-8 px-4 py-16 md:grid-cols-5 md:px-6">
+        <div className="mx-auto grid max-w-[1760px] grid-cols-2 gap-8 px-4 py-16 md:grid-cols-5 md:px-8 xl:px-12">
           {[
             [72, "hours to build", ""],
             [9, "Kaggle notebooks", ""],
@@ -144,7 +144,7 @@ export default function AboutPage() {
       </section>
 
       <section className="border-b border-border">
-        <div className="mx-auto max-w-7xl px-4 pt-20 md:px-6">
+        <div className="mx-auto max-w-[1760px] px-4 pt-20 md:px-8 xl:px-12">
           <p className="label-mono">How it came together</p>
           <h2 className="mt-4 font-serif text-5xl leading-[1] md:text-6xl">
             Seventy-two hours, <span className="italic">in order</span>.
@@ -154,7 +154,7 @@ export default function AboutPage() {
       </section>
 
       <section className="border-b border-border">
-        <div className="mx-auto max-w-7xl px-4 py-20 md:px-6">
+        <div className="mx-auto max-w-[1760px] px-4 py-20 md:px-8 xl:px-12">
           <p className="label-mono">The team</p>
           <h2 className="mt-4 font-serif text-5xl leading-[1] md:text-6xl">
             Three people, <span className="italic">one weekend</span>.
@@ -187,7 +187,7 @@ export default function AboutPage() {
       </section>
 
       <section>
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-20 md:grid-cols-2 md:px-6">
+        <div className="mx-auto grid max-w-[1760px] gap-10 px-4 py-20 md:grid-cols-2 md:px-8 xl:px-12">
           <div>
             <p className="label-mono">Honest by default</p>
             <h2 className="mt-4 font-serif text-4xl leading-tight">What this is, and what it is not.</h2>

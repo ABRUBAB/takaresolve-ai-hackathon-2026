@@ -13,6 +13,7 @@ import type { Area as AreaT, Liquidity } from "@/lib/types";
 import { useApi } from "@/lib/use-api";
 import { usePalette } from "@/lib/use-palette";
 import { cn } from "@/lib/utils";
+import { TapHint } from "@/components/ui/tap-hint";
 
 const tip = { background: "var(--popover)", border: "1px solid var(--border)", borderRadius: 12, fontSize: 12 };
 const k = (v: number) => `${Math.round(v / 1000)}k`;
@@ -25,15 +26,15 @@ export default function AgentPage() {
   const [more, setMore] = useState(true);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-12">
+    <div className="mx-auto max-w-[1760px] px-4 py-8 md:px-8 xl:px-12 md:py-12">
       <AreaIntro
-        label="Agent · Karim · AI-4 + AI-5 zone view"
+        label="Agent · Tanvir · AI-4 + AI-5 zone view"
         title={
           <>
             Cash for the week, <span className="italic">at a glance</span>.
           </>
         }
-        text="Karim runs a cash-in / cash-out point near Rina's home. Running out of cash turns customers away; holding too much is risky. Each column is how much cash to hold for a 90%-safe day; the two riskiest days are marked."
+        text="Tanvir runs a cash-in / cash-out point near Rubab's home. Running out of cash turns customers away; holding too much is risky. Each column is how much cash to hold for a 90%-safe day; the two riskiest days are marked."
       />
       <Guard q={liq}>
         {(l) => {
@@ -63,7 +64,7 @@ export default function AgentPage() {
               </div>
 
               {/* cash tanks: fill = cash to hold for a 90%-safe day */}
-              <div className="grid grid-cols-7 gap-2 md:gap-3">
+              <div id="cash" className="grid scroll-mt-24 grid-cols-7 gap-2 md:gap-3">
                 {l.forecast.map((f, i) => {
                   const h = (f.cash_to_hold_90pct_bdt / max) * 100;
                   const cap = (l.capacity_bdt / max) * 100;
@@ -72,7 +73,7 @@ export default function AgentPage() {
                     <button key={f.date} onClick={() => setDay(on ? null : i)} aria-pressed={on} className="group flex flex-col items-center gap-2">
                       <div
                         className={cn(
-                          "relative h-[clamp(220px,38vh,340px)] w-full overflow-hidden rounded-2xl border bg-card transition-colors md:rounded-3xl",
+                          "relative h-[clamp(220px,38vh,340px)] w-full overflow-hidden rounded-2xl border bg-card transition-all group-hover:-translate-y-1 group-hover:shadow-lg group-hover:shadow-black/20 md:rounded-3xl",
                           f.highlight ? "border-volt-ink dark:border-volt" : "border-border",
                           on && "ring-2 ring-foreground/60",
                         )}
@@ -87,7 +88,7 @@ export default function AgentPage() {
                           transition={{ duration: 1, delay: i * 0.06, ease: [0.2, 0.8, 0.2, 1] }}
                         />
                         <div className="absolute inset-x-0 border-t-2 border-dashed border-risk" style={{ bottom: `${cap}%` }} />
-                        <p className="num absolute inset-x-0 top-3 text-center font-mono text-xs font-semibold md:text-base">{k(f.cash_to_hold_90pct_bdt)}</p>
+                        <p className="absolute inset-x-0 top-3 text-center"><span className="num rounded-full bg-background/85 px-2 py-0.5 font-mono text-xs font-semibold md:text-sm">{k(f.cash_to_hold_90pct_bdt)}</span></p>
                       </div>
                       <span className={cn("text-xs md:text-sm", on ? "font-semibold" : "text-muted-foreground group-hover:text-foreground")}>{f.weekday.slice(0, 3)}</span>
                     </button>
@@ -117,14 +118,14 @@ export default function AgentPage() {
                     ))}
                   </motion.div>
                 ) : (
-                  <motion.p key="hint" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-sm text-faint">
-                    Tap a day for its range and top-up.
-                  </motion.p>
+                  <motion.div key="hint" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                    <TapHint>Tap any day to see its range and top-up</TapHint>
+                  </motion.div>
                 )}
               </AnimatePresence>
 
               <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-3xl border border-border bg-card p-5">
+                <div id="peers" className="scroll-mt-24 rounded-3xl border border-border bg-card p-5">
                   <p className="text-sm font-medium">You vs {l.peers.n} similar agents</p>
                   <p className="num mt-3 font-mono text-3xl font-semibold">
                     {tk(l.peers.mine_last_28d)}
@@ -151,7 +152,7 @@ export default function AgentPage() {
                 </div>
                 <Guard q={area}>
                   {(a) => (
-                    <div className="rounded-3xl border border-border bg-card p-5">
+                    <div id="qr" className="scroll-mt-24 rounded-3xl border border-border bg-card p-5">
                       <div className="flex items-start justify-between gap-2">
                         <p className="text-sm font-medium">QR cash-out pressure in your area</p>
                         <Store className="size-4 text-muted-foreground" />
@@ -172,7 +173,7 @@ export default function AgentPage() {
                 </Guard>
               </div>
 
-              <div>
+              <div id="forecast" className="scroll-mt-24">
                 <button
                   onClick={() => setMore((m) => !m)}
                   aria-expanded={more}

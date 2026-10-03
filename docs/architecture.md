@@ -58,16 +58,16 @@ sequenceDiagram
 ### M.3 User flow (golden thread)
 ```mermaid
 flowchart TD
-  A[Rina drafts ৳3,000 send] --> B{Pause Check}
+  A[Rubab drafts ৳3,000 send] --> B{Pause Check}
   B -- high, confident --> C[Warning + 3 reasons + actions]
   B -- unsure --> D[Grey: soft warning + ops review if amount large]
-  C --> E[Rina waits / verifies → stops]
+  C --> E[Rubab waits / verifies → stops]
   E --> F[Mule wallet tries QR cash-out at merchant M-0417]
   F --> G[QR Shield flags merchant: family A pattern]
   G --> H[Case Linker joins victim + mule + merchant]
   H --> I[Ops: one case, graph, brief, Dispute Clock]
-  I --> J{Nusrat decides}
+  I --> J{Abdur Rahman decides}
   J --> K[Request merchant evidence / propose cap → audit log]
-  G --> L[Karim sees QR leakage in his zone + liquidity forecast]
+  G --> L[Tanvir sees QR leakage in the zone + liquidity forecast]
   K --> M[Outcome stored → threshold review in NB99]
 ```

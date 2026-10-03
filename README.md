@@ -21,15 +21,15 @@
 
 ## UVERA in 30 seconds
 
-**Rina** gets a call: *"You won a prize. Send Tk 3,000 to unlock it."* She opens her wallet to send the money.
+**Rubab** gets a call: *"You won a prize. Send Tk 3,000 to unlock it."* Rubab opens the wallet to send the money.
 
-**Before she taps Confirm**, UVERA checks the transfer. The receiving wallet is two days old and is taking money from many
-strangers. UVERA pauses her and explains why in simple Bangla and English. She can wait, verify the number, ask someone she
-trusts, or still continue. **UVERA never blocks her.**
+**Before Rubab taps Confirm**, UVERA checks the transfer. The receiving wallet is two days old and is taking money from many
+strangers. UVERA pauses the transfer and explains why in simple Bangla and English. Rubab can wait, verify the number, ask a
+trusted person, or still continue. **UVERA never blocks the customer.**
 
 Meanwhile, the same scammer's wallet tries to turn stolen money into cash through a shop that misuses **Bangla QR** as a cash
-machine. **QR Shield** notices the pattern. **Karim**, a nearby agent, sees why his cash-out business is dropping.
-**Nusrat** in operations gets **one linked case** instead of five separate alerts. It comes with an evidence graph, a plain
+machine. **QR Shield** notices the pattern. **Tanvir**, a nearby agent, sees why the cash-out business is dropping.
+**Abdur Rahman** in operations gets **one linked case** instead of five separate alerts. It comes with an evidence graph, a plain
 summary, and a dispute deadline clock. **The AI recommends. A person decides.**
 
 <p align="center"><img src="docs/assets/story.svg" alt="Five steps: customer, pause check, mule wallet, QR Shield, one operations case" width="100%"></p>
@@ -54,9 +54,9 @@ summary, and a dispute deadline clock. **The AI recommends. A person decides.**
 | Area | Who | What they get | AI inside |
 |---|---|---|---|
 | **Homepage** `/` | Everyone | The story, a live 3D Trust Field drawn from a real sample of the synthetic world (customers, agents & shops, linked cases; scam money stops at a pause ring and rises into its case), a live Pause Check against the API, and measured results | — |
-| **Customer** `/customer` | Rina | **Pause Check** before sending (pause · not sure · low risk; wait, verify, ask someone, or continue) · **Scam Text Check** for suspicious SMS · **Cash-Flow Guardian** with safe savings plans | AI-1 · AI-2 · AI-3 · AI-7 |
-| **Agent** `/agent` | Karim | **Liquidity Copilot**: cash to hold for a 90%-safe day, riskiest days, peers · **QR pressure** in his zone (zone level only) | AI-4 · AI-5 |
-| **Operations** `/ops` | Nusrat | **Case queue** by risk and deadline · replayable **money-path graph** · **grounded brief** · **dispute clock** · audited human decisions · **QR Shield watchlist** | AI-5 · AI-6 · AI-7 · rules |
+| **Customer** `/customer` | Rubab | **Pause Check** before sending (pause · not sure · low risk; wait, verify, ask someone, or continue) · **Scam Text Check** for suspicious SMS · **Cash-Flow Guardian** with safe savings plans | AI-1 · AI-2 · AI-3 · AI-7 |
+| **Agent** `/agent` | Tanvir | **Liquidity Copilot**: cash to hold for a 90%-safe day, riskiest days, peers · **QR pressure** in the zone (zone level only) | AI-4 · AI-5 |
+| **Operations** `/ops` | Abdur Rahman | **Case queue** by risk and deadline · replayable **money-path graph** · **grounded brief** · **dispute clock** · audited human decisions · **QR Shield watchlist** | AI-5 · AI-6 · AI-7 · rules |
 | **Trust Center** `/trust` | Judges, reviewers | Every metric with its source notebook, fairness slices, data card, live API health and limitations | all |
 
 Every area has a **“Behind the screen”** panel that shows the raw model output (score, calibrated probability, conformal

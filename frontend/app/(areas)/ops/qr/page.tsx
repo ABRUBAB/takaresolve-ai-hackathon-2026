@@ -14,6 +14,7 @@ import { num, pct, tk } from "@/lib/format";
 import type { QrDetail, QrList, QrState } from "@/lib/types";
 import { useApi } from "@/lib/use-api";
 import { cn } from "@/lib/utils";
+import { TapHint } from "@/components/ui/tap-hint";
 
 const FILTERS: { id: QrState | "all"; label: string }[] = [
   { id: "all", label: "All flagged" },
@@ -145,7 +146,7 @@ function Watchlist() {
   const q = useApi<QrList>(`/qr/merchants?limit=120${filter === "all" ? "" : `&state=${filter}`}`, "ops");
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-12">
+    <div className="mx-auto max-w-[1760px] px-4 py-8 md:px-8 xl:px-12 md:py-12">
       <AreaIntro
         label="Operations · AI-5 QR Shield"
         title={
@@ -191,6 +192,7 @@ function Watchlist() {
                   </button>
                 ))}
               </div>
+              <TapHint>Tap a shop to open its file</TapHint>
               <div className="overflow-hidden rounded-3xl border border-border bg-card">
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[820px] text-sm">

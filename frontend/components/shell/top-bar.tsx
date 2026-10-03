@@ -12,9 +12,9 @@ import { cn } from "@/lib/utils";
 
 const AREAS = [
   { href: "/", label: "Home", who: "" },
-  { href: "/customer", label: "Customer", who: "Rina" },
-  { href: "/agent", label: "Agent", who: "Karim" },
-  { href: "/ops", label: "Operations", who: "Nusrat" },
+  { href: "/customer", label: "Customer", who: "Rubab" },
+  { href: "/agent", label: "Agent", who: "Tanvir" },
+  { href: "/ops", label: "Operations", who: "Abdur Rahman" },
   { href: "/trust", label: "Trust Center", who: "" },
   { href: "/about", label: "About", who: "" },
 ];
@@ -33,7 +33,7 @@ export function TopBar({ floating = false }: { floating?: boolean }) {
         floating ? "fixed inset-x-0 top-0 border-transparent bg-background/30 backdrop-blur-md" : "sticky top-0 border-border bg-background/80 backdrop-blur-md",
       )}
     >
-      <div className="mx-auto flex h-14 max-w-7xl items-center gap-4 px-4 md:px-6">
+      <div className="mx-auto flex h-14 max-w-[1760px] items-center gap-4 px-4 md:px-8 xl:px-12">
         <Link href="/" aria-label="UVERA home">
           <Logo />
         </Link>

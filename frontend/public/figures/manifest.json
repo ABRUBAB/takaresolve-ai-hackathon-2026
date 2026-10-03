@@ -1,0 +1,52 @@
+{
+ "figures": [
+  {
+   "file": "ai1_pr_curve.png",
+   "source": "official"
+  },
+  {
+   "file": "ai1_reliability.png",
+   "source": "official"
+  },
+  {
+   "file": "ai1_risk_coverage.png",
+   "source": "official"
+  },
+  {
+   "file": "ai1_shap_global.png",
+   "source": "official"
+  },
+  {
+   "file": "ai2_reliability.png",
+   "source": "official"
+  },
+  {
+   "file": "ai3_forecast_example.png",
+   "source": "official"
+  },
+  {
+   "file": "ai3_shortfall_reliability.png",
+   "source": "dev"
+  },
+  {
+   "file": "ai4_forecast_example.png",
+   "source": "dev"
+  },
+  {
+   "file": "ai4_stockout_reliability.png",
+   "source": "dev"
+  },
+  {
+   "file": "ai5_reliability.png",
+   "source": "official"
+  },
+  {
+   "file": "ai5_unseen_family_D.png",
+   "source": "official"
+  },
+  {
+   "file": "summary_recall_vs_rule.png",
+   "source": "dev"
+  }
+ ]
+}
