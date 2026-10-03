@@ -2,6 +2,7 @@
   "ai": "AI-3 Cash-Flow Guardian",
   "target": "daily net flow (inflow - outflow)",
   "horizon_days": 7,
+  "event": "balance below Tk 200 at the end of the next 7 days",
   "n_series": 2000,
   "winner_on_validation": "chronos2",
   "backtest": [
@@ -54,28 +55,53 @@
       "mean_width_80": 7407.1497
     }
   ],
-  "shortfall_floor_bdt": 200,
+  "probability_method": "empirical normalised residuals of the 7-day sum (calibrated on validation origins)",
+  "validation_threshold": 0.4291500000000001,
+  "threshold_rule": "best F1 on validation within an alert budget (configs/thresholds.yaml)",
+  "seven_day_sum_80pct_interval_coverage_test": 0.797,
   "shortfall_probability_test": {
     "events": 904,
     "n": 4000,
-    "brier": 0.1533973795538527,
+    "base_rate": 0.226,
+    "brier": 0.13863547014062502,
     "brier_baseline": 0.1633691836734694,
-    "pr_auc": 0.4831576748094253,
+    "pr_auc": 0.5085123360737394,
     "pr_auc_baseline": 0.37714711353031904,
-    "ece": 0.09435968489401832,
-    "recall_at_0.5": 0.00995575221238938,
-    "precision_at_0.5": 0.6
+    "ece": 0.0365240625,
+    "at_validation_threshold": {
+      "threshold": 0.4291500000000001,
+      "recall": 0.5586283185840708,
+      "precision": 0.5383795309168443,
+      "flag_rate": 0.2345
+    },
+    "at_0.5_for_reference": {
+      "threshold": 0.5,
+      "recall": 0.4435840707964602,
+      "precision": 0.5663841807909604,
+      "flag_rate": 0.177
+    }
   },
-  "shortfall_probability_test_before_recalibration": {
+  "shortfall_probability_test_naive_sum_of_quantiles": {
     "events": 904,
     "n": 4000,
+    "base_rate": 0.226,
     "brier": 0.15154242332765996,
     "brier_baseline": 0.1633691836734694,
     "pr_auc": 0.5085467325397146,
     "pr_auc_baseline": 0.37714711353031904,
     "ece": 0.10067204127042073,
-    "recall_at_0.5": 0.581858407079646,
-    "precision_at_0.5": 0.5356415478615071
+    "at_validation_threshold": {
+      "threshold": 0.4291500000000001,
+      "recall": 0.745575221238938,
+      "precision": 0.46514837819185645,
+      "flag_rate": 0.36225
+    },
+    "at_0.5_for_reference": {
+      "threshold": 0.5,
+      "recall": 0.581858407079646,
+      "precision": 0.5356415478615071,
+      "flag_rate": 0.2455
+    }
   },
   "baseline": "historical frequency of low balance (training window)"
 }

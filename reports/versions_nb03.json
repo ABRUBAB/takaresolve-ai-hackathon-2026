@@ -14,5 +14,5 @@
   "google.genai": "1.68.0",
   "cuda": true,
   "gpu": "Tesla T4",
-  "uvera_commit": "094cd3830ea96df1a96da8024274f95a16f770cc"
+  "uvera_commit": "ef989c6b691f73f8397256d2453a7d2bc4952129"
 }
