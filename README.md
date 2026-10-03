@@ -271,8 +271,9 @@ docker build -f backend/Dockerfile -t uvera-api .
 ```
 
 ## Live deployment
-The website runs on Vercel and the API on a Hugging Face Docker Space; step-by-step setup is in [docs/deploy.md](docs/deploy.md).
-The live links will be added at the top of this file.
+The website runs on Vercel. When no live API is reachable it plays back real responses recorded from the API for every demo
+scenario (badge: "Recorded demo"), so the hosted demo always works; a live API adds free typing on top. Step-by-step setup,
+including the live API on a laptop or a Hugging Face Docker Space, is in [docs/deploy.md](docs/deploy.md).
 
 ## Testing
 

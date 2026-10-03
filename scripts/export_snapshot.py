@@ -18,9 +18,22 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def _norm(v):
+    """Whole-number floats as ints, like JavaScript's JSON.stringify (12.0 -> 12)."""
+    if isinstance(v, dict):
+        return {k: _norm(x) for k, x in v.items()}
+    if isinstance(v, list):
+        return [_norm(x) for x in v]
+    if isinstance(v, float) and v.is_integer():
+        return int(v)
+    return v
+
+
 def key(method: str, path: str, body: dict | None = None) -> str:
-    """Same key the website builds: method, path, and the JSON body with sorted keys."""
-    return f"{method} {path}" + (f" {json.dumps(body, sort_keys=True, separators=(',', ':'), ensure_ascii=False)}" if body is not None else "")
+    """Same key the website builds (frontend/lib/api.ts): method, path, and the JSON body with sorted keys."""
+    if body is None:
+        return f"{method} {path}"
+    return f"{method} {path} {json.dumps(_norm(body), sort_keys=True, separators=(',', ':'), ensure_ascii=False)}"
 
 
 def main() -> None:

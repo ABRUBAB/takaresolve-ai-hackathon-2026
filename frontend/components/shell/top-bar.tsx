@@ -6,6 +6,7 @@ import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Logo } from "@/components/brand/logo";
 import { SyntheticBadge } from "@/components/trust/chips";
+import { useRecordedMode } from "@/lib/api";
 import { useLang } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +25,7 @@ export function TopBar({ floating = false }: { floating?: boolean }) {
   const path = usePathname();
   const { resolvedTheme, setTheme } = useTheme();
   const { lang, setLang } = useLang();
+  const recorded = useRecordedMode();
   return (
     <header
       className={cn(
@@ -55,7 +57,16 @@ export function TopBar({ floating = false }: { floating?: boolean }) {
           })}
         </nav>
         <div className="ml-auto flex items-center gap-2">
-          <SyntheticBadge className="hidden lg:inline-flex" />
+          {recorded ? (
+            <span
+              className="hidden items-center gap-1.5 rounded-full border border-dashed border-caution/60 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] text-caution sm:inline-flex"
+              title="The live API is offline, so the site plays back real responses recorded from it for the demo scenarios."
+            >
+              ● Recorded demo
+            </span>
+          ) : (
+            <SyntheticBadge className="hidden lg:inline-flex" />
+          )}
           <button
             onClick={() => setLang(lang === "en" ? "bn" : "en")}
             className="h-8 rounded-full border border-border px-3 text-xs text-muted-foreground hover:text-foreground"
