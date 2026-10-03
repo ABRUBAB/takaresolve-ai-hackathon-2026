@@ -116,7 +116,10 @@ def env_info() -> dict:
 
 
 class Budget:
-    """Simple time budget so long stages stop before Kaggle's 12-hour session cap."""
+    """Expected run time per notebook, logged at the end of each stage.
+
+    Over budget only prints a warning: every check sits right before the cell that zips the results, so raising there
+    would throw away finished work. Kaggle's own 12-hour cap still applies."""
 
     def __init__(self, minutes: float):
         self.t0 = time.time()
@@ -128,7 +131,7 @@ class Budget:
     def check(self, stage: str) -> None:
         print(f"[{stage}] elapsed {self.elapsed():.1f} min")
         if self.elapsed() > self.minutes:
-            raise TimeoutError(f"time budget of {self.minutes} min exceeded at stage '{stage}'")
+            print(f"WARNING: over the expected {self.minutes} min at stage '{stage}' (results are still saved)")
 
 
 @contextmanager

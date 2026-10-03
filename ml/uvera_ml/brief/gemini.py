@@ -16,6 +16,9 @@ FALLBACK_MODEL = os.environ.get("GEMINI_FALLBACK_MODEL", "gemini-3.5-flash-lite"
 # tried in order; the first one that answers is remembered (free tiers differ between keys and regions)
 MODEL_CHAIN = [m for m in dict.fromkeys([DEFAULT_MODEL, "gemini-3.5-flash", FALLBACK_MODEL, "gemini-2.5-flash",
                                          "gemini-2.5-flash-lite"]) if m]
+# error text (lower case) that means "busy or out of quota, retry later" vs "this model is not usable with this key"
+_BUSY = ("429", "resource_exhausted", "503", "unavailable", "timeout", "timed out", "deadline")
+_GONE = ("404", "not_found", "not found", "403", "permission_denied", "not supported")
 
 
 class GeminiUnavailable(RuntimeError):
@@ -48,8 +51,11 @@ def load_key_on_kaggle(secret_name: str = "GEMINI_API_KEY") -> str:
 
 
 class Gemini:
+    """A model that keeps failing (daily quota used up, unknown name, no access) is paused for `pause_s` seconds, so a run
+    whose key runs out of quota falls back to templates in seconds instead of retrying every call for hours."""
+
     def __init__(self, model: str | None = None, min_interval_s: float = 6.5, cache_dir: str | Path | None = None,
-                 max_retries: int = 4, timeout_s: float = 60.0):
+                 max_retries: int = 4, timeout_s: float = 60.0, pause_s: float = 600.0):
         key = os.environ.get("GEMINI_API_KEY")
         if not key:
             raise GeminiUnavailable("GEMINI_API_KEY is not set")
@@ -63,6 +69,7 @@ class Gemini:
         self.models = list(dict.fromkeys([model, *MODEL_CHAIN])) if model else list(MODEL_CHAIN)
         self.last_error = None
         self.min_interval_s, self.max_retries = min_interval_s, max_retries
+        self.pause_s, self._paused = pause_s, {}  # model -> time it was paused
         self._last = 0.0
         self.cache_dir = Path(cache_dir) if cache_dir else None
         if self.cache_dir:
@@ -80,7 +87,13 @@ class Gemini:
             self.cache_hits += 1
             return json.loads((self.cache_dir / f"{key}.json").read_text(encoding="utf-8"))
         last_err = None
-        for model in self.models:
+        now = time.time()
+        live = [m for m in self.models if now - self._paused.get(m, float("-inf")) >= self.pause_s]
+        if not live:
+            self.failures += 1
+            raise GeminiUnavailable(f"every Gemini model is paused after quota or access errors; last: {self.last_error}"[:300])
+        for model in live:
+            pause = False
             for attempt in range(self.max_retries):
                 wait = self.min_interval_s - (time.time() - self._last)
                 if wait > 0:
@@ -103,11 +116,17 @@ class Gemini:
                 except Exception as e:  # noqa: BLE001 - network/API errors are retried, then we fall back
                     last_err = e
                     self.last_error = f"{model}: {str(e)[:200]}"
-                    msg = str(e)
-                    if "429" in msg or "RESOURCE_EXHAUSTED" in msg or "503" in msg or "timeout" in msg.lower():
-                        time.sleep(min(60, 5 * 2 ** attempt))
-                        continue
-                    break  # non-retryable for this model -> try the fallback model
+                    low = str(e).lower()
+                    if any(s in low for s in _BUSY):
+                        if attempt < self.max_retries - 1:
+                            time.sleep(min(60, 5 * 2 ** attempt))
+                            continue
+                        pause = True  # still refused after every retry: quota used up or the model is overloaded
+                    elif any(s in low for s in _GONE):
+                        pause = True  # unknown model name for this key/region, or no access
+                    break  # try the fallback model (a one-off bad answer does not pause the model)
+            if pause:
+                self._paused[model] = time.time()
         self.failures += 1
         raise GeminiUnavailable(f"Gemini failed: {last_err!r}"[:300])
 
@@ -121,4 +140,4 @@ class Gemini:
 
     def stats(self) -> dict:
         return {"model": self.models[0], "fallback_models": self.models[1:], "calls": self.calls,
-                "cache_hits": self.cache_hits, "failures": self.failures}
+                "cache_hits": self.cache_hits, "failures": self.failures, "paused_models": sorted(self._paused)}
