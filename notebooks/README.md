@@ -7,7 +7,7 @@ Python package [`ml/uvera_ml`](../ml/uvera_ml), so the notebooks only orchestrat
 |---|---|---|---|---|---|
 | [`NB00_synthetic_world`](NB00_synthetic_world.ipynb) | Synthetic world + data card + leakage guard | CPU | On | — | 5–10 min |
 | [`NB01_ai1_pause_check`](NB01_ai1_pause_check.ipynb) | AI-1 Pause Check (scam risk before Confirm) | CPU | On | — | 20–40 min |
-| [`NB02_ai2_scam_text`](NB02_ai2_scam_text.ipynb) | AI-2 Scam Text Sentinel (Bangla / Banglish / English) | GPU T4 ×2 | On · `GEMINI_API_KEY` | [UCI SMS Spam Collection](https://www.kaggle.com/datasets/uciml/sms-spam-collection-dataset) | 45–90 min |
+| [`NB02_ai2_scam_text`](NB02_ai2_scam_text.ipynb) | AI-2 Scam Text Sentinel (Bangla / Banglish / English) | GPU T4 ×2 | On · `GEMINI_API_KEY` only to regenerate the corpus (re-runs reuse the committed one) | [UCI SMS Spam Collection](https://www.kaggle.com/datasets/uciml/sms-spam-collection-dataset) (downloaded if not attached) | 45–90 min |
 | [`NB03_ai3_cashflow_guardian`](NB03_ai3_cashflow_guardian.ipynb) | AI-3 Cash-Flow Guardian (forecast + shortfall risk) | GPU T4 ×2 | On | — | 20–40 min |
 | [`NB04_ai4_agent_liquidity`](NB04_ai4_agent_liquidity.ipynb) | AI-4 Agent Liquidity Copilot (cash stock-out risk) | GPU T4 ×2 | On | — | 20–40 min |
 | [`NB05_ai5_qr_shield`](NB05_ai5_qr_shield.ipynb) | AI-5 QR Shield (Bangla QR used as cash-out) | CPU | On | — | 10–20 min |
@@ -19,7 +19,7 @@ Python package [`ml/uvera_ml`](../ml/uvera_ml), so the notebooks only orchestrat
 
 ## Reproduce a result
 1. Kaggle → **New Notebook → File → Import Notebook** → upload the `.ipynb`.
-2. Settings: accelerator as above, **Internet On**. For NB02/NB07 add a Kaggle Secret named `GEMINI_API_KEY` (free key from Google AI Studio). Without it, those notebooks still run with template text only.
+2. Settings: accelerator as above, **Internet On**. For NB07 add a Kaggle Secret named `GEMINI_API_KEY` (free key from Google AI Studio). Without it, NB07 still runs with template text only.
 3. Optional: set `REF` in cell 1 to a commit hash for an exact reproduction.
 4. **Save Version → Save & Run All (Commit)** (background run: no idle timeout; 12-hour session cap).
 5. Download `outputs/NBxx_outputs.zip` from the **Output** tab and unzip it at the repo root — it contains `artifacts/` and `reports/`.
