@@ -119,7 +119,7 @@ export default function GuardianPage() {
       }
       phone={
         <div className="space-y-5 pt-2">
-          <div className="no-scrollbar flex gap-1.5 overflow-x-auto" role="radiogroup" aria-label="Customer">
+          <div className="no-scrollbar flex gap-1.5 overflow-x-auto pr-6 [mask-image:linear-gradient(to_right,black_85%,transparent)]" role="radiogroup" aria-label="Customer">
             {WHO.map((w) => (
               <button
                 key={w.id}

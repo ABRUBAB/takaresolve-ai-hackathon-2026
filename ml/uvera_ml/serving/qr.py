@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 
 from uvera_ml.common import load_config
+from uvera_ml.features.qr import reason_text
 from uvera_ml.serving.store import ArtifactStore
 from uvera_ml.sim.world import World
 
@@ -49,6 +50,9 @@ class QREngine:
 
     def _row(self, r: dict) -> dict:
         reasons = json.loads(r["reasons"]) if isinstance(r.get("reasons"), str) else []
+        for x in reasons:  # results saved before a sentence existed for this signal still read as plain language
+            if x.get("text_en") == x.get("feature"):
+                x["text_en"], x["text_bn"] = reason_text(x["feature"], x.get("value"))
         return {"merchant_id": r["merchant_id"], "zone": r["zone"], "category": r["category"], "size": r["size"],
                 "week": int(r["week"]), "state": r["state"], "p_calibrated": float(r["p_calibrated"]),
                 "payments": int(r["n_payments"]), "volume_bdt": float(r["volume"]),

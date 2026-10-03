@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Mark } from "@/components/brand/logo";
 import { Footer } from "@/components/shell/footer";
 import { TopBar } from "@/components/shell/top-bar";
+
+export const metadata: Metadata = { title: "Page not found" };
 
 export default function NotFound() {
   return (

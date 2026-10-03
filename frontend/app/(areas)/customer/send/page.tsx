@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { CheckCircle2, ChevronLeft, CircleHelp, Loader2, Phone as PhoneIcon, Timer, TriangleAlert, Users } from "lucide-react";
+import { CheckCircle2, ChevronLeft, CircleHelp, Loader2, Pause, Phone as PhoneIcon, Timer, TriangleAlert, Users } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -15,6 +15,7 @@ import { EmptyInspector, Inspector, InspectorSection, KV, SummaryChips, TraceFoo
 import { post } from "@/lib/api";
 import { num, pct, tk } from "@/lib/format";
 import { useLang } from "@/lib/i18n";
+import { TapHint } from "@/components/ui/tap-hint";
 import type { Demo, PauseRequest, PauseResult } from "@/lib/types";
 import { useAction, usePublic } from "@/lib/use-api";
 import { cn } from "@/lib/utils";
@@ -127,7 +128,7 @@ function SendFlow() {
         <motion.form key="form" onSubmit={submit} className="space-y-4 pt-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
           <p className="text-xl font-semibold tracking-tight">{t("send_money")}</p>
           {scenarios.length > 0 && (
-            <div className="no-scrollbar flex gap-1.5 overflow-x-auto pb-1" aria-label="Demo scenarios">
+            <div className="no-scrollbar flex gap-1.5 overflow-x-auto pb-1 pr-6 [mask-image:linear-gradient(to_right,black_85%,transparent)]" aria-label="Demo scenarios">
               {scenarios.map((s) => (
                 <Link
                   key={s.id}
@@ -507,19 +508,45 @@ function SendFlow() {
   return (
     <CustomerShell
       intro={
-        <AreaIntro
-          label="Customer · Send money · AI-1 + AI-2 + AI-7"
-          title={
-            <>
-              Pause <span className="italic">before</span> the money moves.
-            </>
-          }
-          text="Every transfer is checked in under a second. High risk pauses with reasons; “not sure” asks a person; low risk sends straight away."
-        />
+        <>
+          <AreaIntro
+            label="Customer · Send money · AI-1 + AI-2 + AI-7"
+            title={
+              <>
+                Pause <span className="italic">before</span> the money moves.
+              </>
+            }
+            text="Every transfer is checked in under a second. High risk pauses with reasons; “not sure” asks a person; low risk sends straight away."
+          />
+          {!r && <Outcomes />}
+        </>
       }
       phone={phone}
       inspector={inspector}
     />
+  );
+}
+
+/** The three answers a check can give, shown before the first check so the empty state teaches the flow. */
+function Outcomes() {
+  const items = [
+    { Icon: Pause, tone: "text-risk", ring: "border-risk/40", title: "Paused, with reasons", text: "High risk. Wait, verify the number or ask someone. Rubab can still send." },
+    { Icon: CircleHelp, tone: "text-unsure", ring: "border-unsure/40", title: "Not sure", text: "Mixed or unusual signals. A person checks; large amounts need a review." },
+    { Icon: CheckCircle2, tone: "text-safe", ring: "border-safe/40", title: "Looks fine", text: "Low risk. It sends straight away and shows what looked normal." },
+  ];
+  return (
+    <div className="mt-6 space-y-3">
+      <div className="grid gap-3 sm:grid-cols-3">
+        {items.map(({ Icon, tone, ring, title, text }) => (
+          <div key={title} className={cn("rounded-2xl border bg-card p-4", ring)}>
+            <Icon className={cn("size-5", tone)} aria-hidden="true" />
+            <p className="mt-2 text-sm font-medium">{title}</p>
+            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{text}</p>
+          </div>
+        ))}
+      </div>
+      <TapHint>Pick a moment on the phone, then press Continue</TapHint>
+    </div>
   );
 }
 

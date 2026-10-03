@@ -63,15 +63,15 @@ export function Footer() {
         {COLUMNS.map((c) => (
           <nav key={c.title} aria-label={c.title} className="space-y-3 text-sm">
             <p className="label-mono">{c.title}</p>
-            <ul className="space-y-2">
+            <ul className="space-y-0.5">
               {c.links.map((l) => (
                 <li key={l.href}>
                   {l.href.startsWith("http") ? (
-                    <a href={l.href} target="_blank" rel="noreferrer" className="text-muted-foreground transition-colors hover:text-foreground">
+                    <a href={l.href} target="_blank" rel="noreferrer" className="inline-block py-1 text-muted-foreground transition-colors hover:text-foreground">
                       {l.label}
                     </a>
                   ) : (
-                    <Link href={l.href} className="text-muted-foreground transition-colors hover:text-foreground">
+                    <Link href={l.href} className="inline-block py-1 text-muted-foreground transition-colors hover:text-foreground">
                       {l.label}
                     </Link>
                   )}
@@ -93,12 +93,14 @@ export function Footer() {
             flickerChance={0.08}
           />
         )}
-        <p
-          aria-hidden="true"
-          className="relative select-none whitespace-nowrap px-4 font-serif text-[clamp(6rem,24vw,22rem)] leading-[0.78] tracking-[-0.04em] text-foreground/[0.07] md:px-8 xl:px-12"
-        >
-          UVERA
-        </p>
+        {/* the wordmark always spans the full content width (SVG text stretched to its box) */}
+        <div className="relative mx-auto max-w-[1760px] px-4 md:px-8 xl:px-12" aria-hidden="true">
+          <svg viewBox="0 0 1000 205" className="block w-full select-none text-foreground/[0.07]">
+            <text x="0" y="198" textLength="1000" lengthAdjust="spacingAndGlyphs" className="font-serif" fontSize="262" fill="currentColor">
+              UVERA
+            </text>
+          </svg>
+        </div>
       </div>
 
       <div className="relative border-t border-border bg-background">
@@ -113,7 +115,7 @@ export function Footer() {
           </a>
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="ml-auto inline-flex items-center gap-1 rounded-full border border-border px-3 py-1 hover:text-foreground"
+            className="ml-auto inline-flex h-8 items-center gap-1 rounded-full border border-border px-3 hover:text-foreground"
           >
             <ArrowUp className="size-3" /> Back to top
           </button>

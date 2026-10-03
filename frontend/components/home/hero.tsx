@@ -123,7 +123,7 @@ export function Hero() {
       >
         {world && idle && <TrustScene world={world} mode={mode} dark={resolvedTheme !== "light"} animate={animate && visible} mobile={mobile} />}
       </motion.div>
-      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-background via-background/50 to-transparent md:via-background/10 md:to-40%" />
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-background via-background/75 to-background/25 md:via-background/10 md:to-transparent md:to-40%" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-background to-transparent" />
       <div className="grain" />
 
@@ -227,8 +227,9 @@ export function Hero() {
           </Marquee>
           <button
             onClick={() => setPaused(!paused)}
-            className="mx-3 inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs text-muted-foreground hover:text-foreground"
+            className="mx-3 inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full border border-border px-3 text-xs text-muted-foreground hover:text-foreground"
             aria-pressed={paused}
+            aria-label={paused ? "Play motion" : "Pause motion"}
           >
             {paused ? <Play className="size-3" /> : <Pause className="size-3" />}
             <span className="hidden sm:inline">{paused ? "Play motion" : "Pause motion"}</span>

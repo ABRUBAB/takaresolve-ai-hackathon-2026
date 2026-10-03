@@ -11,7 +11,7 @@ export function DeadlineBar({ d, compact = false }: { d: Deadline | null; compac
   return (
     <div className={cn("space-y-1", compact ? "min-w-36" : "")}>
       <div className="flex items-center justify-between gap-3 text-xs">
-        <span className={cn("truncate", compact && "max-w-40")}>{d.label}</span>
+        <span className={cn("line-clamp-2", compact && "max-w-48")} title={d.label}>{d.label}</span>
         <span className={cn("num flex shrink-0 items-center gap-1 font-mono", d.status === "urgent" && "text-caution", d.status === "breached" && "text-risk")}>
           {d.status === "breached" ? <AlertOctagon className="size-3" /> : <Clock className="size-3" />}
           {hoursText(d.remaining_hours)}

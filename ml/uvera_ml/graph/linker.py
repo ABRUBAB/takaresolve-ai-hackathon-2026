@@ -7,6 +7,7 @@ wallet are merged into one case. The evidence subgraph IS the explanation shown 
 from __future__ import annotations
 
 import json
+import re
 from bisect import bisect_left
 from collections import defaultdict
 from pathlib import Path
@@ -18,6 +19,11 @@ import pandas as pd
 from uvera_ml.common import write_json
 
 MAX_HOPS, WINDOW_S = 3, 48 * 3600
+
+
+def tidy_plurals(text: str) -> str:
+    """'1 customer(s)' -> '1 customer', '109 customer(s)' -> '109 customers' (evidence lines are shown to analysts)."""
+    return re.sub(r"(\d[\d,]*)([^\d(]*?)(\w+)\(s\)", lambda m: m[1] + m[2] + m[3] + ("" if m[1] == "1" else "s"), text)
 
 
 class _UF:
@@ -124,6 +130,8 @@ def link_cases(world, scored_transfers: pd.DataFrame, merchant_scores: pd.DataFr
                              "value": n_flagged if qr_flag else len(merchants)})
         if agents:
             evidence.append({"id": "E5", "type": "rule", "text": f"Cash-out at {len(agents)} agent point(s)", "value": len(agents)})
+        for e in evidence:
+            e["text"] = tidy_plurals(e["text"])
         cases.append({
             "case_key": f"CASE-{gi + 1:04d}", "score": round(float(score), 4), "n_alerts": len(members),
             "victims": victims, "wallets": wallets, "merchants": merchants, "agents": agents,

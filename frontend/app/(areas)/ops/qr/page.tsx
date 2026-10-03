@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Info } from "lucide-react";
+import { ChevronDown, Info } from "lucide-react";
 import { Suspense, useState } from "react";
 import { AreaIntro } from "@/components/customer/phone";
 import { QrBadge } from "@/components/ops/bits";
@@ -39,7 +39,7 @@ function MerchantDrawer({ id, onClose }: { id: string | null; onClose: () => voi
                 <div className="flex flex-wrap items-center gap-2">
                   <QrBadge state={m.state} />
                   <span className="text-sm text-muted-foreground">
-                    {m.category} · {m.zone.replace("_", "-")} · {m.size} · week {m.week}
+                    {m.category.replace(/_/g, " ")} · {m.zone.replace(/_/g, "-")} · {m.size} · week {m.week}
                   </span>
                 </div>
                 <KV
@@ -143,6 +143,7 @@ function Watchlist() {
   const params = useSearchParams();
   const [filter, setFilter] = useState<QrState | "all">("all");
   const [open, setOpen] = useState<string | null>(params.get("merchant"));
+  const [showAll, setShowAll] = useState(false);
   const q = useApi<QrList>(`/qr/merchants?limit=120${filter === "all" ? "" : `&state=${filter}`}`, "ops");
 
   return (
@@ -158,10 +159,12 @@ function Watchlist() {
       />
       <Guard q={q}>
         {(d) => {
-          const rows = d.merchants.filter((m) => m.state !== "green");
+          const flagged = d.merchants.filter((m) => m.state !== "green");
+          const rows = showAll ? flagged : flagged.slice(0, 20);
+          const shopType = (m: (typeof flagged)[number]) => `${m.category.replace(/_/g, " ")} · ${m.zone.replace(/_/g, "-")} · ${m.size}`;
           return (
             <div className="mt-10 space-y-6">
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
                 {[
                   ["Review now", d.counts.red ?? 0],
                   ["Watch", d.counts.amber ?? 0],
@@ -170,12 +173,12 @@ function Watchlist() {
                 ].map(([k, v]) => (
                   <div key={String(k)} className="rounded-2xl border border-border bg-card p-4">
                     <p className="text-xs text-muted-foreground">{k}</p>
-                    <p className="num mt-1 font-mono text-2xl font-semibold">{num(Number(v))}</p>
+                    <p className="num mt-1 font-mono text-xl font-semibold md:text-2xl">{num(Number(v))}</p>
                   </div>
                 ))}
-                <div className="rounded-2xl border border-border bg-card p-4">
+                <div className="col-span-2 rounded-2xl border border-border bg-card p-4 sm:col-span-1">
                   <p className="text-xs text-muted-foreground">Est. fee leakage this week</p>
-                  <p className="num mt-1 font-mono text-2xl font-semibold">{tk(d.counts.est_fee_leakage_bdt)}</p>
+                  <p className="num mt-1 font-mono text-xl font-semibold md:text-2xl">{tk(d.counts.est_fee_leakage_bdt)}</p>
                   <OutputChip type="assumption" className="mt-1" />
                 </div>
               </div>
@@ -185,7 +188,10 @@ function Watchlist() {
                     key={f.id}
                     role="tab"
                     aria-selected={filter === f.id}
-                    onClick={() => setFilter(f.id)}
+                    onClick={() => {
+                      setFilter(f.id);
+                      setShowAll(false);
+                    }}
                     className={cn("shrink-0 rounded-full border px-3 py-1.5 text-sm", filter === f.id ? "border-foreground bg-foreground text-background" : "border-border text-muted-foreground")}
                   >
                     {f.label}
@@ -194,7 +200,26 @@ function Watchlist() {
               </div>
               <TapHint>Tap a shop to open its file</TapHint>
               <div className="overflow-hidden rounded-3xl border border-border bg-card">
-                <div className="overflow-x-auto">
+                {/* phones: one card per shop */}
+                <ul className="divide-y divide-border md:hidden">
+                  {rows.map((m) => (
+                    <li key={m.merchant_id}>
+                      <button onClick={() => setOpen(m.merchant_id)} className="block w-full space-y-1.5 px-5 py-4 text-left active:bg-muted/50">
+                        <span className="flex items-center justify-between gap-2">
+                          <span className="font-mono font-medium">{m.merchant_id}</span>
+                          <QrBadge state={m.state} />
+                        </span>
+                        <span className="block text-xs text-muted-foreground">{shopType(m)}</span>
+                        <span className="block text-sm">{m.reasons[0]?.text_en ?? "—"}</span>
+                        <span className="num flex justify-between font-mono text-xs text-muted-foreground">
+                          <span>{m.payments} payments</span>
+                          <span>leakage {tk(m.est_fee_leakage_bdt)}</span>
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                <div className="hidden overflow-x-auto md:block">
                   <table className="w-full min-w-[820px] text-sm">
                     <thead className="text-left text-xs text-muted-foreground">
                       <tr className="border-b border-border">
@@ -217,10 +242,10 @@ function Watchlist() {
                           <td className="px-3 py-3">
                             <QrBadge state={m.state} />
                           </td>
-                          <td className="px-3 py-3 text-muted-foreground">
-                            {m.category} · {m.zone.replace("_", "-")} · {m.size}
+                          <td className="px-3 py-3 text-muted-foreground">{shopType(m)}</td>
+                          <td className="max-w-80 px-3 py-3">
+                            <span className="line-clamp-2">{m.reasons[0]?.text_en ?? "—"}</span>
                           </td>
-                          <td className="max-w-72 truncate px-3 py-3">{m.reasons[0]?.text_en ?? "—"}</td>
                           <td className="num px-3 py-3 text-right font-mono">{m.payments}</td>
                           <td className="num px-5 py-3 text-right font-mono">{tk(m.est_fee_leakage_bdt)}</td>
                         </tr>
@@ -230,6 +255,16 @@ function Watchlist() {
                 </div>
                 {rows.length === 0 && <p className="p-6 text-sm text-muted-foreground">No shops in this state this week.</p>}
               </div>
+              {flagged.length > 20 && (
+                <button
+                  onClick={() => setShowAll((v) => !v)}
+                  aria-expanded={showAll}
+                  className="mx-auto flex h-11 items-center gap-2 rounded-full border border-border px-5 text-sm hover:border-foreground/40"
+                >
+                  {showAll ? "Show the first 20 only" : `Show all ${flagged.length} flagged shops`}
+                  <ChevronDown className={cn("size-4 transition-transform", showAll && "rotate-180")} />
+                </button>
+              )}
               <p className="text-sm text-muted-foreground">
                 “Review now” = a higher score than 98% of honest shop-weeks in the validation weeks; “Watch” = higher than 90%. The calibrated
                 probability is shown inside each shop. Analysts review about 20 shops a week.

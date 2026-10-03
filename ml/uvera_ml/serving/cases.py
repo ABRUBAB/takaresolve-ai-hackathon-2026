@@ -4,6 +4,7 @@ from __future__ import annotations
 import pandas as pd
 
 from uvera_ml.common import load_config
+from uvera_ml.graph.linker import tidy_plurals
 from uvera_ml.serving.store import ArtifactStore
 from uvera_ml.sim.world import DAY, START
 
@@ -37,6 +38,8 @@ class CaseEngine:
         self.qr_state = qr_state or (lambda m: None)
         # demo clock: 'now' is 6 hours after the newest case opened, so recent cases are fresh and older ones show urgency
         for c in self.cases:  # the clock starts when the latest victim complaint arrives
+            for e in c.get("evidence", []):
+                e["text"] = tidy_plurals(e["text"])
             c["complaint_t"] = max((e["t"] for e in c["edges"] if e["hop"] == 0), default=c["opened_at_t"])
         self.now_t = (max(c["complaint_t"] for c in self.cases) + 6 * 3600) if self.cases else 0
 

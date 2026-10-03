@@ -83,7 +83,7 @@ export function AiOrbit() {
         <h2 id="orbit-title" className="mt-4 max-w-2xl font-serif text-5xl leading-[1] md:text-6xl">
           Tap an AI to <span className="italic">look inside</span>.
         </h2>
-        <TapHint className="mt-6">Tap an AI on the ring — the card on the right changes</TapHint>
+        <TapHint className="mt-6">Tap an AI on the ring to open its card</TapHint>
         <div className="mt-10 grid items-center gap-12 lg:grid-cols-2">
           <div className="relative mx-auto aspect-square w-full max-w-[460px]" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
             <div className="absolute inset-0 rounded-full border border-dashed border-border" />

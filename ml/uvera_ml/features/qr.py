@@ -26,7 +26,19 @@ REASON_TEXT = {
     "peer_z_ticket": ("Ticket size far from similar shops in the area", "এলাকার একই ধরনের দোকানের তুলনায় পেমেন্টের অঙ্ক অনেক আলাদা"),
     "peer_z_payers": ("Many more payers than similar shops", "একই ধরনের দোকানের চেয়ে অনেক বেশি ক্রেতা"),
     "peer_z_round": ("Far more round amounts than similar shops", "একই ধরনের দোকানের চেয়ে অনেক বেশি গোল অঙ্ক"),
+    "amount_cv": ("Payment amounts follow an unusual pattern for this shop", "এই দোকানের পেমেন্টের অঙ্কের ধরন অস্বাভাবিক"),
+    "payments_per_payer": ("Payers pay {v:.1f} times each on average", "প্রতি ক্রেতা গড়ে {v:.1f} বার পেমেন্ট করেন"),
+    "median_ticket": ("Typical payment is Tk {v:,.0f}", "সাধারণ পেমেন্ট {v:,.0f} টাকা"),
 }
+
+
+def reason_text(feature: str, value: float | None) -> tuple[str, str]:
+    """Plain English and Bangla sentence for a QR Shield reason (falls back to a readable feature name)."""
+    en, bn = REASON_TEXT.get(feature, (feature.replace("_", " ").capitalize(), feature.replace("_", " ")))
+    try:
+        return en.format(v=float(value)), bn.format(v=float(value))
+    except (TypeError, ValueError, KeyError):
+        return en.replace(" {v:.0f}", ""), bn.replace(" {v:.0f}", "")
 
 
 def _robust_z(x: pd.Series) -> pd.Series:

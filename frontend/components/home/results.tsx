@@ -16,7 +16,7 @@ const isNum = (v: unknown): v is number => typeof v === "number" && Number.isFin
 function Tile({ className, children, delay = 0, src }: { className?: string; children: ReactNode; delay?: number; src?: string }) {
   return (
     <motion.div
-      className={cn("relative flex flex-col justify-between gap-6 overflow-hidden rounded-3xl border border-border bg-card p-6", className)}
+      className={cn("relative flex flex-col justify-between gap-6 overflow-hidden rounded-3xl border border-border bg-card p-6", src && "pt-12", className)}
       initial={{ opacity: 0, y: 18 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}

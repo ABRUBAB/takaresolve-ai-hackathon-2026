@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useEffect, useRef } from "react";
 import { Logo } from "@/components/brand/logo";
 import { SyntheticBadge } from "@/components/trust/chips";
 import { useRecordedMode } from "@/lib/api";
@@ -23,6 +24,13 @@ const isActive = (path: string | null, href: string) => (href === "/" ? path ===
 
 export function TopBar({ floating = false }: { floating?: boolean }) {
   const path = usePathname();
+  const mobileNav = useRef<HTMLElement>(null);
+  // on phones the menu scrolls sideways: bring the current area into view
+  useEffect(() => {
+    const nav = mobileNav.current;
+    const on = nav?.querySelector<HTMLElement>('[aria-current="page"]');
+    if (nav && on) nav.scrollTo({ left: on.offsetLeft - nav.clientWidth / 2 + on.clientWidth / 2 });
+  }, [path]);
   const { resolvedTheme, setTheme } = useTheme();
   const { lang, setLang } = useLang();
   const recorded = useRecordedMode();
@@ -84,12 +92,17 @@ export function TopBar({ floating = false }: { floating?: boolean }) {
           </button>
         </div>
       </div>
-      <nav className="no-scrollbar flex gap-1 overflow-x-auto border-t border-border px-4 py-2 lg:hidden" aria-label="Areas (mobile)">
+      <nav
+        ref={mobileNav}
+        className="no-scrollbar flex gap-1 overflow-x-auto border-t border-border px-4 py-2 [mask-image:linear-gradient(to_right,black_88%,transparent)] lg:hidden"
+        aria-label="Areas (mobile)"
+      >
         {AREAS.map((a) => (
           <Link
             key={a.href}
             href={a.href}
-            className={cn("shrink-0 rounded-full px-3 py-1 text-sm", isActive(path, a.href) ? "bg-foreground text-background" : "text-muted-foreground")}
+            aria-current={isActive(path, a.href) ? "page" : undefined}
+            className={cn("shrink-0 rounded-full px-3 py-1.5 text-sm", isActive(path, a.href) ? "bg-foreground text-background" : "text-muted-foreground")}
           >
             {a.label}
           </Link>

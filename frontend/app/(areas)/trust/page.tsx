@@ -68,11 +68,11 @@ function Table({ cols, rows, highlight, open }: { cols: string[]; rows: ReactNod
     );
   return (
     <div className="overflow-x-auto rounded-2xl border border-border">
-      <table className="w-full min-w-[520px] text-sm">
+      <table className="w-full min-w-[320px] text-sm">
         <thead className="bg-muted/50 text-left text-xs text-muted-foreground">
           <tr>
             {cols.map((c, i) => (
-              <th key={c} className={cn("px-3 py-2 font-normal", i > 0 && "text-right")}>
+              <th key={c} className={cn("px-2.5 py-2 font-normal sm:px-3", i > 0 && "text-right")}>
                 {c}
               </th>
             ))}
@@ -82,7 +82,7 @@ function Table({ cols, rows, highlight, open }: { cols: string[]; rows: ReactNod
           {rows.map((r, i) => (
             <tr key={i} className={cn(highlight === i && "bg-volt/10")}>
               {r.map((c, j) => (
-                <td key={j} className={cn("px-3 py-2", j > 0 && "num text-right font-mono text-[13px]")}>
+                <td key={j} className={cn("px-2.5 py-2 sm:px-3", j > 0 && "num text-right font-mono text-xs sm:text-[13px]")}>
                   {c}
                 </td>
               ))}
@@ -98,7 +98,7 @@ function Bars({ rows, max = 1 }: { rows: [string, number][]; max?: number }) {
   return (
     <div className="space-y-2">
       {rows.map(([k, v]) => (
-        <div key={k} className="grid grid-cols-[minmax(0,14rem)_1fr_3.5rem] items-center gap-3 text-sm">
+        <div key={k} className="grid grid-cols-[minmax(0,9rem)_1fr_3rem] items-center gap-3 text-sm sm:grid-cols-[minmax(0,14rem)_1fr_3.5rem]">
           <span className="truncate font-mono text-xs">{k}</span>
           <div className="h-1.5 rounded-full bg-muted">
             <div className="h-full rounded-full bg-foreground/70" style={{ width: `${Math.min(100, (v / max) * 100)}%` }} />
@@ -201,7 +201,7 @@ export default function TrustCenter() {
 
               <Section id="data" title="The synthetic world (NB00)" lead="One seeded world feeds every notebook. Scammers follow hidden processes; honest look-alikes and 10% label noise keep the task from being trivial.">
                 {dc?.meta && (
-                  <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
                     {[
                       ["Events", num(dc.meta.n_events)],
                       ["Days", num(dc.meta.days)],

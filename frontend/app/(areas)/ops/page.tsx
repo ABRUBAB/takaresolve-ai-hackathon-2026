@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowUpRight, QrCode } from "lucide-react";
+import { ArrowUpRight, ChevronDown, QrCode } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
 import { AreaIntro } from "@/components/customer/phone";
@@ -18,6 +18,7 @@ import { TapHint } from "@/components/ui/tap-hint";
 export default function OpsQueue() {
   const q = useApi<Cases>("/cases?limit=60", "ops");
   const [detailed, setDetailed] = useState(true);
+  const [showAll, setShowAll] = useState(false);
   const router = useRouter();
 
   return (
@@ -36,9 +37,10 @@ export default function OpsQueue() {
           const urgent = d.cases.filter((c) => c.next_deadline?.status === "urgent").length;
           const atRisk = d.cases.reduce((s, c) => s + c.amount_at_risk_bdt, 0);
           const alerts = d.cases.reduce((s, c) => s + c.n_alerts, 0);
+          const rows = showAll ? d.cases : d.cases.slice(0, 15);
           return (
             <div className="mt-10 space-y-6">
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
                 {[
                   ["Linked cases", num(d.total)],
                   [`Alerts inside the top ${d.cases.length}`, num(alerts)],
@@ -47,7 +49,7 @@ export default function OpsQueue() {
                 ].map(([k, v]) => (
                   <div key={k} className="rounded-2xl border border-border bg-card p-4">
                     <p className="text-xs text-muted-foreground">{k}</p>
-                    <p className="num mt-1 font-mono text-2xl font-semibold">{v}</p>
+                    <p className="num mt-1 font-mono text-xl font-semibold md:text-2xl">{v}</p>
                   </div>
                 ))}
               </div>
@@ -69,7 +71,7 @@ export default function OpsQueue() {
                           <div className="min-w-0">
                             <p className="font-mono text-lg font-semibold">{c.case_key}</p>
                             <p className="text-sm text-muted-foreground">
-                              {c.victims} victims · {tk(c.amount_at_risk_bdt)}
+                              {c.victims} {c.victims === 1 ? "victim" : "victims"} · {tk(c.amount_at_risk_bdt)}
                             </p>
                             <p className="mt-2 inline-flex items-center gap-1 text-xs">
                               Open case <ArrowUpRight className="size-3" />
@@ -81,10 +83,27 @@ export default function OpsQueue() {
                 </div>
               </div>
 
+              <Link
+                href="/ops/cases/CASE-0001"
+                className="group flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-volt-ink/40 bg-volt/5 p-5 transition-colors hover:border-foreground/40 dark:border-volt/30"
+              >
+                <span>
+                  <span className="label-mono">Start here · the golden thread</span>
+                  <span className="mt-1 block text-lg font-medium">CASE-0001: the ring behind Rubab&apos;s prize scam</span>
+                  <span className="text-sm text-muted-foreground">One case joins the alerts that share mule wallets, QR shops and agents.</span>
+                </span>
+                <span className="inline-flex h-10 items-center gap-1 rounded-full bg-foreground px-4 text-sm font-medium text-background">
+                  Open the case <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                </span>
+              </Link>
+
               <TapHint>Tap any case to open its workspace</TapHint>
               <div className="overflow-hidden rounded-3xl border border-border bg-card">
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-5 py-3">
-                  <p className="text-sm font-medium">Case queue</p>
+                  <div>
+                    <p className="text-sm font-medium">Case queue</p>
+                    <p className="text-xs text-muted-foreground">Ordered by urgency: chain risk score, then time to the next deadline</p>
+                  </div>
                   <div className="flex flex-wrap items-center gap-2">
                     <button
                       onClick={() => setDetailed((v) => !v)}
@@ -97,7 +116,38 @@ export default function OpsQueue() {
                     <OutputChip type="rule">Deadlines</OutputChip>
                   </div>
                 </div>
-                <div className="overflow-x-auto">
+                {/* phones: one card per case */}
+                <ul className="divide-y divide-border md:hidden">
+                  {rows.map((c) => (
+                    <li key={c.case_key}>
+                      <Link href={`/ops/cases/${c.case_key}`} className="block space-y-2.5 px-5 py-4 active:bg-muted/50">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-mono font-medium">
+                            {c.case_key}
+                            {c.qr_flagged_endpoint && (
+                              <span className="ml-2 inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+                                <QrCode className="size-3" /> QR
+                              </span>
+                            )}
+                          </span>
+                          <StatusPill status={c.status} />
+                        </div>
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                          <span className="flex items-center gap-1.5">
+                            <span className="h-1 w-10 rounded-full bg-muted">
+                              <span className="block h-full rounded-full bg-foreground" style={{ width: `${c.score * 100}%` }} />
+                            </span>
+                            <span className="num font-mono text-foreground">{c.score.toFixed(2)}</span>
+                          </span>
+                          <span>{c.victims} {c.victims === 1 ? "victim" : "victims"}</span>
+                          <span className="num ml-auto font-mono text-foreground">{tk(c.amount_at_risk_bdt)}</span>
+                        </div>
+                        <DeadlineBar d={c.next_deadline} />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+                <div className="hidden overflow-x-auto md:block">
                   <table className={cn("w-full text-sm", detailed ? "min-w-[860px]" : "min-w-[640px]")}>
                     <thead className="text-left text-xs text-muted-foreground">
                       <tr className="border-b border-border">
@@ -112,7 +162,7 @@ export default function OpsQueue() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
-                      {d.cases.map((c, i) => (
+                      {rows.map((c, i) => (
                         <motion.tr
                           key={c.case_key}
                           initial={{ opacity: 0 }}
@@ -159,12 +209,16 @@ export default function OpsQueue() {
                   </table>
                 </div>
               </div>
-              <p className="flex items-center gap-1 text-sm text-muted-foreground">
-                Start with the golden thread:
-                <Link href="/ops/cases/CASE-0001" className="inline-flex items-center gap-1 font-medium text-foreground underline-offset-4 hover:underline">
-                  CASE-0001, the ring behind Rubab&apos;s prize scam <ArrowUpRight className="size-3.5" />
-                </Link>
-              </p>
+              {d.cases.length > 15 && (
+                <button
+                  onClick={() => setShowAll((v) => !v)}
+                  aria-expanded={showAll}
+                  className="mx-auto flex h-11 items-center gap-2 rounded-full border border-border px-5 text-sm hover:border-foreground/40"
+                >
+                  {showAll ? "Show the top 15 only" : `Show all ${d.cases.length} cases`}
+                  <ChevronDown className={cn("size-4 transition-transform", showAll && "rotate-180")} />
+                </button>
+              )}
             </div>
           );
         }}

@@ -105,9 +105,9 @@ function MiniGraph() {
 
 function MiniGauge() {
   return (
-    <div className="grid h-28 grid-cols-5 items-end gap-1" aria-hidden="true">
+    <div className="grid h-28 w-36 grid-cols-5 items-end gap-1.5" aria-hidden="true">
       {[0.86, 0.94, 0.88, 0.48, 0].map((v, i) => (
-        <span key={i} className="rounded-sm bg-foreground/80" style={{ height: `${Math.max(6, v * 100)}%` }} />
+        <span key={i} className={cn("rounded-t-md", i === 0 ? "bg-volt-ink dark:bg-volt" : "bg-muted-foreground/40")} style={{ height: `${Math.max(6, v * 100)}%` }} />
       ))}
     </div>
   );
@@ -145,7 +145,7 @@ export function Portals() {
                   </CardItem>
                   <CardItem translateZ={40}>
                     <h3 className="font-serif text-4xl">{p.who}</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">{p.text}</p>
+                    <p className="mt-1 min-h-10 text-sm text-muted-foreground">{p.text}</p>
                   </CardItem>
                   <span className="absolute inset-x-0 bottom-0 h-0.5 origin-left scale-x-0 bg-volt transition-transform duration-500 group-hover:scale-x-100" />
                 </Link>

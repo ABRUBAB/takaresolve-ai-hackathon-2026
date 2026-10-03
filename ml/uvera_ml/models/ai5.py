@@ -18,7 +18,7 @@ from sklearn.model_selection import StratifiedGroupKFold
 from uvera_ml.common import load_config, write_json
 from uvera_ml.eval import metrics as M
 from uvera_ml.eval import plots
-from uvera_ml.features.qr import FEATURES, REASON_TEXT, build_qr_features
+from uvera_ml.features.qr import FEATURES, build_qr_features, reason_text
 from uvera_ml.features.splits import day_bounds, is_test_entity
 from uvera_ml.uncertainty.calibration import IsotonicCalibrator
 from uvera_ml.uncertainty.conformal import MondrianConformal
@@ -174,11 +174,7 @@ def run_ai5(world, out: str | Path, seeds=(42, 7, 1337, 2026, 99), quick: bool =
         r = []
         for j in top:
             feat, v = FEATURES[j], float(te.loc[i, FEATURES[j]])
-            en, bn = REASON_TEXT.get(feat, (feat, feat))
-            try:
-                en, bn = en.format(v=v), bn.format(v=v)
-            except (ValueError, KeyError):
-                pass
+            en, bn = reason_text(feat, v)
             r.append({"feature": feat, "value": v, "contribution": float(c[j]), "text_en": en, "text_bn": bn})
         reasons.append(json.dumps(r, ensure_ascii=False))
     te_out["reasons"] = reasons

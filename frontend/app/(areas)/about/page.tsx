@@ -129,7 +129,7 @@ export default function AboutPage() {
             [72, "hours to build", ""],
             [9, "Kaggle notebooks", ""],
             [7, "AI components", ""],
-            [2.2, "million synthetic events", "M"],
+            [2.2, "synthetic events", "M"],
             [0, "real customer records used", ""],
           ].map(([v, label, unit]) => (
             <div key={String(label)}>
