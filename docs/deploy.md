@@ -55,6 +55,9 @@ Nothing depends on the venue's internet except the browser:
 cd backend && uvicorn app.main:app --port 8000
 ```
 
+Create `frontend/.env.local` with one line, `NEXT_PUBLIC_API_BASE=http://localhost:8000` (without it a production build
+uses the recordings only), then:
+
 ```bash
 cd frontend && npm run build && npm run start
 ```
