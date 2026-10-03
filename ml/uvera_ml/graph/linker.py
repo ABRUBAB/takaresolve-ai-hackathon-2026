@@ -175,13 +175,19 @@ def evaluate_linking(world, cases: list[dict]) -> dict:
     found = {x["event_id"] for c in cases for x in c["edges"]}
     window = true_cashouts[true_cashouts["t"] >= min((c["opened_at_t"] for c in cases), default=0)]
     reached_cases = window[window["case_id"].isin({cid for c in cases for cid in c["_true_case_ids"]})]
+    ranked = sorted(cases, key=lambda c: -c["score"])
+    n_true = sum(c["_true_scam_alerts"] for c in cases)
     return {"n_cases": len(cases), "n_alerts": int(sum(c["n_alerts"] for c in cases)),
             "alerts_per_case": float(np.mean([c["n_alerts"] for c in cases])) if cases else None,
             "analyst_items_reduction": 1 - len(cases) / max(1, sum(c["n_alerts"] for c in cases)),
             "same_mule_pairs_linked": same / total if total else None, "same_mule_pairs": total,
             "case_purity_mean": float(np.mean(purities)) if purities else None,
             "cashouts_found_for_detected_cases": float(reached_cases["event_id"].isin(found).mean()) if len(reached_cases) else None,
-            "cases_with_true_scam": int(sum(c["_true_scam_alerts"] > 0 for c in cases))}
+            "cases_with_true_scam": int(sum(c["_true_scam_alerts"] > 0 for c in cases)),
+            # cases are sorted by chain score: how much of the real scam reaches the top of the analyst queue?
+            "real_scam_alerts_in_top_cases": {str(k): float(sum(c["_true_scam_alerts"] for c in ranked[:k]) / max(1, n_true))
+                                              for k in (5, 10, 20)},
+            "top_cases_with_real_scam": {str(k): int(sum(c["_true_scam_alerts"] > 0 for c in ranked[:k])) for k in (5, 10, 20)}}
 
 
 def communities(cases: list[dict]) -> dict:
