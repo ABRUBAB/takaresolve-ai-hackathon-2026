@@ -35,31 +35,27 @@ export function Principles() {
             <OutputChip type="generated" />
           </div>
         </div>
-        <div className="mt-12 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
+        <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {PRINCIPLES.map((p, i) => {
             const on = open === i;
             return (
-              <motion.button
+              <motion.div
                 key={p.title}
-                onClick={() => setOpen(i)}
                 onMouseEnter={() => setOpen(i)}
-                aria-expanded={on}
-                layout
-                className={cn(
-                  "flex min-h-40 flex-col justify-between rounded-3xl border p-5 text-left transition-colors",
-                  on ? "border-foreground bg-foreground text-background" : "border-border bg-card hover:border-foreground/30",
-                )}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05, duration: 0.5 }}
+                className={cn("flex gap-4 rounded-3xl border p-6 transition-colors", on ? "border-foreground/50 bg-card" : "border-border bg-card/40")}
               >
-                <p.icon className={cn("size-6", on ? "text-volt-ink" : "")} aria-hidden="true" />
+                <span className={cn("grid size-11 shrink-0 place-items-center rounded-2xl transition-colors", on ? "bg-volt text-black" : "bg-muted")}>
+                  <p.icon className="size-5" aria-hidden="true" />
+                </span>
                 <div>
                   <p className="font-semibold">{p.title}</p>
-                  {on && (
-                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-2 text-xs leading-relaxed opacity-70">
-                      {p.text}
-                    </motion.p>
-                  )}
+                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{p.text}</p>
                 </div>
-              </motion.button>
+              </motion.div>
             );
           })}
         </div>

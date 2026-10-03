@@ -51,13 +51,22 @@ export function Phone({ children }: { children: ReactNode }) {
   );
 }
 
-export function CustomerShell({ phone, inspector, intro }: { phone: ReactNode; inspector: ReactNode; intro: ReactNode }) {
+export function CustomerShell({ phone, inspector, intro, aside }: { phone: ReactNode; inspector: ReactNode; intro: ReactNode; aside?: ReactNode }) {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-12">
-      <div className="mb-8">{intro}</div>
-      <div className="grid items-start gap-8 lg:grid-cols-[400px_minmax(0,1fr)] lg:gap-12">
-        <Phone>{phone}</Phone>
-        <div className="min-w-0">{inspector}</div>
+      <div className="grid items-start gap-8 lg:grid-cols-[400px_minmax(0,1fr)] lg:gap-14">
+        <div className="lg:order-2 lg:pt-6">
+          {intro}
+          {aside && <div className="mt-8 hidden lg:block">{aside}</div>}
+          <div className="mt-8 hidden lg:block">{inspector}</div>
+        </div>
+        <div className="lg:order-1">
+          <Phone>{phone}</Phone>
+        </div>
+        <div className="space-y-6 lg:hidden">
+          {aside}
+          {inspector}
+        </div>
       </div>
     </div>
   );

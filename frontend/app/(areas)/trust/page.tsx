@@ -1,7 +1,8 @@
 "use client";
 
-import { AlertTriangle, CheckCircle2, CircleDashed } from "lucide-react";
-import type { ReactNode } from "react";
+import { AlertTriangle, CheckCircle2, ChevronDown, CircleDashed } from "lucide-react";
+import { motion } from "motion/react";
+import { useState, type ReactNode } from "react";
 import { AreaIntro } from "@/components/customer/phone";
 import { Guard } from "@/components/shell/states";
 import { num, tk } from "@/lib/format";
@@ -47,7 +48,23 @@ function Section({ id, title, ai, src, children, lead }: { id: string; title: st
   );
 }
 
-function Table({ cols, rows, highlight }: { cols: string[]; rows: ReactNode[][]; highlight?: number }) {
+function Table({ cols, rows, highlight, open }: { cols: string[]; rows: ReactNode[][]; highlight?: number; open?: boolean }) {
+  const [show, setShow] = useState(open ?? true);
+  if (!show)
+    return (
+      <button
+        onClick={() => setShow(true)}
+        className="flex w-full items-center justify-between rounded-2xl border border-dashed border-border px-4 py-3 text-left text-sm hover:border-foreground/40"
+      >
+        <span>
+          <span className="font-medium">{cols[0]}</span>
+          <span className="text-muted-foreground"> · {rows.length} rows</span>
+        </span>
+        <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+          Show the table <ChevronDown className="size-3.5" />
+        </span>
+      </button>
+    );
   return (
     <div className="overflow-x-auto rounded-2xl border border-border">
       <table className="w-full min-w-[520px] text-sm">
@@ -131,6 +148,37 @@ export default function TrustCenter() {
           const dc = m.data_card as J;
           return (
             <div className="mt-10">
+              <div className="mb-10 grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-7">
+                {(
+                  [
+                    ["AI-1", "ai1", t1?.model?.at_5pct_alert_rate?.recall, "scams caught at 5%", "pct"],
+                    ["AI-2", "ai2", Math.max(0, ...((a2?.test_heldout_style_B as J[]) ?? []).map((r) => r.verdict_pr_auc ?? 0)), "PR-AUC, unseen style", "num"],
+                    ["AI-3", "ai3", (a3?.backtest as J[] | undefined)?.find((r) => r.split === "test" && r.model === a3?.winner_on_validation)?.coverage_80, "80% band coverage", "num"],
+                    ["AI-4", "ai4", (a4?.backtest as J[] | undefined)?.find((r) => r.split === "test" && r.model === a4?.winner_on_validation)?.coverage_80, "80% band coverage", "num"],
+                    ["AI-5", "ai5", a5?.weekly_precision_at_k, "top-20 precision", "pct"],
+                    ["AI-6", "ai6", a6?.linking?.analyst_items_reduction, "fewer analyst items", "pct"],
+                    ["AI-7", "ai7", a7?.injection_shown_success_rate, "injections shown", "pct"],
+                  ] as [string, string, unknown, string, string][]
+                ).map(([id, key, v, label, kind], i) => (
+                  <motion.a
+                    key={id}
+                    href={`#${key === "ai3" || key === "ai4" ? "ai34" : key}`}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.05 }}
+                    className="flex flex-col justify-between gap-4 rounded-3xl border border-border bg-card p-4 transition-colors hover:border-foreground/40"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-xs">{id}</span>
+                      <span className={cn("size-2 rounded-full", S[key] === "official" ? "bg-volt-ink dark:bg-volt" : "border border-dashed border-faint")} title={S[key]} />
+                    </div>
+                    <div>
+                      <p className="num font-mono text-2xl font-semibold">{typeof v === "number" ? (kind === "pct" ? `${Math.round(v * 100)}%` : v.toFixed(2)) : "—"}</p>
+                      <p className="text-[11px] leading-tight text-muted-foreground">{label}</p>
+                    </div>
+                  </motion.a>
+                ))}
+              </div>
               <nav className="no-scrollbar flex gap-2 overflow-x-auto pb-6" aria-label="Sections">
                 {[
                   ["data", "Data"],
@@ -185,6 +233,7 @@ export default function TrustCenter() {
               >
                 {t1 && (
                   <Table
+                    open
                     cols={["Metric", "UVERA AI-1", "Rule baseline"]}
                     highlight={2}
                     rows={[
@@ -218,6 +267,7 @@ export default function TrustCenter() {
                 )}
                 {a1?.cv_paired_vs_lightgbm && (
                   <Table
+                    open={false}
                     cols={["Compared with LightGBM (25 paired CV folds)", "Mean PR-AUC difference", "95% CI", "Folds won"]}
                     rows={(a1.cv_paired_vs_lightgbm as J[]).map((r) => [
                       r.model.replace(/_/g, " "),
@@ -277,6 +327,7 @@ export default function TrustCenter() {
                 )}
                 {a2?.external_uci_sms_spam && typeof a2.external_uci_sms_spam === "object" && (
                   <Table
+                    open={false}
                     cols={["External sanity test: UCI SMS Spam (English)", "n", "Spam share", "PR-AUC"]}
                     rows={Object.entries(a2.external_uci_sms_spam as Record<string, J>).map(([k, v]) => [k.replace(/_/g, " "), num(v.n), p1(v.spam_share), f3(v.verdict_pr_auc)])}
                   />
@@ -382,6 +433,7 @@ export default function TrustCenter() {
 
               <Section id="health" title="Live system health" lead="Measured by this running API since it started.">
                 <Table
+                  open={false}
                   cols={["Route", "Requests", "p50 ms", "p95 ms"]}
                   rows={Object.entries(m.live_health.routes).map(([k, v]) => [k, num(v.n), f3(v.p50_ms, 1), f3(v.p95_ms, 1)])}
                 />

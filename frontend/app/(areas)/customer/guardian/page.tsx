@@ -6,8 +6,8 @@ import { Area, Bar, CartesianGrid, ComposedChart, Line, ReferenceLine, Responsiv
 import { AreaIntro, CustomerShell } from "@/components/customer/phone";
 import { Guard } from "@/components/shell/states";
 import { OutputChip } from "@/components/trust/chips";
-import { ProbabilityMeter } from "@/components/trust/evidence";
-import { Inspector, InspectorSection, KV, TraceFooter } from "@/components/trust/inspector";
+import { RiskDial } from "@/components/trust/visuals";
+import { Inspector, InspectorSection, KV, SummaryChips, TraceFooter } from "@/components/trust/inspector";
 import { pct, shortDate, tk } from "@/lib/format";
 import { useLang } from "@/lib/i18n";
 import type { Cashflow } from "@/lib/types";
@@ -77,7 +77,7 @@ export default function GuardianPage() {
                       {c.warning ? <AlertTriangle className="size-5 text-caution" /> : <ShieldCheck className="size-5 text-safe" />}
                       <p className="font-medium">{c.warning ? "Your balance may run low this week" : "This week looks safe"}</p>
                     </div>
-                    <ProbabilityMeter p={c.p_shortfall_7d} label={t("low_balance_risk")} className="mt-3" />
+                    <RiskDial p={c.p_shortfall_7d} size={150} className="mx-auto mt-3" tone={c.warning ? "caution" : "safe"} label="chance of running low" />
                     <p className="mt-2 text-xs text-muted-foreground">Safety floor: {tk(c.floor_bdt)} at the end of the next 7 days.</p>
                   </div>
                   <div>
@@ -142,7 +142,13 @@ export default function GuardianPage() {
         </div>
       }
       inspector={
-        <Inspector>
+        <Inspector
+          summary={
+            q.data ? (
+              <SummaryChips items={[["model", q.data.model], ["best on validation", q.data.validated_winner], ["warning cut-off", pct(q.data.warning_threshold)]]} />
+            ) : undefined
+          }
+        >
           {q.data ? (
             <>
               <InspectorSection title="AI-3 forecast" chip={<OutputChip type="model" />}>

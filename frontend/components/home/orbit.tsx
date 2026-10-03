@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 /* eslint-disable @typescript-eslint/no-explicit-any -- metric files are free-form JSON written by the notebooks */
 type J = any;
 
-type Ai = { id: string; name: string; who: string; what: string; out: "model" | "rule" | "generated"; metric: (m: MetricsSummary) => [string, string] | null };
+type Ai = { id: string; name: string; how: string; who: string; what: string; out: "model" | "rule" | "generated"; metric: (m: MetricsSummary) => [string, string] | null };
 
 const isNum = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
 const mase = (a: J) => {
@@ -26,7 +26,7 @@ const mase = (a: J) => {
 
 const AIS: Ai[] = [
   {
-    id: "AI-1", name: "Pause Check", who: "Customer", out: "model",
+    id: "AI-1", name: "Pause Check", how: "LightGBM vs XGBoost, CatBoost, logistic regression and a rule · grouped CV × 5 seeds · isotonic calibration · conformal “not sure” · TreeSHAP reasons", who: "Customer", out: "model",
     what: "Scores a transfer before it leaves and pauses it with reasons when it looks like a scam.",
     metric: (m) => {
       const h = m.summary.headline.ai1;
@@ -36,7 +36,7 @@ const AIS: Ai[] = [
     },
   },
   {
-    id: "AI-2", name: "Scam Text Check", who: "Customer", out: "model",
+    id: "AI-2", name: "Scam Text Check", how: "TF-IDF vs BGE-M3 embeddings vs an evidential head · tested on a held-out writing style · phrase occlusion", who: "Customer", out: "model",
     what: "Reads an SMS in Bangla, Banglish or English, names the scam family and highlights the words that matter.",
     metric: (m) => {
       const rows = ((m.per_ai.ai2 as J)?.test_heldout_style_B as J[]) ?? [];
@@ -44,15 +44,15 @@ const AIS: Ai[] = [
       return rows.length ? [best.toFixed(2), "PR-AUC on a writing style it never saw"] : null;
     },
   },
-  { id: "AI-3", name: "Cash-Flow Guardian", who: "Customer", out: "model", what: "Forecasts the week of money in and out and warns early if the balance may run low.", metric: (m) => mase(m.per_ai.ai3) },
-  { id: "AI-4", name: "Liquidity Copilot", who: "Agent", out: "model", what: "Tells an agent how much cash to hold for a 90%-safe day, with the riskiest days marked.", metric: (m) => mase(m.per_ai.ai4) },
+  { id: "AI-3", name: "Cash-Flow Guardian", how: "Seasonal-naive vs LightGBM-quantile vs Chronos-2 · rolling-origin backtest · empirical probability", who: "Customer", out: "model", what: "Forecasts the week of money in and out and warns early if the balance may run low.", metric: (m) => mase(m.per_ai.ai3) },
+  { id: "AI-4", name: "Liquidity Copilot", how: "Quantile forecasts · interval coverage · no yes/no alarm where the evidence is weak", who: "Agent", out: "model", what: "Tells an agent how much cash to hold for a 90%-safe day, with the riskiest days marked.", metric: (m) => mase(m.per_ai.ai4) },
   {
-    id: "AI-5", name: "QR Shield", who: "Operations · Agent zone", out: "model",
+    id: "AI-5", name: "QR Shield", how: "LightGBM + Isolation Forest rank fusion · unseen scheme tested separately · size-fairness check", who: "Operations · Agent zone", out: "model",
     what: "Finds shops whose QR payments look like hidden cash-out, compared with shops of the same type, area and size.",
     metric: (m) => (isNum(m.summary.headline.ai5.precision_at_k) ? [`${Math.round(m.summary.headline.ai5.precision_at_k * 100)}%`, "of the 20 shops reviewed each week are real cash-out"] : null),
   },
   {
-    id: "AI-6", name: "Case Linker", who: "Operations", out: "rule",
+    id: "AI-6", name: "Case Linker", how: "Time-respecting path tracing (≤ 3 hops, ≤ 48 h) · union-find linking · community detection", who: "Operations", out: "rule",
     what: "Follows money paths in time order and joins alerts that share wallets or shops into one case with a deadline clock.",
     metric: (m) => {
       const v = (m.summary.headline.ai6 as J)?.analyst_items_reduction;
@@ -60,7 +60,7 @@ const AIS: Ai[] = [
     },
   },
   {
-    id: "AI-7", name: "Grounded Brief", who: "Everyone", out: "generated",
+    id: "AI-7", name: "Grounded Brief", how: "Gemini structured output · evidence-card retrieval · deterministic validator · template fallback · injection tests", who: "Everyone", out: "generated",
     what: "Writes a short Bangla and English brief using only the facts the other AIs produced; a validator rejects anything new.",
     metric: (m) => (isNum(m.summary.headline.ai7.injection_shown_success_rate) ? [`${Math.round(Number(m.summary.headline.ai7.injection_shown_success_rate) * 100)}%`, "of prompt-injection attacks reached a user"] : null),
   },
@@ -134,6 +134,7 @@ export function AiOrbit() {
               <h3 className="mt-3 text-3xl font-semibold tracking-[-0.02em]">{ai.name}</h3>
               <p className="mt-1 text-xs text-faint">{ai.who}</p>
               <p className="mt-4 leading-relaxed text-muted-foreground">{ai.what}</p>
+              <p className="mt-4 rounded-2xl bg-muted/60 px-4 py-3 font-mono text-[11px] leading-relaxed text-muted-foreground">{ai.how}</p>
               <div className="mt-8 border-t border-border pt-6">
                 {metric ? (
                   <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">

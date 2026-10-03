@@ -7,7 +7,8 @@ import { AreaIntro, CustomerShell } from "@/components/customer/phone";
 import { ErrorBox } from "@/components/shell/states";
 import { OutputChip } from "@/components/trust/chips";
 import { HighlightedText, ProbabilityMeter } from "@/components/trust/evidence";
-import { EmptyInspector, Inspector, InspectorSection, KV, TraceFooter } from "@/components/trust/inspector";
+import { EmptyInspector, Inspector, InspectorSection, KV, SummaryChips, TraceFooter } from "@/components/trust/inspector";
+import { RiskDial } from "@/components/trust/visuals";
 import { post } from "@/lib/api";
 import { pct } from "@/lib/format";
 import { useLang } from "@/lib/i18n";
@@ -97,7 +98,8 @@ export default function CheckPage() {
                   verdict === "unsure" && "border-2 border-dashed border-unsure/60",
                 )}
               >
-                <div className="flex items-center gap-2">
+                <RiskDial p={r.p_scam} size={150} className="mx-auto" tone={verdict === "unsure" ? "unsure" : undefined} label="scam probability" />
+                <div className="flex items-center justify-center gap-2">
                   {verdict === "scam" && <ShieldAlert className="size-6 text-risk" />}
                   {verdict === "safe" && <ShieldCheck className="size-6 text-safe" />}
                   {verdict === "unsure" && <CircleHelp className="size-6 text-unsure" />}
@@ -122,7 +124,15 @@ export default function CheckPage() {
         </div>
       }
       inspector={
-        <Inspector>
+        <Inspector
+          summary={
+            r ? (
+              <SummaryChips items={[["scam probability", pct(r.p_scam)], ["family", r.family.replace(/_/g, " ")], ["AI instructions", r.contains_ai_instructions ? "detected" : "none"]]} />
+            ) : (
+              <p className="text-sm text-muted-foreground">Scam-family probabilities and how much each highlighted phrase moved the verdict.</p>
+            )
+          }
+        >
           {!r ? (
             <EmptyInspector text="Pick an example or paste a message. This panel shows the scam probability, the probability of each scam family, and how much each highlighted phrase moved the verdict." />
           ) : (

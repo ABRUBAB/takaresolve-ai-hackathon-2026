@@ -90,7 +90,11 @@ export function Results() {
                   <Column v={a1.recall_at_5pct_rule_baseline} label="Simple rule" />
                 </div>
               )}
-              <p className="text-xs text-muted-foreground">Unseen customers, later weeks · PR-AUC {isNum(a1.pr_auc) ? a1.pr_auc.toFixed(2) : "—"} vs {isNum(a1.pr_auc_rule_baseline) ? a1.pr_auc_rule_baseline.toFixed(2) : "—"}</p>
+              <p className="text-sm text-muted-foreground">
+                Tested on customers the model never saw (grouped split), in the weeks after training, against a simple rule (large amount to a
+                new receiver) that flags the same number of transfers. PR-AUC {isNum(a1.pr_auc) ? a1.pr_auc.toFixed(2) : "—"} vs{" "}
+                {isNum(a1.pr_auc_rule_baseline) ? a1.pr_auc_rule_baseline.toFixed(2) : "—"} for the rule.
+              </p>
             </Tile>
 
             <Tile className="items-center text-center md:col-span-3 md:flex-row md:text-left" delay={0.05} src={src.ai1}>
@@ -137,7 +141,10 @@ export function Results() {
             <Tile className="md:col-span-2" delay={0.05} src={src.ai5}>
               <p className="text-sm font-medium">QR Shield · the 20 shops checked each week</p>
               {isNum(a5?.precision_at_k) && <DotWaffle filled={Math.round(a5.precision_at_k * 20)} total={20} cols={10} />}
-              <p className="text-xs text-muted-foreground">{isNum(a5?.precision_at_k) ? `${Math.round(a5.precision_at_k * 20)} of 20 are real hidden cash-out` : "—"}</p>
+              <p className="text-sm text-muted-foreground">
+                {isNum(a5?.precision_at_k) ? `${Math.round(a5.precision_at_k * 20)} of the 20 shops analysts review each week are real hidden cash-out` : "—"}
+                {isNum(a5?.fpr_honest_round_price) ? `; honest round-price shops flagged ${(a5.fpr_honest_round_price * 100).toFixed(1)}%.` : "."}
+              </p>
             </Tile>
 
             <Tile className="md:col-span-2" delay={0.1} src={src.ai6}>
@@ -145,7 +152,7 @@ export function Results() {
               {a6 && isNum(a6.analyst_items_reduction) && (
                 <p className="num font-serif text-7xl leading-none">−{Math.round(a6.analyst_items_reduction * 100)}%</p>
               )}
-              <p className="text-xs text-muted-foreground">fewer items when linked alerts become one case</p>
+              <p className="text-sm text-muted-foreground">fewer items to open when alerts that share mule wallets or shops are reviewed as one case</p>
             </Tile>
 
             <Tile className="md:col-span-2" delay={0.15} src={src.ai7}>
@@ -153,7 +160,7 @@ export function Results() {
               <p className="num font-serif text-7xl leading-none">
                 {a7 && isNum(a7.injection_shown_success_rate) ? `${Math.round(Number(a7.injection_shown_success_rate) * 100)}%` : "—"}
               </p>
-              <p className="text-xs text-muted-foreground">a validator checks every number and evidence id</p>
+              <p className="text-sm text-muted-foreground">Gemini may only reword facts the models produced; a validator checks every number and evidence id and falls back to a template.</p>
             </Tile>
           </div>
         )}

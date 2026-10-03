@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useSyncExternalStore, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useSyncExternalStore, type ReactNode } from "react";
 
 export type Lang = "en" | "bn";
 
@@ -77,6 +77,9 @@ const Ctx = createContext<{ lang: Lang; setLang: (l: Lang) => void; t: (k: Key) 
 
 export function LangProvider({ children }: { children: ReactNode }) {
   const lang = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  useEffect(() => {
+    document.documentElement.lang = lang; // screen readers pronounce Bangla correctly
+  }, [lang]);
   const setLang = useCallback((l: Lang) => {
     try {
       localStorage.setItem(KEY, l);

@@ -63,3 +63,25 @@ export function QrBadge({ state }: { state: QrState }) {
     </span>
   );
 }
+
+/** A countdown ring for one dispute deadline. */
+export function DeadlineRing({ d, size = 92 }: { d: Deadline; size?: number }) {
+  const r = 40;
+  const c = 2 * Math.PI * r;
+  const frac = Math.max(0, Math.min(1, d.remaining_fraction));
+  const tone = d.status === "breached" ? "stroke-risk" : d.status === "urgent" ? "stroke-caution" : "stroke-foreground";
+  return (
+    <div className="flex flex-col items-center gap-2 text-center">
+      <div className="relative grid place-items-center" style={{ width: size, height: size }}>
+        <svg viewBox="0 0 100 100" className="absolute inset-0 -rotate-90" aria-hidden="true">
+          <circle cx="50" cy="50" r={r} fill="none" className="stroke-muted" strokeWidth="6" />
+          <circle cx="50" cy="50" r={r} fill="none" className={tone} strokeWidth="6" strokeLinecap="round" strokeDasharray={`${c * frac} ${c}`} />
+        </svg>
+        <span className={cn("num font-mono text-xs font-semibold", d.status === "urgent" && "text-caution", d.status === "breached" && "text-risk")}>
+          {hoursText(d.remaining_hours).replace(" left", "")}
+        </span>
+      </div>
+      <span className="max-w-28 text-[11px] leading-tight text-muted-foreground">{d.label}</span>
+    </div>
+  );
+}

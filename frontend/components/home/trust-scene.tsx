@@ -92,24 +92,23 @@ function buildField(world: WorldCompact, mobile: boolean): Field {
     const k = kind[i];
     groups[k === 3 ? 3 : k === 4 ? 2 : k === 0 || k === 6 ? 0 : 1].push(i);
   }
-  const s1 = mobile ? 0.82 : 1;
   groups[0].forEach((i, k) => {
-    const rad = s1 * 5.6 * Math.sqrt((k + 0.5) / groups[0].length);
+    const rad = 3.6 * Math.sqrt((k + 0.5) / groups[0].length);
     const th = k * GOLDEN;
     p[1].set([rad * Math.cos(th), -1.35 + (r() - 0.5) * 0.1, rad * Math.sin(th)], i * 3);
   });
   groups[2].forEach((i, k) => {
     const th = (k / Math.max(1, groups[2].length)) * Math.PI * 2;
-    p[1].set([0.9 * Math.cos(th), -1.25, 0.9 * Math.sin(th)], i * 3);
+    p[1].set([0.7 * Math.cos(th), -1.25, 0.7 * Math.sin(th)], i * 3);
   });
   groups[1].forEach((i, k) => {
-    const rad = s1 * (1.3 + 2.8 * Math.sqrt((k + 0.5) / groups[1].length));
+    const rad = 1.0 + 2.2 * Math.sqrt((k + 0.5) / groups[1].length);
     const th = k * GOLDEN + 1.1;
     p[1].set([rad * Math.cos(th), 0, rad * Math.sin(th)], i * 3);
   });
   groups[3].forEach((i, k) => {
     const th = (k / Math.max(1, groups[3].length)) * Math.PI * 2;
-    p[1].set([1.05 * Math.cos(th), 1.5, 1.05 * Math.sin(th)], i * 3);
+    p[1].set([0.85 * Math.cos(th), 1.45, 0.85 * Math.sin(th)], i * 3);
   });
 
   // ---- state 2: the UVERA mark (ring = customers, left bar = agents & shops, volt bar = the pause)
@@ -147,7 +146,7 @@ function buildField(world: WorldCompact, mobile: boolean): Field {
       hl[i * 4 + 3] = 1;
     } else {
       const th = r() * Math.PI * 2;
-      const rad = 3.2 + Math.pow(r(), 0.7) * 3.2;
+      const rad = 2.2 + Math.pow(r(), 0.7) * 1.4;
       p[3].set([rad * Math.cos(th), -0.6 + (r() - 0.5) * 0.35, rad * Math.sin(th)], i * 3);
     }
   }
@@ -449,8 +448,12 @@ function Scene({ world, mode, animate, mobile, dark }: { world: WorldCompact; mo
     const lo = Math.floor(Math.min(L.state, 2.999));
     const f = L.state - lo;
     const cam = CAMERA[lo].map((v, k) => v + (CAMERA[lo + 1][k] - v) * f);
-    const zoom = mobile ? 1.3 : 1.12;
-    camera.position.set(cam[0] + L.pointer.x * 0.25 * L.mouseOn, cam[1] * zoom, cam[2] * zoom);
+    const half = Math.tan(((42 / 2) * Math.PI) / 180);
+    const fitR = 3.6;
+    const len = Math.hypot(cam[0], cam[1], cam[2]);
+    const need = Math.max(len, (fitR * 1.05) / half, fitR / (half * (size.width / Math.max(1, size.height))));
+    const zoom = need / len;
+    camera.position.set(cam[0] * zoom + L.pointer.x * 0.25 * L.mouseOn, cam[1] * zoom, cam[2] * zoom);
     camera.lookAt(0, 0.1, 0);
     camera.updateMatrixWorld();
 

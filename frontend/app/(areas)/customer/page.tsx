@@ -1,16 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowDownLeft, ArrowUpRight, MessageSquareWarning, Send, ShieldCheck, TrendingUp } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, CircleHelp, MessageSquareWarning, Send, ShieldCheck, ShieldX, TrendingUp } from "lucide-react";
 import { AreaIntro, CustomerShell } from "@/components/customer/phone";
 import { Guard } from "@/components/shell/states";
-import { Inspector, InspectorSection, KV, TraceFooter } from "@/components/trust/inspector";
+import { Inspector, InspectorSection, KV, SummaryChips, TraceFooter } from "@/components/trust/inspector";
 import { shortDate, tk } from "@/lib/format";
 import { useLang } from "@/lib/i18n";
 import type { Profile } from "@/lib/types";
 import { useApi } from "@/lib/use-api";
 
 const TYPE: Record<string, string> = { p2p: "Transfer", qr_pay: "QR payment", cash_in: "Cash in", cash_out: "Cash out", recharge: "Mobile recharge", bill: "Bill" };
+
+const TRY = [
+  { href: "/customer/send?scenario=golden_prize_scam", title: "Prize scam", sub: "High risk · paused", icon: ShieldX, bg: "bg-risk/15", fg: "text-risk" },
+  { href: "/customer/send?scenario=new_device_takeover", title: "New phone at night", sub: "The AI is not sure", icon: CircleHelp, bg: "bg-muted", fg: "text-unsure" },
+  { href: "/customer/send?scenario=normal_user", title: "Family transfer", sub: "Low risk · sends", icon: ShieldCheck, bg: "bg-safe/15", fg: "text-safe" },
+];
 
 const PIPELINE = [
   ["Features", "19 behaviour signals about the sender, the receiver and the moment, computed only from the past"],
@@ -98,9 +104,10 @@ export default function CustomerHome() {
           )}
         </Guard>
       }
-      inspector={
-        <Inspector>
-          <InspectorSection title="What happens when Rina presses send">
+      aside={
+        <div className="space-y-8">
+          <div className="rounded-3xl border border-border bg-card p-5">
+            <p className="label-mono mb-4">What happens when Rina presses send</p>
             <ol className="space-y-3">
               {PIPELINE.map(([k, v], i) => (
                 <li key={k} className="flex gap-3">
@@ -111,7 +118,25 @@ export default function CustomerHome() {
                 </li>
               ))}
             </ol>
-          </InspectorSection>
+          </div>
+          <div>
+          <p className="label-mono mb-3">Try a moment from Rina&apos;s evening</p>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {TRY.map((x) => (
+              <Link key={x.href} href={x.href} className="group rounded-3xl border border-border bg-card p-4 transition-colors hover:border-foreground/40">
+                <span className={`mb-4 grid size-10 place-items-center rounded-full ${x.bg}`}>
+                  <x.icon className={`size-5 ${x.fg}`} />
+                </span>
+                <p className="font-medium">{x.title}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">{x.sub}</p>
+              </Link>
+            ))}
+          </div>
+          </div>
+        </div>
+      }
+      inspector={
+        <Inspector summary={<SummaryChips items={[["balance", q.data ? tk(q.data.balance_bdt) : "—"], ["wallet age", q.data ? `${q.data.tenure_days} d` : "—"], ["checks", "19 signals"]]} />}>
           {q.data && (
             <InspectorSection title="Persona facts (synthetic)">
               <KV
@@ -126,20 +151,6 @@ export default function CustomerHome() {
               />
             </InspectorSection>
           )}
-          <InspectorSection title="Try these">
-            <div className="grid gap-2 sm:grid-cols-3">
-              {[
-                ["/customer/send?scenario=golden_prize_scam", "Prize scam", "High risk · paused"],
-                ["/customer/send?scenario=new_device_takeover", "New phone + PIN reset", "AI says not sure"],
-                ["/customer/send?scenario=normal_user", "Family transfer", "Low risk · sends"],
-              ].map(([href, a, b]) => (
-                <Link key={href} href={href} className="rounded-2xl border border-border p-3 text-sm hover:border-foreground/40">
-                  <p className="font-medium">{a}</p>
-                  <p className="text-xs text-muted-foreground">{b}</p>
-                </Link>
-              ))}
-            </div>
-          </InspectorSection>
           <TraceFooter trace={q.data?.trace_id} model={q.data?.model_version || "profile"} data={q.data?.data_version} />
         </Inspector>
       }

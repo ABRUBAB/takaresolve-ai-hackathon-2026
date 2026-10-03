@@ -11,6 +11,7 @@ import type { WorldCompact } from "@/components/home/trust-scene";
 import Magnet from "@/components/reactbits/Magnet";
 import { HyperText } from "@/components/ui/hyper-text";
 import { Marquee } from "@/components/ui/marquee";
+import { useIdle } from "@/lib/use-idle";
 import { useMotionPref } from "@/lib/motion-pref";
 import { cn } from "@/lib/utils";
 
@@ -44,6 +45,7 @@ export function Hero() {
   const { resolvedTheme } = useTheme();
   const { animate, paused, setPaused } = useMotionPref();
   const mobile = useMobile();
+  const idle = useIdle();
   const [world, setWorld] = useState<WorldCompact | null>(null);
   const [visible, setVisible] = useState(true);
   const [mode, setMode] = useState(0);
@@ -112,14 +114,14 @@ export function Hero() {
     <section ref={box} className="relative isolate h-[100svh] min-h-[600px] overflow-hidden border-b border-border" aria-labelledby="hero-title">
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_72%_45%,color-mix(in_oklab,var(--volt)_7%,transparent),transparent_60%)]" />
       <motion.div
-        className="absolute inset-x-0 bottom-12 top-14 -z-10 opacity-60 md:left-[34%] md:opacity-100"
+        className="absolute inset-x-0 bottom-12 top-14 -z-10 opacity-60 md:left-[36%] md:opacity-100"
         initial={{ opacity: 0, scale: 1.04 }}
-        animate={{ opacity: world ? 1 : 0, scale: world ? 1 : 1.04 }}
+        animate={{ opacity: world && idle ? 1 : 0, scale: world && idle ? 1 : 1.04 }}
         transition={{ duration: 1.8, ease: [0.2, 0.8, 0.2, 1] }}
         role="img"
         aria-label={`Interactive 3D field of synthetic wallets. Current view: ${MODES[mode].label}. ${MODES[mode].caption}`}
       >
-        {world && <TrustScene world={world} mode={mode} dark={resolvedTheme !== "light"} animate={animate && visible} mobile={mobile} />}
+        {world && idle && <TrustScene world={world} mode={mode} dark={resolvedTheme !== "light"} animate={animate && visible} mobile={mobile} />}
       </motion.div>
       <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-background via-background/50 to-transparent md:via-background/10 md:to-40%" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-background to-transparent" />
@@ -163,7 +165,7 @@ export function Hero() {
           </span>
           <span className="label-mono border-l border-border pl-4">AI DEV FEST 2026 · Track 07</span>
         </motion.div>
-        <h1 id="hero-title" className="max-w-3xl font-serif text-[clamp(2.8rem,min(7.2vw,11.5vh),7.25rem)] leading-[0.92] tracking-[-0.02em]">
+        <h1 id="hero-title" className="max-w-4xl font-serif text-[clamp(3rem,min(8.6vw,13.5vh),8.75rem)] leading-[0.9] tracking-[-0.02em]">
           <motion.span
             className="block"
             initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}

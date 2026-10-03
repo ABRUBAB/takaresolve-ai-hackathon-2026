@@ -59,9 +59,9 @@ export function TopBar({ floating = false }: { floating?: boolean }) {
           <button
             onClick={() => setLang(lang === "en" ? "bn" : "en")}
             className="h-8 rounded-full border border-border px-3 text-xs text-muted-foreground hover:text-foreground"
-            aria-label={lang === "en" ? "Switch to Bangla" : "Switch to English"}
           >
-            {lang === "en" ? "বাংলা" : "English"}
+            {lang === "en" ? <span lang="bn">বাংলা</span> : "English"}
+            <span className="sr-only"> (change language)</span>
           </button>
           <button
             aria-label="Toggle light and dark theme"

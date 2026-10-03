@@ -8,6 +8,7 @@ import { BlurFade } from "@/components/ui/blur-fade";
 import { NumberTicker } from "@/components/ui/number-ticker";
 import { Timeline } from "@/components/ui/timeline";
 import { useMotionPref } from "@/lib/motion-pref";
+import { useIdle } from "@/lib/use-idle";
 import { TEAM, TEAM_NAME } from "@/lib/team";
 
 const LiquidMetal = dynamic(() => import("@paper-design/shaders-react").then((m) => m.LiquidMetal), { ssr: false });
@@ -59,6 +60,7 @@ const STEPS = [
 
 export default function AboutPage() {
   const { animate } = useMotionPref();
+  const idle = useIdle(2500);
   return (
     <div>
       <section className="relative overflow-hidden border-b border-border">
@@ -78,9 +80,9 @@ export default function AboutPage() {
               </p>
             </BlurFade>
           </div>
-          <div className="relative mx-auto aspect-square w-full max-w-[420px]">
+          <div className="relative mx-auto aspect-square w-full max-w-[420px]" role="img" aria-label="The UVERA mark in liquid metal">
             <div className="absolute inset-[8%] rounded-full bg-[radial-gradient(circle,color-mix(in_oklab,var(--volt)_18%,transparent),transparent_65%)]" />
-            <LiquidMetal
+            {idle && <LiquidMetal
               image="/brand/mark.svg"
               colorBack="#00000000"
               colorTint="#d7ff3a"
@@ -94,8 +96,7 @@ export default function AboutPage() {
               scale={0.85}
               speed={animate ? 0.8 : 0}
               style={{ width: "100%", height: "100%" }}
-              aria-label="The UVERA mark in liquid metal"
-            />
+            />}
           </div>
         </div>
       </section>

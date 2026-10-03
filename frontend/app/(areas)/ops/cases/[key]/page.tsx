@@ -6,7 +6,7 @@ import { ChevronLeft, Info, Loader2, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { CaseGraph } from "@/components/ops/case-graph";
-import { DeadlineBar, StatusPill } from "@/components/ops/bits";
+import { DeadlineRing, StatusPill } from "@/components/ops/bits";
 import { Guard } from "@/components/shell/states";
 import { OutputChip } from "@/components/trust/chips";
 import { post } from "@/lib/api";
@@ -24,6 +24,13 @@ const ACTIONS = [
   { id: "note", label: "Add a note" },
 ] as const;
 
+const PANELS = [
+  { id: "brief", label: "Brief" },
+  { id: "evidence", label: "Evidence" },
+  { id: "clock", label: "Clock" },
+  { id: "decide", label: "Decide" },
+] as const;
+
 export default function CaseDetailPage() {
   const { key } = useParams<{ key: string }>();
   const q = useApi<CaseDetail>(`/cases/${key}`, "ops");
@@ -31,6 +38,7 @@ export default function CaseDetailPage() {
   const [action, setAction] = useState<string>("request_evidence");
   const [reason, setReason] = useState("");
   const [saving, setSaving] = useState(false);
+  const [panel, setPanel] = useState<(typeof PANELS)[number]["id"]>("brief");
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,23 +90,54 @@ export default function CaseDetailPage() {
               </div>
             </div>
 
-            <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_400px]">
-              <div className="space-y-6">
-                <section className="overflow-hidden rounded-3xl border border-border bg-card">
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-5 py-3">
-                    <p className="text-sm font-medium">
-                      Money paths · {c.wallets} wallets · {c.merchants} shops · {c.agents} agents
-                    </p>
-                    <span className="font-mono text-[11px] text-faint">time-ordered · ≤ 3 hops · ≤ 48 h</span>
-                  </div>
-                  <CaseGraph nodes={c.graph.nodes} edges={c.graph.edges} />
-                </section>
+            <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
+              <section className="overflow-hidden rounded-3xl border border-border bg-card">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-5 py-3">
+                  <p className="text-sm font-medium">
+                    Money paths · {c.wallets} wallets · {c.merchants} shops · {c.agents} agents
+                  </p>
+                  <span className="font-mono text-[11px] text-faint">time-ordered · ≤ 3 hops · ≤ 48 h</span>
+                </div>
+                <CaseGraph nodes={c.graph.nodes} edges={c.graph.edges} />
+              </section>
 
-                <section className="rounded-3xl border border-border bg-card p-5">
-                  <div className="mb-4 flex items-center justify-between">
-                    <h2 className="font-semibold">Evidence</h2>
-                    <span className="text-xs text-muted-foreground">{pct(c.forwarded_share)} of the money moved on within 48 h</span>
-                  </div>
+              <section className="overflow-hidden rounded-3xl border border-border bg-card lg:sticky lg:top-20">
+                <div className="no-scrollbar flex gap-1 overflow-x-auto border-b border-border p-2" role="tablist" aria-label="Case panels">
+                  {PANELS.map((p) => (
+                    <button
+                      key={p.id}
+                      role="tab"
+                      aria-selected={panel === p.id}
+                      onClick={() => setPanel(p.id)}
+                      className={cn("h-9 shrink-0 rounded-full px-4 text-sm", panel === p.id ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground")}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="p-5">
+                  {panel === "brief" && (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <OutputChip type="generated">{`Generated · ${c.brief.source.replace("_", " ")}`}</OutputChip>
+                        <div className="flex rounded-full border border-border p-0.5 text-[11px]">
+                          {(["en", "bn"] as const).map((l) => (
+                            <button key={l} onClick={() => setLang(l)} aria-pressed={lang === l} className={cn("rounded-full px-2 py-0.5", lang === l ? "bg-foreground text-background" : "text-muted-foreground")}>
+                              {l === "en" ? "EN" : "বাং"}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                  <p className={cn("text-sm leading-relaxed", lang === "bn" && "bn")}>{lang === "en" ? c.brief.english : c.brief.bangla}</p>
+                  <p className="mt-3 flex gap-1.5 text-xs text-muted-foreground">
+                    <ShieldCheck className="mt-0.5 size-3.5 shrink-0" />
+                    Uses only evidence {c.brief.evidence_ids.join(", ")} and cards {c.brief.card_ids.join(", ")}. A validator rejects any new number, link or instruction.
+                  </p>
+                    </div>
+                  )}
+                  {panel === "evidence" && (
+                    <div className="space-y-4">
+                      <p className="text-xs text-muted-foreground">{pct(c.forwarded_share)} of the money moved on within 48 h</p>
                   <ol className="space-y-3">
                     {c.evidence.map((e) => (
                       <li key={e.id} className="flex items-start gap-3">
@@ -108,51 +147,29 @@ export default function CaseDetailPage() {
                       </li>
                     ))}
                   </ol>
-                </section>
-              </div>
-
-              <div className="space-y-6 lg:sticky lg:top-20">
-                <section className="rounded-3xl border border-border bg-card p-5">
-                  <div className="mb-3 flex items-center justify-between gap-2">
-                    <h2 className="font-semibold">Brief</h2>
-                    <div className="flex items-center gap-2">
-                      <OutputChip type="generated">{`Generated · ${c.brief.source.replace("_", " ")}`}</OutputChip>
-                      <div className="flex rounded-full border border-border p-0.5 text-[11px]">
-                        {(["en", "bn"] as const).map((l) => (
-                          <button key={l} onClick={() => setLang(l)} aria-pressed={lang === l} className={cn("rounded-full px-2 py-0.5", lang === l ? "bg-foreground text-background" : "text-muted-foreground")}>
-                            {l === "en" ? "EN" : "বাং"}
-                          </button>
+                    </div>
+                  )}
+                  {panel === "clock" && (
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-medium">Dispute clock</p>
+                        <OutputChip type="rule" />
+                      </div>
+                      <div className="mt-5 grid grid-cols-2 gap-5">
+                        {c.dispute_clock.map((d) => (
+                          <DeadlineRing key={d.rule} d={d} />
                         ))}
                       </div>
+                      {!c.dispute_rules_verified && (
+                        <p className="mt-5 flex gap-1.5 text-xs text-muted-foreground">
+                          <Info className="mt-0.5 size-3.5 shrink-0" />
+                          {c.dispute_rules_note}
+                        </p>
+                      )}
                     </div>
-                  </div>
-                  <p className={cn("text-sm leading-relaxed", lang === "bn" && "bn")}>{lang === "en" ? c.brief.english : c.brief.bangla}</p>
-                  <p className="mt-3 flex gap-1.5 text-xs text-muted-foreground">
-                    <ShieldCheck className="mt-0.5 size-3.5 shrink-0" />
-                    Uses only evidence {c.brief.evidence_ids.join(", ")} and cards {c.brief.card_ids.join(", ")}. A validator rejects any new number, link or instruction.
-                  </p>
-                </section>
-
-                <section className="rounded-3xl border border-border bg-card p-5">
-                  <div className="mb-4 flex items-center justify-between">
-                    <h2 className="font-semibold">Dispute clock</h2>
-                    <OutputChip type="rule" />
-                  </div>
-                  <div className="space-y-4">
-                    {c.dispute_clock.map((d) => (
-                      <DeadlineBar key={d.rule} d={d} />
-                    ))}
-                  </div>
-                  {!c.dispute_rules_verified && (
-                    <p className="mt-4 flex gap-1.5 text-xs text-muted-foreground">
-                      <Info className="mt-0.5 size-3.5 shrink-0" />
-                      {c.dispute_rules_note}
-                    </p>
                   )}
-                </section>
-
-                <section className="rounded-3xl border border-border bg-card p-5">
-                  <h2 className="font-semibold">Decide</h2>
+                  {panel === "decide" && (
+                    <div>
                   <p className="mt-1 text-xs text-muted-foreground">The AI only recommends. A person makes and signs every decision.</p>
                   <form onSubmit={submit} className="mt-4 space-y-3">
                     <select value={action} onChange={(e) => setAction(e.target.value)} className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm">
@@ -191,8 +208,10 @@ export default function CaseDetailPage() {
                       </ul>
                     </div>
                   )}
-                </section>
-              </div>
+                    </div>
+                  )}
+                </div>
+              </section>
             </div>
             <p className="font-mono text-[11px] text-faint">
               trace {c.trace_id} · model {c.model_version} · data {c.data_version}

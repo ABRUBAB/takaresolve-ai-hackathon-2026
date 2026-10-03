@@ -9,8 +9,9 @@ import { toast } from "sonner";
 import { AreaIntro, CustomerShell } from "@/components/customer/phone";
 import { ErrorBox } from "@/components/shell/states";
 import { OutputChip, RiskBadge, riskStateOf } from "@/components/trust/chips";
-import { actionText, HighlightedText, ProbabilityMeter, ReasonList, unsureText } from "@/components/trust/evidence";
-import { EmptyInspector, Inspector, InspectorSection, KV, TraceFooter } from "@/components/trust/inspector";
+import { actionText, HighlightedText, ProbabilityMeter, unsureText } from "@/components/trust/evidence";
+import { ReasonTiles, RiskDial } from "@/components/trust/visuals";
+import { EmptyInspector, Inspector, InspectorSection, KV, SummaryChips, TraceFooter } from "@/components/trust/inspector";
 import { post } from "@/lib/api";
 import { num, pct, tk } from "@/lib/format";
 import { useLang } from "@/lib/i18n";
@@ -246,70 +247,39 @@ function SendFlow() {
             <ChevronLeft className="size-4" /> {t("back")}
           </button>
 
-          {paused && (
-            <div className="text-center">
-              <div className="relative mx-auto grid size-28 place-items-center">
-                <motion.span
-                  className="absolute inset-0 rounded-full border-[3px] border-volt"
-                  initial={{ scale: 0.3, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
-                />
-                <motion.span
-                  className="absolute inset-0 rounded-full border border-volt"
-                  initial={{ scale: 1, opacity: 0.6 }}
-                  animate={{ scale: 1.5, opacity: 0 }}
-                  transition={{ duration: 1.6, repeat: 2, delay: 0.6 }}
-                />
-                <span className="flex gap-2">
-                  <span className="h-10 w-3 rounded-sm bg-foreground" />
-                  <span className="h-10 w-3 rounded-sm bg-volt" />
-                </span>
-              </div>
-              <p className="mt-5 text-xl font-semibold">{t("paused")}</p>
-              <p className="num mt-1 text-sm text-muted-foreground">
-                {tk(r.inputs.amount)} → {form.recipient_wallet}
+          <div className="text-center">
+            <RiskDial
+              p={r.calibrated_probability}
+              size={200}
+              className="mx-auto"
+              tone={r.uncertainty_state === "unsure" ? "unsure" : undefined}
+              label={r.uncertainty_state === "unsure" ? "the AI is not sure" : lang === "bn" ? "প্রতারণার সম্ভাবনা" : "chance this is a scam"}
+            />
+            <div className="mt-4 flex items-center justify-center gap-2">
+              {paused && <span className="flex gap-1"><span className="h-5 w-1.5 rounded-sm bg-foreground" /><span className="h-5 w-1.5 rounded-sm bg-volt" /></span>}
+              {lowRisk && <CheckCircle2 className="size-5 text-safe" />}
+              {r.uncertainty_state === "unsure" && <CircleHelp className="size-5 text-unsure" />}
+              {r.uncertainty_state !== "unsure" && r.risk_level === "medium" && <TriangleAlert className="size-5 text-caution" />}
+              <p className="text-xl font-semibold">
+                {paused ? t("paused") : lowRisk ? t("looks_fine") : r.uncertainty_state === "unsure" ? t("not_sure") : t("some_signs")}
               </p>
             </div>
-          )}
-          {lowRisk && (
-            <div className="text-center">
-              <CheckCircle2 className="mx-auto size-16 text-safe" strokeWidth={1.5} />
-              <p className="mt-4 text-xl font-semibold">{t("looks_fine")}</p>
-              <p className="num mt-1 text-sm text-muted-foreground">
-                {tk(r.inputs.amount)} → {form.recipient_wallet}
-              </p>
-            </div>
+            <p className="num mt-1 text-sm text-muted-foreground">
+              {tk(r.inputs.amount)} → {form.recipient_wallet}
+            </p>
+          </div>
+
+          {!lowRisk && <ReasonTiles reasons={r.reasons} lang={lang} />}
+          {!lowRisk && r.note_check && r.note_check.state === "likely_scam" && (
+            <p className="flex items-center gap-2 rounded-2xl bg-risk/10 px-3 py-2 text-sm">
+              <TriangleAlert className="size-4 shrink-0 text-risk" />
+              {lang === "bn" ? r.note_check.family_text_bn : r.note_check.family_text_en}
+            </p>
           )}
           {r.uncertainty_state === "unsure" && (
-            <div className="rounded-3xl border-2 border-dashed border-unsure/60 p-5 text-center">
-              <CircleHelp className="mx-auto size-12 text-unsure" strokeWidth={1.5} />
-              <p className="mt-3 text-lg font-semibold">{t("not_sure")}</p>
-              <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-                {r.reasons_for_unsure.map((u) => (
-                  <li key={u}>{unsureText(u)}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {r.uncertainty_state !== "unsure" && r.risk_level === "medium" && (
-            <div className="text-center">
-              <TriangleAlert className="mx-auto size-14 text-caution" strokeWidth={1.5} />
-              <p className="mt-3 text-xl font-semibold">{t("some_signs")}</p>
-            </div>
-          )}
-
-          {!lowRisk && (
-            <div className="rounded-2xl bg-muted/60 p-4">
-              <p className="mb-3 text-sm font-medium">{t("why")}</p>
-              <ReasonList reasons={r.reasons} lang={lang} />
-              {r.note_check && r.note_check.state === "likely_scam" && (
-                <p className="mt-4 border-t border-border pt-3 text-sm">
-                  <TriangleAlert className="mr-1 inline size-4 text-risk" />
-                  {lang === "bn" ? r.note_check.family_text_bn : r.note_check.family_text_en}
-                </p>
-              )}
-            </div>
+            <p className="rounded-2xl border border-dashed border-unsure/60 px-3 py-2 text-center text-sm text-muted-foreground">
+              {r.reasons_for_unsure.map(unsureText).join(" ")}
+            </p>
           )}
 
           {r.human_review === "required" && (
@@ -422,7 +392,23 @@ function SendFlow() {
   );
 
   const inspector = (
-    <Inspector>
+    <Inspector
+      summary={
+        r ? (
+          <SummaryChips
+            items={[
+              ["probability", pct(r.calibrated_probability)],
+              ["state", r.state.replace(/_/g, " ")],
+              ["conformal", `{ ${r.conformal_set.join(", ")} }`],
+              ["unusual input", r.ood_flag ? "yes" : "no"],
+              ["latency", latency != null ? `${latency} ms` : "—"],
+            ]}
+          />
+        ) : (
+          <p className="text-sm text-muted-foreground">Raw score, calibrated probability, conformal set, TreeSHAP weights, rules and the brief appear here after a check.</p>
+        )
+      }
+    >
       {!r ? (
         <EmptyInspector text="Press Continue. This panel then shows exactly what the models returned: the raw score, the calibrated probability, the conformal set, the unusual-input flag, every reason with its weight, the business rules that fired and the generated brief." />
       ) : (

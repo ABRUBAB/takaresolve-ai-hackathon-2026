@@ -199,7 +199,7 @@ export function LivePause() {
                     aria-expanded={details}
                     className="inline-flex h-11 items-center gap-2 rounded-full border border-border px-5 text-sm hover:border-foreground/40"
                   >
-                    {details ? "Hide the analysis" : "Show the analysis"}
+                    {details ? "Hide the model analysis" : "Show the model analysis"}
                     <ChevronDown className={cn("size-4 transition-transform", details && "rotate-180")} />
                   </button>
                   <div className="flex rounded-full border border-border p-0.5 text-xs" role="group" aria-label="Language">
@@ -209,6 +209,20 @@ export function LivePause() {
                       </button>
                     ))}
                   </div>
+                </div>
+                <div className="space-y-4 rounded-3xl border border-border bg-card p-6">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium">{lang === "bn" ? "কেন এটি দেখছি?" : "Why Rina sees this"}</p>
+                    <OutputChip type="model">Model reasons</OutputChip>
+                  </div>
+                  <ReasonList reasons={r.reasons} lang={lang} />
+                  <p className={cn("text-sm text-muted-foreground", lang === "bn" && "bn")}>{lang === "bn" ? r.counterfactual.text_bn : r.counterfactual.text_en}</p>
+                  {r.note_check && (
+                    <p className={cn("rounded-2xl bg-muted/60 px-3 py-2 text-sm", lang === "bn" && "bn")}>
+                      {lang === "bn" ? "বার্তাটি: " : "The message: "}
+                      {lang === "bn" ? r.note_check.family_text_bn : r.note_check.family_text_en}
+                    </p>
+                  )}
                 </div>
                 <AnimatePresence initial={false}>
                   {details && (
@@ -236,11 +250,21 @@ export function LivePause() {
                           </ul>
                         )}
                         <div>
-                          <div className="mb-3 flex items-center justify-between">
-                            <p className="text-sm font-medium">Why · exact TreeSHAP weights</p>
+                          <div className="mb-2 flex items-center justify-between">
+                            <p className="text-sm font-medium">Exact TreeSHAP weights</p>
                             <OutputChip type="model" />
                           </div>
-                          <ReasonList reasons={r.reasons} lang={lang} />
+                          <div className="divide-y divide-border rounded-2xl border border-border text-sm">
+                            {r.reasons.map((x) => (
+                              <div key={x.feature} className="flex justify-between gap-3 px-3 py-2 font-mono text-xs">
+                                <span>{x.feature}</span>
+                                <span>
+                                  value {x.value.toFixed(2)} · push {x.contribution >= 0 ? "+" : ""}
+                                  {x.contribution.toFixed(2)}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                         {r.note_check && req?.note && (
                           <div>
