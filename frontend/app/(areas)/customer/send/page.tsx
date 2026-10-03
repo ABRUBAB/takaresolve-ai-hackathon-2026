@@ -269,7 +269,8 @@ function SendFlow() {
             </p>
           </div>
 
-          {!lowRisk && <ReasonTiles reasons={r.reasons} lang={lang} />}
+          {lowRisk && r.reasons.length > 0 && <p className="-mb-2 text-center text-xs text-muted-foreground">What looked normal</p>}
+          {r.reasons.length > 0 && <ReasonTiles reasons={r.reasons} lang={lang} />}
           {!lowRisk && r.note_check && r.note_check.state === "likely_scam" && (
             <p className="flex items-center gap-2 rounded-2xl bg-risk/10 px-3 py-2 text-sm">
               <TriangleAlert className="size-4 shrink-0 text-risk" />
@@ -463,7 +464,9 @@ function SendFlow() {
                 </tbody>
               </table>
             </div>
-            <p className="text-sm text-muted-foreground">{r.counterfactual.text_en}</p>
+            <p className="text-sm text-muted-foreground">
+              {r.counterfactual?.text_en ?? (lowRisk ? "Low risk: these are the signals that pulled the score down (negative push)." : "")}
+            </p>
           </InspectorSection>
           {r.rule_hits.length > 0 && (
             <InspectorSection title="Business rules" chip={<OutputChip type="rule" />}>

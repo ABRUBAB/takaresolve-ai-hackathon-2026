@@ -64,7 +64,8 @@ export type PauseResult = Envelope & {
   human_review: string;
   reasons_for_unsure: string[];
   reasons: Reason[];
-  counterfactual: { amount_bdt: number | null; text_en: string; text_bn: string };
+  /** null when the draft is already low risk (nothing to lower) */
+  counterfactual: { amount_bdt: number | null; text_en: string; text_bn: string } | null;
   thresholds: { amber_p: number; red_p: number };
   rule_hits: { id: string; type: string; text: string }[];
   note_check: TextCheck | null;
@@ -88,6 +89,8 @@ export type Profile = Envelope & {
 
 export type Band = { date: string; q10: number; q50: number; q90: number };
 
+export type SavingsPlan = { plan: string; monthly_bdt: number; months_to_goal: number | null; meets_deadline: boolean };
+
 export type Cashflow = Envelope & {
   customer_id: string;
   model: string;
@@ -104,7 +107,7 @@ export type Cashflow = Envelope & {
   event: string;
   heavy_outflow_weeks: { week_start: string; outflow_bdt: number }[];
   monthly_free_cash: { q10: number; q50: number };
-  savings_plans: { plan: string; monthly_bdt: number; months_to_goal: number | null; meets_deadline: boolean }[];
+  savings_plans: SavingsPlan[];
 };
 
 export type Peers = {

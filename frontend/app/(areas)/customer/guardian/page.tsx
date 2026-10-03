@@ -1,6 +1,7 @@
 "use client";
 
-import { AlertTriangle, ShieldCheck } from "lucide-react";
+import { AlertTriangle, Check, ShieldCheck } from "lucide-react";
+import { motion } from "motion/react";
 import { useState } from "react";
 import { Area, Bar, CartesianGrid, ComposedChart, Line, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AreaIntro, CustomerShell } from "@/components/customer/phone";
@@ -10,7 +11,7 @@ import { RiskDial } from "@/components/trust/visuals";
 import { Inspector, InspectorSection, KV, SummaryChips, TraceFooter } from "@/components/trust/inspector";
 import { pct, shortDate, tk } from "@/lib/format";
 import { useLang } from "@/lib/i18n";
-import type { Cashflow } from "@/lib/types";
+import type { Cashflow, SavingsPlan } from "@/lib/types";
 import { useApi } from "@/lib/use-api";
 import { usePalette } from "@/lib/use-palette";
 import { cn } from "@/lib/utils";
@@ -21,14 +22,85 @@ const WHO = [
 ];
 
 const PLAN: Record<string, string> = { safe: "Safe", balanced: "Balanced", ambitious: "Ambitious" };
+const PLAN_NOTE: Record<string, string> = {
+  safe: "holds in a bad month",
+  balanced: "in between",
+  ambitious: "needs a normal month",
+};
+
+/**
+ * The monthly amounts come from the API (they depend only on the customer's free cash, not on the goal).
+ * Months-to-goal and the deadline check are the same rule as savings_options() in ml/uvera_ml/models/forecasting.py,
+ * applied here so a new goal updates instantly, also in the recorded demo.
+ */
+function forGoal(plans: SavingsPlan[], goal: number, months: number) {
+  const need = goal / Math.max(1, months);
+  return {
+    need,
+    plans: plans.map((p) => ({
+      ...p,
+      months_to_goal: p.monthly_bdt > 0 ? Math.ceil(goal / p.monthly_bdt) : null,
+      meets_deadline: p.monthly_bdt >= need,
+    })),
+  };
+}
+
+function SavingsResult({ plans, goal, months }: { plans: SavingsPlan[]; goal: number; months: number }) {
+  const { need, plans: rows } = forGoal(plans, goal, months);
+  const top = Math.max(need, ...rows.map((p) => p.monthly_bdt), 1);
+  return (
+    <motion.div className="space-y-3" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
+      <p className="rounded-2xl bg-muted/60 px-3 py-2 text-sm">
+        To save <span className="num font-mono font-semibold">{tk(goal)}</span> in <span className="font-semibold">{months} {months === 1 ? "month" : "months"}</span>, put
+        aside <span className="num font-mono font-semibold">{tk(Math.ceil(need))}</span> a month.
+      </p>
+      <ul className="space-y-3">
+        {rows.map((p, i) => (
+          <li key={p.plan} className="space-y-1.5">
+            <div className="flex items-baseline justify-between gap-2 text-sm">
+              <span className="min-w-0">
+                <span className="font-medium">{PLAN[p.plan] ?? p.plan}</span>
+                <span className="text-xs text-muted-foreground"> · {PLAN_NOTE[p.plan] ?? ""}</span>
+              </span>
+              <span className="num shrink-0 font-mono">{p.monthly_bdt > 0 ? `${tk(p.monthly_bdt)}/mo` : "Tk 0"}</span>
+            </div>
+            <div className="relative h-2.5 rounded-full bg-muted">
+              <motion.div
+                className={cn("h-full rounded-full", p.meets_deadline ? "bg-safe" : "bg-muted-foreground/50")}
+                initial={{ width: 0 }}
+                animate={{ width: `${(p.monthly_bdt / top) * 100}%` }}
+                transition={{ duration: 0.8, delay: 0.1 + i * 0.08, ease: [0.2, 0.8, 0.2, 1] }}
+              />
+              <span className="absolute -top-1 h-[18px] w-0.5 rounded-full bg-foreground" style={{ left: `calc(${(need / top) * 100}% - 1px)` }} aria-hidden="true" />
+            </div>
+            <p className={cn("flex items-center gap-1 text-xs", p.meets_deadline ? "text-safe" : "text-muted-foreground")}>
+              {p.monthly_bdt <= 0 ? (
+                "No room to save safely right now: a bad month leaves nothing spare"
+              ) : p.meets_deadline ? (
+                <>
+                  <Check className="size-3.5" /> Reaches the goal in {p.months_to_goal} {p.months_to_goal === 1 ? "month" : "months"}, on time
+                </>
+              ) : (
+                `Reaches the goal in ${p.months_to_goal} months, later than you wanted`
+              )}
+            </p>
+          </li>
+        ))}
+      </ul>
+      <p className="flex items-center gap-1.5 text-[11px] text-faint">
+        <span className="inline-block h-3 w-0.5 rounded-full bg-foreground" aria-hidden="true" /> the amount you need each month · nothing is moved automatically
+      </p>
+    </motion.div>
+  );
+}
 
 export default function GuardianPage() {
   const [who, setWho] = useState(WHO[0].id);
   const [goal, setGoal] = useState("30000");
   const [months, setMonths] = useState("6");
-  const [applied, setApplied] = useState({ goal: "30000", months: "6" });
+  const [applied, setApplied] = useState({ goal: 30000, months: 6, run: 0 });
   const subject = who === "C000021" ? undefined : who;
-  const q = useApi<Cashflow>(`/customers/${who}/cashflow?goal_bdt=${applied.goal}&months=${applied.months}`, "customer", subject);
+  const q = useApi<Cashflow>(`/customers/${who}/cashflow?goal_bdt=30000&months=6`, "customer", subject);
   const { t } = useLang();
   const pal = usePalette();
 
@@ -100,40 +172,32 @@ export default function GuardianPage() {
                       </ResponsiveContainer>
                     </div>
                   </div>
-                  <div className="space-y-3 rounded-3xl border border-border p-4">
+                  <div className="space-y-4 rounded-3xl border border-border p-4">
                     <p className="font-medium">{t("savings_goal")}</p>
                     <form
                       className="flex items-end gap-2"
                       onSubmit={(e) => {
                         e.preventDefault();
-                        setApplied({ goal: String(Math.max(100, Number(goal) || 100)), months: String(Math.min(60, Math.max(1, Number(months) || 1))) });
+                        const g = Math.max(100, Number(goal) || 100);
+                        const m = Math.min(60, Math.max(1, Number(months) || 1));
+                        setGoal(String(g));
+                        setMonths(String(m));
+                        setApplied((a) => ({ goal: g, months: m, run: a.run + 1 }));
                       }}
                     >
                       <label className="flex-1 space-y-1 text-xs text-muted-foreground">
                         Goal (Tk)
-                        <input value={goal} onChange={(e) => setGoal(e.target.value.replace(/\D/g, ""))} className="h-10 w-full rounded-xl border border-border bg-background px-3 font-mono text-sm text-foreground" />
+                        <input inputMode="numeric" value={goal} onChange={(e) => setGoal(e.target.value.replace(/\D/g, ""))} className="h-10 w-full rounded-xl border border-border bg-background px-3 font-mono text-sm text-foreground" />
                       </label>
                       <label className="w-20 space-y-1 text-xs text-muted-foreground">
                         Months
-                        <input value={months} onChange={(e) => setMonths(e.target.value.replace(/\D/g, ""))} className="h-10 w-full rounded-xl border border-border bg-background px-3 font-mono text-sm text-foreground" />
+                        <input inputMode="numeric" value={months} onChange={(e) => setMonths(e.target.value.replace(/\D/g, ""))} className="h-10 w-full rounded-xl border border-border bg-background px-3 font-mono text-sm text-foreground" />
                       </label>
-                      <button className="h-10 rounded-xl bg-foreground px-3 text-sm text-background">Plan</button>
+                      <button type="submit" className="h-10 rounded-xl bg-foreground px-4 text-sm font-medium text-background transition-transform hover:scale-[1.03] active:scale-95">
+                        Plan
+                      </button>
                     </form>
-                    {c.savings_plans.length > 0 && c.savings_plans.every((p) => p.monthly_bdt <= 0) ? (
-                      <p className="text-sm text-muted-foreground">There is no safe room to save this month. Keep the balance above the floor first; the plan updates as money comes in.</p>
-                    ) : (
-                      <ul className="divide-y divide-border text-sm">
-                        {c.savings_plans.map((p) => (
-                          <li key={p.plan} className="flex items-center justify-between py-2">
-                            <span>{PLAN[p.plan] ?? p.plan}</span>
-                            <span className="num font-mono">{tk(p.monthly_bdt)}/mo</span>
-                            <span className={cn("text-xs", p.meets_deadline ? "text-safe" : "text-muted-foreground")}>
-                              {p.months_to_goal ? `${p.months_to_goal} months` : "—"}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
+                    <SavingsResult key={applied.run} plans={c.savings_plans} goal={applied.goal} months={applied.months} />
                   </div>
                 </div>
               );
@@ -178,7 +242,7 @@ export default function GuardianPage() {
                     ["Free cash per month (bad month, 10th pct.)", tk(q.data.monthly_free_cash.q10)],
                   ]}
                 />
-                <p className="text-sm text-muted-foreground">Free cash is resampled from the last 60 days. The safe plan saves 80% of the bad-month amount, so a weak month does not push the balance below the floor. Nothing is moved automatically.</p>
+                <p className="text-sm text-muted-foreground">Free cash is resampled from the last 60 days. The safe plan saves 80% of the bad-month amount, so a weak month does not push the balance below the floor. Months to the goal = goal ÷ the monthly amount, rounded up; a plan is on time when its monthly amount covers goal ÷ months. Nothing is moved automatically.</p>
               </InspectorSection>
               <TraceFooter trace={q.data.trace_id} model={q.data.model_version} data={q.data.data_version} />
             </>

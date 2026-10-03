@@ -15,7 +15,7 @@ from uvera_ml.sim.world import DAY, START, World
 from uvera_ml.uncertainty.calibration import IsotonicCalibrator
 from uvera_ml.uncertainty.conformal import MondrianConformal
 from uvera_ml.uncertainty.novelty import RobustNovelty
-from uvera_ml.xai.reasons import top_reasons
+from uvera_ml.xai.reasons import safe_reasons, top_reasons
 
 
 def cidx(cid: str) -> int:
@@ -101,7 +101,8 @@ class PauseCheckEngine:
         ood = bool(self.nov.flag(X)[0])
         d = decide(raw, cstate, ood, self.thr, amount, self.rules)
         contrib = self.booster.predict(X, pred_contrib=True)[0]
-        reasons = top_reasons(contrib, f, FEATURES)
+        # a low-risk draft explains what looked normal; anything else explains what raised the risk
+        reasons = (safe_reasons if d["state"] == "confident_low" else top_reasons)(contrib, f, FEATURES)
         return {
             "model_version": self.version, "features": f, "model_score": raw, "calibrated_probability": p,
             "conformal_set": [lab for lab, on in (("normal", bool(in0[0])), ("scam", bool(in1[0]))) if on],

@@ -156,7 +156,8 @@ export function LivePause() {
                               : "Some warning signs"}
                       </p>
                     </div>
-                    {!low && <ReasonTiles reasons={r.reasons} lang={lang} className="mt-5 w-full text-left" />}
+                    {low && r.reasons.length > 0 && <p className="mt-5 text-xs text-muted-foreground">{lang === "bn" ? "যা স্বাভাবিক দেখাল" : "What looked normal"}</p>}
+                    {r.reasons.length > 0 && <ReasonTiles reasons={r.reasons} lang={lang} className={cn("w-full text-left", low ? "mt-2" : "mt-5")} />}
                     <div className="mt-auto w-full space-y-2 pt-6">
                       {low ? (
                         <Link href={`/customer/send?scenario=${current?.id ?? ""}`} className="flex h-12 items-center justify-center rounded-full bg-foreground text-sm font-medium text-background hover:opacity-90">
@@ -225,11 +226,15 @@ export function LivePause() {
                 </div>
                 <div className="space-y-4 rounded-3xl border border-border bg-card p-6">
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium">{lang === "bn" ? "কেন এটি দেখছি?" : "Why Rubab sees this"}</p>
+                    <p className="text-sm font-medium">
+                      {low ? (lang === "bn" ? "কেন এটি ঠিক আছে বলে মনে হচ্ছে" : "Why it looks fine") : lang === "bn" ? "কেন এটি দেখছি?" : "Why Rubab sees this"}
+                    </p>
                     <OutputChip type="model">Model reasons</OutputChip>
                   </div>
                   <ReasonList reasons={r.reasons} lang={lang} />
-                  <p className={cn("text-sm text-muted-foreground", lang === "bn" && "bn")}>{lang === "bn" ? r.counterfactual.text_bn : r.counterfactual.text_en}</p>
+                  {r.counterfactual && (
+                    <p className={cn("text-sm text-muted-foreground", lang === "bn" && "bn")}>{lang === "bn" ? r.counterfactual.text_bn : r.counterfactual.text_en}</p>
+                  )}
                   {r.note_check && (
                     <p className={cn("rounded-2xl bg-muted/60 px-3 py-2 text-sm", lang === "bn" && "bn")}>
                       {lang === "bn" ? "বার্তাটি: " : "The message: "}

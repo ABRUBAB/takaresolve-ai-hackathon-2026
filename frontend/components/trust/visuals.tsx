@@ -90,6 +90,19 @@ const FEATURE: Record<string, { icon: LucideIcon; value: (v: number) => string; 
   sender_tenure_days: { icon: CalendarClock, value: (v) => `${Math.round(v)} d`, label: "your wallet age" },
 };
 
+/** Wording for signals that LOWERED the risk (low-risk drafts explain what looked normal). */
+const SAFE: Record<string, { value: (v: number) => string; label: string }> = {
+  amount_log: { value: () => "small", label: "amount" },
+  amount_z_30d: { value: () => "usual", label: "amount for you" },
+  first_time_pair: { value: () => "known", label: "you paid them before" },
+  pin_reset_72h: { value: () => "no", label: "recent PIN reset" },
+  device_change_72h: { value: () => "same", label: "phone as before" },
+  cash_in_gap_min: { value: (v) => `${Math.round(v)} min`, label: "since money came in" },
+  is_night: { value: () => "day", label: "not late at night" },
+  channel_ussd: { value: () => "app", label: "usual channel" },
+  recipient_out_in_ratio_7d: { value: (v) => pct(v), label: "passed on, not unusual" },
+};
+
 /** Model reasons as icon tiles; tap a tile to read the full sentence (EN or BN). */
 export function ReasonTiles({ reasons, lang = "en", className }: { reasons: Reason[]; lang?: "en" | "bn"; className?: string }) {
   const [open, setOpen] = useState<string | null>(null);
@@ -98,7 +111,8 @@ export function ReasonTiles({ reasons, lang = "en", className }: { reasons: Reas
     <div className={cn("space-y-2", className)}>
       <div className="grid grid-cols-3 gap-2">
         {reasons.slice(0, 3).map((r, i) => {
-          const f = FEATURE[r.feature] ?? { icon: Sparkles, value: () => "", label: r.feature.replace(/_/g, " ") };
+          const base = FEATURE[r.feature] ?? { icon: Sparkles, value: () => "", label: r.feature.replace(/_/g, " ") };
+          const f = r.contribution < 0 && SAFE[r.feature] ? { ...base, ...SAFE[r.feature] } : base;
           const Icon = f.icon;
           const on = open === r.feature;
           return (
@@ -114,7 +128,7 @@ export function ReasonTiles({ reasons, lang = "en", className }: { reasons: Reas
                 on ? "border-foreground/50 bg-muted" : "border-border bg-background/40 hover:-translate-y-0.5 hover:border-foreground/40 hover:bg-muted/50",
               )}
             >
-              <Icon className="size-5 text-risk" aria-hidden="true" />
+              <Icon className={cn("size-5", r.contribution < 0 ? "text-safe" : "text-risk")} aria-hidden="true" />
               <span className="num font-mono text-sm font-semibold">{f.value(r.value)}</span>
               <span className="text-[10.5px] leading-tight text-muted-foreground">{f.label}</span>
             </motion.button>

@@ -30,15 +30,39 @@ REASON_TEXT = {
 }
 
 
-def top_reasons(contrib: np.ndarray, values: dict, features: list[str], k: int = 3) -> list[dict]:
-    """contrib: one row of pred_contrib (len(features)+1, last = bias). Only reasons that RAISE risk are returned."""
+# Shown when a draft is LOW risk: the facts that pulled the score down (negative TreeSHAP), worded as what looked normal.
+SAFE_TEXT = {
+    "recipient_age_days": ("The receiving wallet has been open for {v:.0f} days", "প্রাপকের ওয়ালেটটি {v:.0f} দিন ধরে চালু আছে"),
+    "recipient_in_count_7d": ("The receiver's incoming transfers look normal", "প্রাপকের কাছে আসা লেনদেন স্বাভাবিক"),
+    "recipient_sender_days_7d": ("Few different people send money to this receiver", "খুব বেশি আলাদা মানুষ এই প্রাপককে টাকা পাঠায় না"),
+    "recipient_in_today_before": ("The receiver has not had a rush of transfers today", "আজ প্রাপকের কাছে হঠাৎ অনেক লেনদেন আসেনি"),
+    "recipient_out_in_ratio_7d": ("Money sent to this receiver does not leave quickly", "এই প্রাপকের কাছে আসা টাকা দ্রুত বের হয়ে যায় না"),
+    "recipient_cashout_count_7d": ("The receiver rarely cashes out", "প্রাপক খুব কম ক্যাশ আউট করে"),
+    "amount_log": ("The amount is small", "টাকার পরিমাণ কম"),
+    "amount_z_30d": ("The amount is close to what you usually send", "আপনি সাধারণত যা পাঠান, পরিমাণটি তার কাছাকাছি"),
+    "amount_to_balance": ("Most of your balance stays in your wallet", "আপনার ব্যালেন্সের বেশিরভাগই থেকে যাবে"),
+    "first_time_pair": ("You have sent money to this number before", "আপনি আগেও এই নম্বরে টাকা পাঠিয়েছেন"),
+    "cash_in_gap_min": ("No money was rushed in just before this", "এর ঠিক আগে তাড়াহুড়ো করে টাকা যোগ করা হয়নি"),
+    "device_change_72h": ("No recent change of phone", "সম্প্রতি ফোন বদলানো হয়নি"),
+    "pin_reset_72h": ("No recent PIN reset", "সম্প্রতি পিন রিসেট করা হয়নি"),
+    "sender_tenure_days": ("Your account has been open for {v:.0f} days", "আপনার অ্যাকাউন্টটি {v:.0f} দিন ধরে চালু আছে"),
+    "sender_out_count_7d": ("Your activity this week looks normal", "এই সপ্তাহে আপনার লেনদেন স্বাভাবিক"),
+    "hour": ("A usual time of day", "স্বাভাবিক সময়"),
+    "is_night": ("Not a late-night transfer", "গভীর রাতের লেনদেন নয়"),
+    "dow": ("A usual day for this kind of transfer", "এই ধরনের লেনদেনের জন্য স্বাভাবিক দিন"),
+    "channel_ussd": ("The channel used looks normal", "ব্যবহৃত মাধ্যম স্বাভাবিক"),
+}
+
+
+def _pick(contrib: np.ndarray, values: dict, features: list[str], k: int, lowers: bool) -> list[dict]:
     c = np.asarray(contrib[: len(features)], float)
-    order = [i for i in np.argsort(-c) if c[i] > 0][:k]
+    order = [i for i in np.argsort(c if lowers else -c) if (c[i] < 0 if lowers else c[i] > 0)][:k]
+    table = SAFE_TEXT if lowers else REASON_TEXT
     out = []
     for i in order:
         f = features[i]
         v = values.get(f)
-        en, bn = REASON_TEXT.get(f, (f, f))
+        en, bn = table.get(f, (f, f))
         try:
             en, bn = en.format(v=float(v)), bn.format(v=float(v))
         except (TypeError, ValueError):
@@ -46,3 +70,13 @@ def top_reasons(contrib: np.ndarray, values: dict, features: list[str], k: int =
         out.append({"feature": f, "value": None if v is None or v != v else float(v), "contribution": float(c[i]),
                     "text_en": en, "text_bn": bn})
     return out
+
+
+def top_reasons(contrib: np.ndarray, values: dict, features: list[str], k: int = 3) -> list[dict]:
+    """contrib: one row of pred_contrib (len(features)+1, last = bias). Only reasons that RAISE risk are returned."""
+    return _pick(contrib, values, features, k, lowers=False)
+
+
+def safe_reasons(contrib: np.ndarray, values: dict, features: list[str], k: int = 3) -> list[dict]:
+    """The k facts that LOWERED risk the most (negative contributions), for drafts the policy calls low risk."""
+    return _pick(contrib, values, features, k, lowers=True)
