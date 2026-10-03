@@ -4,7 +4,8 @@
   "horizon_days": 7,
   "event": "balance below Tk 200 at the end of the next 7 days",
   "n_series": 10000,
-  "winner_on_validation": "chronos2",
+  "winner_on_validation": "lightgbm_quantile",
+  "served_live_model": "lightgbm_quantile",
   "backtest": [
     {
       "split": "test",
@@ -17,10 +18,10 @@
     {
       "split": "test",
       "model": "lightgbm_quantile",
-      "mase": 0.3825,
-      "pinball_mean": 442.0434,
-      "coverage_80": 0.7958,
-      "mean_width_80": 2486.9367
+      "mase": 0.3827,
+      "pinball_mean": 441.9165,
+      "coverage_80": 0.7963,
+      "mean_width_80": 2493.6963
     },
     {
       "split": "test",
@@ -41,10 +42,10 @@
     {
       "split": "val",
       "model": "lightgbm_quantile",
-      "mase": 0.928,
-      "pinball_mean": 1003.7156,
-      "coverage_80": 0.774,
-      "mean_width_80": 5331.6114
+      "mase": 0.7524,
+      "pinball_mean": 764.8785,
+      "coverage_80": 0.8014,
+      "mean_width_80": 5283.7034
     },
     {
       "split": "val",
@@ -56,51 +57,74 @@
     }
   ],
   "probability_method": "empirical normalised residuals of the 7-day sum (calibrated on validation origins)",
-  "validation_threshold": 0.4248885,
+  "validation_threshold": 0.3649,
   "threshold_rule": "best F1 on validation within an alert budget (configs/thresholds.yaml)",
-  "seven_day_sum_80pct_interval_coverage_test": 0.80695,
+  "seven_day_sum_80pct_interval_coverage_test": 0.7448,
   "shortfall_probability_test": {
     "events": 4582,
     "n": 20000,
     "base_rate": 0.2291,
-    "brier": 0.13988929356037502,
+    "brier": 0.142751406480125,
     "brier_baseline": 0.1631894081632653,
-    "pr_auc": 0.5157129671064361,
+    "pr_auc": 0.4996750021971808,
     "pr_auc_baseline": 0.38992302602113316,
-    "ece": 0.0351671575,
+    "ece": 0.0311769225,
     "at_0.5_for_reference": {
       "threshold": 0.5,
-      "recall": 0.46268005237887383,
-      "precision": 0.5654841291010936,
-      "flag_rate": 0.18745
+      "recall": 0.49257965953731997,
+      "precision": 0.5208862220170782,
+      "flag_rate": 0.21665
     },
     "at_validation_threshold": {
-      "threshold": 0.4248885,
-      "recall": 0.5685290266259275,
-      "precision": 0.5448650909851496,
-      "flag_rate": 0.23905
+      "threshold": 0.3649,
+      "recall": 0.6625927542557835,
+      "precision": 0.474375,
+      "flag_rate": 0.32
     }
   },
   "shortfall_probability_test_naive_sum_of_quantiles": {
     "events": 4582,
     "n": 20000,
     "base_rate": 0.2291,
-    "brier": 0.151807464113994,
+    "brier": 0.14663252595685403,
     "brier_baseline": 0.1631894081632653,
-    "pr_auc": 0.5157297793685742,
+    "pr_auc": 0.49973861272024295,
     "pr_auc_baseline": 0.38992302602113316,
-    "ece": 0.09615345477459439,
+    "ece": 0.048289509812313516,
     "at_0.5_for_reference": {
       "threshold": 0.5,
-      "recall": 0.5855521606285465,
-      "precision": 0.539404905508645,
-      "flag_rate": 0.2487
+      "recall": 0.4199039720646006,
+      "precision": 0.5365309537088678,
+      "flag_rate": 0.1793
     },
     "at_validation_threshold": {
-      "threshold": 0.4248885,
-      "recall": 0.7459624618070712,
-      "precision": 0.4627047515906322,
-      "flag_rate": 0.36935
+      "threshold": 0.3649,
+      "recall": 0.7570929725010912,
+      "precision": 0.4318436449645213,
+      "flag_rate": 0.40165
+    }
+  },
+  "served_seven_day_sum_80pct_interval_coverage_test": 0.7448,
+  "shortfall_probability_test_served": {
+    "events": 4582,
+    "n": 20000,
+    "base_rate": 0.2291,
+    "brier": 0.142751406480125,
+    "brier_baseline": 0.1631894081632653,
+    "pr_auc": 0.4996750021971808,
+    "pr_auc_baseline": 0.38992302602113316,
+    "ece": 0.0311769225,
+    "at_0.5_for_reference": {
+      "threshold": 0.5,
+      "recall": 0.49257965953731997,
+      "precision": 0.5208862220170782,
+      "flag_rate": 0.21665
+    },
+    "at_validation_threshold": {
+      "threshold": 0.3649,
+      "recall": 0.6625927542557835,
+      "precision": 0.474375,
+      "flag_rate": 0.32
     }
   },
   "baseline": "historical frequency of low balance (training window)"
