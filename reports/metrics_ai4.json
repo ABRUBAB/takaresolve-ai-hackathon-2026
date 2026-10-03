@@ -57,13 +57,62 @@
   ],
   "capacity_rule": "agent_capacity_factor x mean daily demand in the training window [ASSUMPTION]",
   "probability_method": "empirical normalised residuals (calibrated on validation origins)",
-  "validation_threshold": 0.4774392857142857,
-  "threshold_rule": "best F2 on validation within an alert budget (configs/thresholds.yaml)",
-  "action_rule_test": {
-    "rule": "top up when the 90% forecast exceeds cash on hand",
-    "recall": 0.8834182229767968,
-    "precision": 0.22357490690346604,
-    "flag_rate": 0.8311904761904761
+  "operating_rule": "hold the 90% forecast (cash to hold); no day-level yes/no alarm",
+  "stockout_base_rate": {
+    "validation": 0.3942857142857143,
+    "test": 0.21035714285714285
+  },
+  "cash_to_hold_test": {
+    "target_days_short": 0.1,
+    "usual_cash": {
+      "days_short_of_cash": 0.21035714285714285,
+      "mean_cash_bdt": 15543.771412760416,
+      "extra_vs_usual_bdt": 0.0
+    },
+    "forecast_q90": {
+      "days_short_of_cash": 0.12630952380952382,
+      "mean_cash_bdt": 20463.468410608813,
+      "extra_vs_usual_bdt": 4919.6969978484
+    },
+    "same_extra_cash_spread_flat": {
+      "days_short_of_cash": 0.12880952380952382,
+      "mean_cash_bdt": 20463.46831632778,
+      "extra_vs_usual_bdt": 4919.696903567368
+    },
+    "seasonal_naive_q90": {
+      "days_short_of_cash": 0.062142857142857146,
+      "mean_cash_bdt": 31550.848844633558,
+      "extra_vs_usual_bdt": 16007.07743187314
+    }
+  },
+  "day_ranking_test": {
+    "question": "within one agent-week, are the two highest-probability days the ones that run short?",
+    "model": {
+      "recall": 0.309564233163554,
+      "precision": 0.22791666666666666,
+      "flag_rate": 0.2857142857142857
+    },
+    "history_baseline": {
+      "recall": 0.28466327108092815,
+      "precision": 0.20958333333333334,
+      "flag_rate": 0.2857142857142857
+    },
+    "chance_precision": 0.21035714285714285,
+    "finding": "no better than chance, so the product does not flag days"
+  },
+  "agent_ranking_test": {
+    "question": "across all agents each week, do the top 20% agent-days by probability run short more often?",
+    "model": {
+      "recall": 0.26032823995472554,
+      "precision": 0.27380952380952384,
+      "flag_rate": 0.2
+    },
+    "history_baseline": {
+      "recall": 0.1935483870967742,
+      "precision": 0.20357142857142857,
+      "flag_rate": 0.2
+    },
+    "chance_precision": 0.21035714285714285
   },
   "stockout_probability_test": {
     "events": 1767,
@@ -74,12 +123,6 @@
     "pr_auc": 0.26606464379072914,
     "pr_auc_baseline": 0.21059263670226708,
     "ece": 0.04269152494331065,
-    "at_validation_threshold": {
-      "threshold": 0.4774392857142857,
-      "recall": 0.003395585738539898,
-      "precision": 0.3333333333333333,
-      "flag_rate": 0.002142857142857143
-    },
     "at_0.5_for_reference": {
       "threshold": 0.5,
       "recall": 0.001697792869269949,
@@ -96,12 +139,6 @@
     "pr_auc": 0.2661280714394993,
     "pr_auc_baseline": 0.21059263670226708,
     "ece": 0.08235112733343794,
-    "at_validation_threshold": {
-      "threshold": 0.4774392857142857,
-      "recall": 0.005659309564233163,
-      "precision": 0.3125,
-      "flag_rate": 0.0038095238095238095
-    },
     "at_0.5_for_reference": {
       "threshold": 0.5,
       "recall": 0.003395585738539898,
