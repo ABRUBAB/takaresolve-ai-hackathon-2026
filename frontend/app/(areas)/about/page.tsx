@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, CircleHelp, Eye, Hand } from "lucide-react";
 import { motion } from "motion/react";
@@ -169,9 +170,22 @@ export default function AboutPage() {
                 transition={{ delay: i * 0.1, duration: 0.6 }}
                 className="group rounded-3xl border border-border bg-card p-7 transition-colors hover:border-foreground/40"
               >
-                <div className="grid size-16 place-items-center rounded-full bg-foreground font-serif text-3xl text-background transition-colors group-hover:bg-volt group-hover:text-black">
-                  {(m.initial ?? m.name.charAt(0)) || "·"}
-                </div>
+                {m.photo ? (
+                  <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-border bg-muted">
+                    {/* monochrome like the rest of the site; full colour on hover */}
+                    <Image
+                      src={m.photo}
+                      alt={`Portrait of ${m.name}`}
+                      fill
+                      sizes="(min-width: 768px) 33vw, 100vw"
+                      className="object-cover grayscale transition duration-700 ease-out group-hover:scale-[1.03] group-hover:grayscale-0"
+                    />
+                  </div>
+                ) : (
+                  <div className="grid size-16 place-items-center rounded-full bg-foreground font-serif text-3xl text-background transition-colors group-hover:bg-volt group-hover:text-black">
+                    {(m.initial ?? m.name.charAt(0)) || "·"}
+                  </div>
+                )}
                 <p className="mt-6 text-xl font-semibold">{m.name || "Team member"}</p>
                 <p className="text-sm text-volt-ink dark:text-volt">{m.role}</p>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{m.work}</p>
