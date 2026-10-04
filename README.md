@@ -64,6 +64,14 @@ set, unusual-input flag, TreeSHAP weights, rules fired, brief source, trace id) 
 
 ---
 
+## Project Demonstration Video
+
+Watch our project presentation and demonstration of **UVERA — Trust you can verify**, an AI-powered platform designed to help identify scams before money moves.
+
+▶️ **[Watch the presentation and demo on Google Drive](https://drive.google.com/drive/folders/1KU9ptExSjvROqj6F60y37O_pR7o6g0_j)**
+
+---
+
 ## How a decision is made
 
 ```mermaid
