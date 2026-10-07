@@ -1,0 +1,195 @@
+{
+ "generated_at": "2026-10-07T04:03:57Z",
+ "platform": "Windows-11-10.0.26300-SP0",
+ "crash_recovery": {
+  "supervisor": "scripts/start_api.ps1 (restart loop, 5 s pause)",
+  "port": 54169,
+  "cycles": [
+   {
+    "cycle": 1,
+    "killed_pid": 23480,
+    "outage_probes": [
+     {
+      "status": null,
+      "error": "connection_refused",
+      "seconds": 2.031
+     },
+     {
+      "status": null,
+      "error": "connection_refused",
+      "seconds": 2.022
+     },
+     {
+      "status": null,
+      "error": "connection_refused",
+      "seconds": 2.045
+     }
+    ],
+    "outage_request_failed_fast": true,
+    "warming_up_probe": {
+     "status": 503,
+     "body_status": "warming_up",
+     "seconds": 0.016
+    },
+    "kill_to_port_open_s": 14.0,
+    "kill_to_ready_s": 161.5,
+    "audit_after": {
+     "ok": true,
+     "rows": 1,
+     "head_hash": "632f3b6001be179ee2238beab65d3529d520b73813c55b417d385614e603d4f5"
+    },
+    "audit_chain_intact": true
+   },
+   {
+    "cycle": 2,
+    "killed_pid": 17968,
+    "outage_probes": [
+     {
+      "status": null,
+      "error": "connection_refused",
+      "seconds": 2.028
+     },
+     {
+      "status": null,
+      "error": "connection_refused",
+      "seconds": 2.034
+     },
+     {
+      "status": null,
+      "error": "connection_refused",
+      "seconds": 2.026
+     }
+    ],
+    "outage_request_failed_fast": true,
+    "warming_up_probe": {
+     "status": 503,
+     "body_status": "warming_up",
+     "seconds": 0.023
+    },
+    "kill_to_port_open_s": 12.4,
+    "kill_to_ready_s": 75.7,
+    "audit_after": {
+     "ok": true,
+     "rows": 1,
+     "head_hash": "632f3b6001be179ee2238beab65d3529d520b73813c55b417d385614e603d4f5"
+    },
+    "audit_chain_intact": true
+   },
+   {
+    "cycle": 3,
+    "killed_pid": 25312,
+    "outage_probes": [
+     {
+      "status": null,
+      "error": "connection_refused",
+      "seconds": 2.044
+     },
+     {
+      "status": null,
+      "error": "connection_refused",
+      "seconds": 2.033
+     },
+     {
+      "status": null,
+      "error": "connection_refused",
+      "seconds": 2.031
+     }
+    ],
+    "outage_request_failed_fast": true,
+    "warming_up_probe": {
+     "status": 503,
+     "body_status": "warming_up",
+     "seconds": 0.009
+    },
+    "kill_to_port_open_s": 11.7,
+    "kill_to_ready_s": 60.6,
+    "audit_after": {
+     "ok": true,
+     "rows": 1,
+     "head_hash": "632f3b6001be179ee2238beab65d3529d520b73813c55b417d385614e603d4f5"
+    },
+    "audit_chain_intact": true
+   }
+  ],
+  "first_start_to_ready_s": 65.2,
+  "audit_before": {
+   "ok": true,
+   "rows": 1,
+   "head_hash": "632f3b6001be179ee2238beab65d3529d520b73813c55b417d385614e603d4f5"
+  },
+  "summary": {
+   "cycles": 3,
+   "kill_to_ready_s_min": 60.6,
+   "kill_to_ready_s_max": 161.5,
+   "kill_to_ready_s_mean": 99.3,
+   "all_recovered": true,
+   "outage_requests_failed_fast": true,
+   "audit_chain_intact_after_every_crash": true
+  }
+ },
+ "stale_artifact": {
+  "tampered_file": "ai1/model.txt (one bit flipped at byte 1000)",
+  "port": 57431,
+  "tampered": {
+   "ready_status": 503,
+   "status": "failed",
+   "bad_files": [
+    {
+     "model": "ai1",
+     "path": "ai1/model.txt",
+     "problem": "sha256 mismatch: file changed, stale or tampered"
+    }
+   ],
+   "seconds_to_verdict": 6.2,
+   "model_endpoint_status": 503
+  },
+  "restored": {
+   "ready_status": 200,
+   "seconds_to_ready": 93.4,
+   "all_verified": true,
+   "models": {
+    "ai1": {
+     "version": "v1",
+     "status": "approved",
+     "verified": true
+    },
+    "ai2": {
+     "version": "v1",
+     "status": "approved",
+     "verified": true
+    },
+    "ai3": {
+     "version": "v1",
+     "status": "approved",
+     "verified": true
+    },
+    "ai4": {
+     "version": "v1",
+     "status": "approved",
+     "verified": true
+    },
+    "ai5": {
+     "version": "v1",
+     "status": "approved",
+     "verified": true
+    },
+    "ai6": {
+     "version": "v1",
+     "status": "approved",
+     "verified": true
+    },
+    "ai7": {
+     "version": "v1",
+     "status": "approved",
+     "verified": true
+    },
+    "web": {
+     "version": "v1",
+     "status": "approved",
+     "verified": true
+    }
+   }
+  },
+  "passed": true
+ }
+}

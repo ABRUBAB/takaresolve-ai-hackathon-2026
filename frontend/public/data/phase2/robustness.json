@@ -1,7 +1,7 @@
 {
   "status": "measured",
   "title": "Robustness beyond one synthetic world",
-  "updated_at": "2026-10-07T04:18:28Z",
+  "updated_at": "2026-10-07T04:24:25Z",
   "source": "scripts/phase2/robustness_ai1.py, integration_study.py (lofo), qr_feedback.py -> reports/phase2/",
   "summary": "We re-ran AI-1 on five independently generated worlds and six shifted worlds, removed each scam family from training in turn, and tested QR Shield on a disguise it never saw.",
   "headline": [

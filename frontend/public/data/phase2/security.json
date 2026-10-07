@@ -1,15 +1,15 @@
 {
   "status": "measured",
   "title": "Security and governance, tested",
-  "updated_at": "2026-10-07T04:18:28Z",
+  "updated_at": "2026-10-07T04:24:25Z",
   "source": "reports/security/ (security_report.py, failure_recovery_test.py, secrets_scan.py, bandit, pip-audit)",
   "summary": "Each governance control the judges named is implemented and verified by an automated test or scan.",
   "headline": [
     {
       "label": "Security tests passing",
-      "value": 379,
+      "value": 380,
       "format": "num",
-      "sub": "of 379; 0 failed"
+      "sub": "of 380; 0 failed"
     },
     {
       "label": "Committed secrets found (full history)",
@@ -44,7 +44,7 @@
         "rows": [
           [
             "Authentication, roles, ownership, bad/expired/forged tokens, rate limits, CORS, input abuse",
-            "379 of 379 tests pass",
+            "380 of 380 tests pass",
             "backend/tests/test_security.py (route × test matrix)"
           ],
           [

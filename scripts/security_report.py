@@ -96,8 +96,8 @@ def main() -> int:
     import test_security as T  # the same route classification the tests use
 
     routes = [(m, p) for m, p, *_ in T.ALL_ROUTES]
-    access = {(m, p): ("public" if (m, p) in T.PUBLIC else "roles: " + ", ".join(T.PROTECTED.get((m, p), ())) or "?")
-              for m, p in routes}
+    access = {(m, p): ("public" if (m, p) in T.PUBLIC else "roles: " + ", ".join(T.PROTECTED.get((m, p), ()))
+                       + (" (or study PIN)" if (m, p) in T.MANUAL_AUTH else "")) for m, p in routes}
     cells: dict[str, dict[str, list[str]]] = defaultdict(lambda: defaultdict(list))
     other = []
     for c in cases:

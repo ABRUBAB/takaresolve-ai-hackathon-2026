@@ -1,7 +1,7 @@
 {
   "status": "measured",
   "title": "Integration: the trust layer is worth more than its parts",
-  "updated_at": "2026-10-07T04:18:28Z",
+  "updated_at": "2026-10-07T04:24:25Z",
   "source": "scripts/phase2/integration_study.py, qr_feedback.py -> reports/phase2/",
   "summary": "An ablation ladder on the same transfers, a causal day-by-day closed loop, and the Case Linker against simple alert aggregation.",
   "headline": [
