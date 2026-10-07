@@ -5,7 +5,7 @@ Run on 2026-10-07 on the working tree (Windows 11, Python 3.12.5, `.venv`). The 
 
 | Scan | Command | Result |
 |---|---|---|
-| Code (SAST) | `python -m bandit -r backend/app ml/uvera_ml -f json -o reports/security/bandit.json` | 5,942 lines. First run: 1 high, 5 medium, 5 low. 2 medium fixed; now **1 high, 3 medium, 5 low**, all reviewed below (no exploitable issue) |
+| Code (SAST) | `python -m bandit -r backend/app ml/uvera_ml -f json -o reports/security/bandit.json` | 5,942 lines. First run: 1 high, 5 medium, 5 low. 2 medium and the 1 high fixed; now **0 high, 3 medium, 5 low**, all reviewed below (no exploitable issue) |
 | Dependencies (pinned) | `python -m pip_audit -r constraints.txt` | 12 packages (the pins and their dependencies): **no known vulnerabilities** (`pip_audit_constraints.json`) |
 | Dependencies (installed) | `python -m pip_audit --skip-editable --vulnerability-service osv` | 80 installed packages: **no known vulnerabilities** (`pip_audit_env.json`). The PyPI advisory service timed out, so the OSV database was used |
 | Secrets, full git history | `python scripts/secrets_scan.py` | 94 commits on all branches, 111,377 added lines, plus 400 working-tree files. **0 high-confidence findings.** 6 values flagged for review: test values, documentation placeholders and one demo PIN (below) |
@@ -16,7 +16,7 @@ Run on 2026-10-07 on the working tree (Windows 11, Python 3.12.5, `.venv`). The 
 | Severity | Rule | Location | Verdict |
 |---|---|---|---|
 | Medium | B608 SQL built from a string | `backend/app/db/__init__.py` (2, new audit-chain code) | **Fixed**: the column lists were built from a constant tuple, now the queries are plain literals. All values already used `?` parameters. A test stores a `DROP TABLE` string as text, and the audit chain still verifies afterwards |
-| High (medium confidence) | B613 bidirectional control characters in source | `ml/uvera_ml/serving/normalize.py:13` | **False positive.** The characters are the data of the AI-2 defence that *removes* invisible and bidi characters from scam texts. They sit inside a string literal and never change how the code is shown. Recommended: write them as `‪`-style escapes so code-review tools do not flag the file (owner: AI-2 adversarial-text code) |
+| High (medium confidence) | B613 bidirectional control characters in source | `ml/uvera_ml/serving/normalize.py:13` | **Fixed.** The characters were the data of the AI-2 defence that *removes* invisible and bidi characters from scam texts. They are now written as `\u` escapes, so the file holds no raw control characters; the re-run of bandit reports 0 high |
 | Medium | B108 hard-coded `/tmp` path | `ml/uvera_ml/models/ai7.py:36` (twice) | Accepted. This is an offline notebook helper that **reads** a Kaggle world cache when one exists. It writes nothing, and the API never uses it |
 | Medium | B310 `urllib.urlopen` | `ml/uvera_ml/sim/text.py:214` | Accepted. It downloads the public UCI SMS-spam set from a fixed `https://` constant, only for an evaluation notebook. No user input reaches the URL |
 | Low | B107 "hard-coded password" | `security.py:67` (empty default argument), `gemini.py:28` (the *name* of the environment variable) | False positives |
