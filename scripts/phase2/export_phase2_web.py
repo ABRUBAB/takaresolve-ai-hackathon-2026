@@ -221,13 +221,44 @@ def fairness():
     b = {s["group"]: s for s in eo["before"]["slices"]}
     a = {s["group"]: s for s in eo["after"]["slices"]}
     rows = dial["rows"]
-    return {"status": "measured", "title": "Fairness: the tenure gap in missed scams", "updated_at": NOW,
-            "source": "scripts/phase2/integration_study.py (fairness, fairness2, dial) -> reports/phase2/integration/",
-            "summary": "Long-tenure customers' scams were missed more often (29.0% vs ~19%). We tested an equal-opportunity fix, searched for a fix with no extra false pauses, and built a policy dial.",
+    rf = load(R / "real_data_fairness.json")
+    real_sections, real_head = [], []
+    if rf:
+        ch = rf["attributes"]["channel"]["pilot_3000_real_labels"]
+        wr = rf["attributes"]["writing"]["pilot_3000_real_labels"]
+        modes = [("one_threshold", "one threshold"), ("group_balanced_training", "group-balanced training"),
+                 ("group_balanced_training_plus_equal_opportunity", "balanced training + per-channel thresholds")]
+        cg = rf["attributes"]["channel"]["groups"]
+        real_sections.append({
+            "id": "real_channel", "title": "Real messages: are SMS scams caught as well as Telegram scams?",
+            "lead": f"BTTC, real Bangla messages (CC BY 4.0). {cg['Telegram']['scams'] / cg['Telegram']['messages']:.0%} of the Telegram messages are scams but only "
+                    f"{cg['SMS']['scams'] / cg['SMS']['messages']:.1%} of the SMS, so a model trained on the mix learns the channel's style instead of the scam. "
+                    "Pilot model trained on 3,000 real labels; thresholds set on validation for 90% recall; 5 seeds, one test pass each.",
+            "chart": {"kind": "bars", "unit": "pct", "x": [lab for _, lab in modes],
+                      "series": [{"name": f"{g} scams caught", "values": [r3(ch[k][g]["recall"]["mean"]) for k, _ in modes]} for g in ("SMS", "Telegram")]},
+            "takeaway": f"SMS scams caught: {ch['one_threshold']['SMS']['recall']['mean']:.0%} → {ch[modes[2][0]]['SMS']['recall']['mean']:.0%}; the gap in missed scams falls from "
+                        f"{ch['one_threshold']['fnr_gap_points']['mean']:.0f} to {ch[modes[2][0]]['fnr_gap_points']['mean']:.1f} points. Synthetic data could not have shown this bias."})
+        real_sections.append({
+            "id": "real_cost", "title": "What the fix costs, on the same real messages",
+            "lead": "Normal messages wrongly flagged, by channel and by writing (Bangla script vs Bangla mixed with English). Mean of 5 seeds.",
+            "chart": {"kind": "table", "columns": ["slice and method", "scams caught", "normal messages flagged", "gap in missed scams (points)"],
+                      "units": ["text", "pct", "pct1", "num1"],
+                      "rows": [[f"{g}, {lab}", r3(ch[k][g]["recall"]["mean"]), r3(ch[k][g]["ham_flagged"]["mean"]), round(ch[k]["fnr_gap_points"]["mean"], 1)]
+                               for k, lab in (modes[0], modes[2]) for g in ("SMS", "Telegram")]
+                      + [[f"{g}, {lab}", r3(wr[k][g]["recall"]["mean"]), r3(wr[k][g]["ham_flagged"]["mean"]), round(wr[k]["fnr_gap_points"]["mean"], 1)]
+                         for k, lab in (("one_threshold", "one threshold"), ("equal_opportunity", "per-group thresholds")) for g in ("Bangla script only", "Bangla mixed with English")]},
+            "takeaway": f"Closing the channel gap flags {ch[modes[2][0]]['SMS']['ham_flagged']['mean']:.1%} of normal SMS instead of {ch['one_threshold']['SMS']['ham_flagged']['mean']:.1%}: "
+                        "a real cost, shown to the policy owner. The lasting fix is more real SMS scam labels (only 280 in this dataset)."})
+        real_head.append({"label": "Real messages: SMS vs Telegram gap in missed scams", "value": r3(ch[modes[2][0]]["fnr_gap_points"]["mean"] / 100), "format": "pct1",
+                          "sub": f"before {ch['one_threshold']['fnr_gap_points']['mean'] / 100:.0%}"})
+    return {"status": "measured", "title": "Fairness: synthetic tenure gap and a real-data check", "updated_at": NOW,
+            "source": "scripts/phase2/integration_study.py (fairness, fairness2, dial), scripts/phase2/real_data_fairness.py -> reports/phase2/",
+            "summary": "Synthetic world: long-tenure customers' scams were missed more often; we tested an equal-opportunity fix and built a policy dial. "
+                       "Real messages (BTTC): we found and fixed a channel bias that synthetic data could not reveal.",
             "headline": [{"label": "Gap in missed scams across tenure groups", "value": eo["after"]["fnr_gap"], "format": "pct1", "sub": f"before {eo['before']['fnr_gap']:.1%}"},
                          {"label": "False pauses per 1,000 normal transfers", "value": eo["after"]["overall"]["false_pauses_per_1000_normal"], "format": "num1",
-                          "sub": f"before {eo['before']['overall']['false_pauses_per_1000_normal']:.1f}"}],
-            "sections": [
+                          "sub": f"before {eo['before']['overall']['false_pauses_per_1000_normal']:.1f}"}] + real_head,
+            "sections": real_sections + [
                 {"id": "fnr_by_tenure", "title": "Missed scams by account tenure, before and after group-aware thresholds",
                  "lead": "Thresholds per tenure group chosen on validation so each group reaches the overall recall; one test pass.",
                  "chart": {"kind": "bars", "unit": "pct1", "x": groups,
@@ -239,7 +270,8 @@ def fairness():
                  "chart": {"kind": "line", "unit": "pct1", "x": [round(r["false_pauses_per_1000_normal"], 1) for r in rows], "x_label": "false pauses per 1,000 normal transfers",
                            "series": [{"name": "gap in missed scams", "values": [r3(r["fnr_gap"]) for r in rows]}]},
                  "takeaway": "A budget-neutral search on validation found no threshold set that narrows the gap without more false pauses, so the trade-off is shown to the policy owner as a dial."}],
-            "caveats": ["Fairness evidence is still synthetic; real-data slices are part of the pilot plan.", "Tenure is an account attribute, not a protected characteristic; no sensitive attribute is used or invented."]}
+            "caveats": ["The tenure study is synthetic; the real-data check covers the text model (BTTC has no customer attributes). Transaction-level fairness on real data is part of the pilot plan.",
+                        "Tenure, channel and writing are not protected characteristics; no sensitive attribute is used or invented."]}
 
 
 # ------------------------------------------------------------------ adversarial

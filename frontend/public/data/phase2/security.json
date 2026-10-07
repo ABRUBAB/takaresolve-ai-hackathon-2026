@@ -1,7 +1,7 @@
 {
   "status": "measured",
   "title": "Security and governance, tested",
-  "updated_at": "2026-10-07T04:24:25Z",
+  "updated_at": "2026-10-07T04:55:19Z",
   "source": "reports/security/ (security_report.py, failure_recovery_test.py, secrets_scan.py, bandit, pip-audit)",
   "summary": "Each governance control the judges named is implemented and verified by an automated test or scan.",
   "headline": [
@@ -84,7 +84,7 @@
           ],
           [
             "Static code scan",
-            "no exploitable finding; 2 issues fixed",
+            "0 high findings; 3 issues fixed, the rest reviewed",
             "bandit (reports/security/security_scan.md)"
           ],
           [

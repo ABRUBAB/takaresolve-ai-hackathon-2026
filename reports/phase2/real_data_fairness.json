@@ -1,0 +1,720 @@
+{
+  "dataset": "BTTC - Bangla Telegram and Text Communications (Mendeley Data, CC BY 4.0, 2026)",
+  "protocol": "and after per-group (equal-opportunity) thresholds, with the same protocol as the tenure study:\n  - 5 seeds; half of the real messages held out for testing (exact duplicates removed first, as in real_data_validation.py)\n  - a pilot model (same AI-2 architecture: character TF-IDF + logistic regression) trained on n real labelled messages\n  - the global threshold is set on a separate validation part of the training pool to catch 90% of scams\n  - equal opportunity: one threshold per group, each set on validation to catch 90% of that group's scams\n  - zero-shot: the served AI-2 model (synthetic training only), per group, as the honest starting point\nWrites reports/phase2/real_data_fairness.json",
+  "target_recall": 0.9,
+  "messages": 10267,
+  "attributes": {
+    "writing": {
+      "groups": {
+        "Bangla mixed with English": {
+          "messages": 5066,
+          "scams": 1406,
+          "ham": 2482
+        },
+        "Bangla script only": {
+          "messages": 5201,
+          "scams": 1262,
+          "ham": 1422
+        }
+      },
+      "zero_shot_served_model": {
+        "Bangla mixed with English": {
+          "recall": 0.8883357041251778,
+          "fnr": 0.1116642958748222,
+          "ham_flagged": 0.9750201450443191,
+          "n": 5066,
+          "scams": 1406,
+          "ham": 2482
+        },
+        "Bangla script only": {
+          "recall": 0.9167987321711569,
+          "fnr": 0.0832012678288431,
+          "ham_flagged": 0.8277074542897328,
+          "n": 5201,
+          "scams": 1262,
+          "ham": 1422
+        }
+      },
+      "pilot_300_real_labels": {
+        "one_threshold": {
+          "Bangla mixed with English": {
+            "recall": {
+              "mean": 0.9334368688840928,
+              "sd": 0.018227863349456735
+            },
+            "fnr": {
+              "mean": 0.06656313111590714,
+              "sd": 0.01822786334945674
+            },
+            "ham_flagged": {
+              "mean": 0.019448118747262086,
+              "sd": 0.004616017999791425
+            },
+            "n": 2526,
+            "scams": 706,
+            "ham": 1229
+          },
+          "Bangla script only": {
+            "recall": {
+              "mean": 0.8617897903941737,
+              "sd": 0.01228211137291704
+            },
+            "fnr": {
+              "mean": 0.13821020960582628,
+              "sd": 0.012282111372917025
+            },
+            "ham_flagged": {
+              "mean": 0.07181067357912013,
+              "sd": 0.019086845034976388
+            },
+            "n": 2607,
+            "scams": 659,
+            "ham": 728
+          },
+          "fnr_gap_points": {
+            "mean": 7.164707848991915,
+            "sd": 2.601852497138845
+          }
+        },
+        "equal_opportunity": {
+          "Bangla mixed with English": {
+            "recall": {
+              "mean": 0.8936654555109433,
+              "sd": 0.01851791227147353
+            },
+            "fnr": {
+              "mean": 0.10633454448905673,
+              "sd": 0.018517912271473546
+            },
+            "ham_flagged": {
+              "mean": 0.010534073629920043,
+              "sd": 0.0020445775538189418
+            },
+            "n": 2526,
+            "scams": 706,
+            "ham": 1229
+          },
+          "Bangla script only": {
+            "recall": {
+              "mean": 0.9001875388385876,
+              "sd": 0.018284957785516063
+            },
+            "fnr": {
+              "mean": 0.09981246116141224,
+              "sd": 0.018284957785516063
+            },
+            "ham_flagged": {
+              "mean": 0.11922724575669075,
+              "sd": 0.029972501411501075
+            },
+            "n": 2607,
+            "scams": 659,
+            "ham": 728
+          },
+          "fnr_gap_points": {
+            "mean": 2.29014463359994,
+            "sd": 2.0024553701849124
+          }
+        },
+        "group_balanced_training": {
+          "Bangla mixed with English": {
+            "recall": {
+              "mean": 0.9322238467596969,
+              "sd": 0.015556331978036752
+            },
+            "fnr": {
+              "mean": 0.06777615324030302,
+              "sd": 0.015556331978036733
+            },
+            "ham_flagged": {
+              "mean": 0.019292168866582284,
+              "sd": 0.0048866712707704716
+            },
+            "n": 2526,
+            "scams": 706,
+            "ham": 1229
+          },
+          "Bangla script only": {
+            "recall": {
+              "mean": 0.8640767561382127,
+              "sd": 0.01344230615421946
+            },
+            "fnr": {
+              "mean": 0.1359232438617873,
+              "sd": 0.01344230615421946
+            },
+            "ham_flagged": {
+              "mean": 0.0736419646419591,
+              "sd": 0.02300851185931503
+            },
+            "n": 2607,
+            "scams": 659,
+            "ham": 728
+          },
+          "fnr_gap_points": {
+            "mean": 6.81470906214843,
+            "sd": 2.3038038760671724
+          }
+        },
+        "group_balanced_training_plus_equal_opportunity": {
+          "Bangla mixed with English": {
+            "recall": {
+              "mean": 0.8947732262691146,
+              "sd": 0.018693571388397015
+            },
+            "fnr": {
+              "mean": 0.10522677373088551,
+              "sd": 0.018693571388397005
+            },
+            "ham_flagged": {
+              "mean": 0.011319949873707432,
+              "sd": 0.003035272120109997
+            },
+            "n": 2526,
+            "scams": 706,
+            "ham": 1229
+          },
+          "Bangla script only": {
+            "recall": {
+              "mean": 0.9010947525531472,
+              "sd": 0.017201269818048284
+            },
+            "fnr": {
+              "mean": 0.0989052474468528,
+              "sd": 0.0172012698180483
+            },
+            "ham_flagged": {
+              "mean": 0.12255558379846332,
+              "sd": 0.03347669889023452
+            },
+            "n": 2607,
+            "scams": 659,
+            "ham": 728
+          },
+          "fnr_gap_points": {
+            "mean": 2.4274547983132675,
+            "sd": 1.6913105004114373
+          }
+        }
+      },
+      "pilot_3000_real_labels": {
+        "one_threshold": {
+          "Bangla mixed with English": {
+            "recall": {
+              "mean": 0.9254063490515397,
+              "sd": 0.008416031341771575
+            },
+            "fnr": {
+              "mean": 0.0745936509484602,
+              "sd": 0.00841603134177158
+            },
+            "ham_flagged": {
+              "mean": 0.011007425085038339,
+              "sd": 0.0021043232049631783
+            },
+            "n": 2526,
+            "scams": 706,
+            "ham": 1229
+          },
+          "Bangla script only": {
+            "recall": {
+              "mean": 0.866246641872627,
+              "sd": 0.016254280848303777
+            },
+            "fnr": {
+              "mean": 0.133753358127373,
+              "sd": 0.016254280848303788
+            },
+            "ham_flagged": {
+              "mean": 0.044999549305545894,
+              "sd": 0.008870332413183671
+            },
+            "n": 2607,
+            "scams": 659,
+            "ham": 728
+          },
+          "fnr_gap_points": {
+            "mean": 5.9159707178912795,
+            "sd": 1.8732096797452011
+          }
+        },
+        "equal_opportunity": {
+          "Bangla mixed with English": {
+            "recall": {
+              "mean": 0.8875036383563097,
+              "sd": 0.024606871047516035
+            },
+            "fnr": {
+              "mean": 0.11249636164369019,
+              "sd": 0.024606871047516018
+            },
+            "ham_flagged": {
+              "mean": 0.006546583826234871,
+              "sd": 0.0020004806379990965
+            },
+            "n": 2526,
+            "scams": 706,
+            "ham": 1229
+          },
+          "Bangla script only": {
+            "recall": {
+              "mean": 0.8967212726961458,
+              "sd": 0.006265177127717395
+            },
+            "fnr": {
+              "mean": 0.10327872730385415,
+              "sd": 0.0062651771277174055
+            },
+            "ham_flagged": {
+              "mean": 0.06608113627946972,
+              "sd": 0.007284190642392797
+            },
+            "n": 2607,
+            "scams": 659,
+            "ham": 728
+          },
+          "fnr_gap_points": {
+            "mean": 2.254536765734325,
+            "sd": 1.795000661295312
+          }
+        },
+        "group_balanced_training": {
+          "Bangla mixed with English": {
+            "recall": {
+              "mean": 0.9233778067640477,
+              "sd": 0.009793042488877779
+            },
+            "fnr": {
+              "mean": 0.07662219323595232,
+              "sd": 0.009793042488877806
+            },
+            "ham_flagged": {
+              "mean": 0.010999680774250259,
+              "sd": 0.0021678746938132653
+            },
+            "n": 2526,
+            "scams": 706,
+            "ham": 1229
+          },
+          "Bangla script only": {
+            "recall": {
+              "mean": 0.8666069687975361,
+              "sd": 0.018880196223659596
+            },
+            "fnr": {
+              "mean": 0.13339303120246385,
+              "sd": 0.018880196223659596
+            },
+            "ham_flagged": {
+              "mean": 0.046537966927679114,
+              "sd": 0.011655281617786062
+            },
+            "n": 2607,
+            "scams": 659,
+            "ham": 728
+          },
+          "fnr_gap_points": {
+            "mean": 5.677083796651152,
+            "sd": 1.8984432626665246
+          }
+        },
+        "group_balanced_training_plus_equal_opportunity": {
+          "Bangla mixed with English": {
+            "recall": {
+              "mean": 0.8861331909066544,
+              "sd": 0.026454586604184444
+            },
+            "fnr": {
+              "mean": 0.11386680909334568,
+              "sd": 0.026454586604184444
+            },
+            "ham_flagged": {
+              "mean": 0.006851172799928381,
+              "sd": 0.0024109467780703644
+            },
+            "n": 2526,
+            "scams": 706,
+            "ham": 1229
+          },
+          "Bangla script only": {
+            "recall": {
+              "mean": 0.8944534454897628,
+              "sd": 0.009118375577516444
+            },
+            "fnr": {
+              "mean": 0.10554655451023717,
+              "sd": 0.00911837557751645
+            },
+            "ham_flagged": {
+              "mean": 0.06632049147340097,
+              "sd": 0.007463683022324604
+            },
+            "n": 2607,
+            "scams": 659,
+            "ham": 728
+          },
+          "fnr_gap_points": {
+            "mean": 2.583221200902806,
+            "sd": 2.08277759343532
+          }
+        }
+      }
+    },
+    "channel": {
+      "groups": {
+        "SMS": {
+          "messages": 7684,
+          "scams": 280,
+          "ham": 3723
+        },
+        "Telegram": {
+          "messages": 2583,
+          "scams": 2388,
+          "ham": 181
+        }
+      },
+      "zero_shot_served_model": {
+        "SMS": {
+          "recall": 0.8714285714285714,
+          "fnr": 0.12857142857142856,
+          "ham_flagged": 0.9374160623153371,
+          "n": 7684,
+          "scams": 280,
+          "ham": 3723
+        },
+        "Telegram": {
+          "recall": 0.9053601340033501,
+          "fnr": 0.09463986599664992,
+          "ham_flagged": 0.5911602209944752,
+          "n": 2583,
+          "scams": 2388,
+          "ham": 181
+        }
+      },
+      "pilot_300_real_labels": {
+        "one_threshold": {
+          "SMS": {
+            "recall": {
+              "mean": 0.3441273218937248,
+              "sd": 0.05430495504918092
+            },
+            "fnr": {
+              "mean": 0.6558726781062753,
+              "sd": 0.054304955049180904
+            },
+            "ham_flagged": {
+              "mean": 0.014947089504801146,
+              "sd": 0.00696332797441302
+            },
+            "n": 3841,
+            "scams": 168,
+            "ham": 1868
+          },
+          "Telegram": {
+            "recall": {
+              "mean": 0.9679629619588027,
+              "sd": 0.007792239340096806
+            },
+            "fnr": {
+              "mean": 0.0320370380411971,
+              "sd": 0.007792239340096816
+            },
+            "ham_flagged": {
+              "mean": 0.5371204821719003,
+              "sd": 0.08938642767395154
+            },
+            "n": 1292,
+            "scams": 1197,
+            "ham": 89
+          },
+          "fnr_gap_points": {
+            "mean": 62.38356400650781,
+            "sd": 5.809929201668811
+          }
+        },
+        "equal_opportunity": {
+          "SMS": {
+            "recall": {
+              "mean": 0.874386518600418,
+              "sd": 0.038068326429075254
+            },
+            "fnr": {
+              "mean": 0.12561348139958187,
+              "sd": 0.03806832642907527
+            },
+            "ham_flagged": {
+              "mean": 0.18470400279737195,
+              "sd": 0.03179896026932313
+            },
+            "n": 3841,
+            "scams": 168,
+            "ham": 1868
+          },
+          "Telegram": {
+            "recall": {
+              "mean": 0.9127092079955957,
+              "sd": 0.017312606918635044
+            },
+            "fnr": {
+              "mean": 0.08729079200440426,
+              "sd": 0.017312606918635044
+            },
+            "ham_flagged": {
+              "mean": 0.2974256457311557,
+              "sd": 0.09151286744851757
+            },
+            "n": 1292,
+            "scams": 1197,
+            "ham": 89
+          },
+          "fnr_gap_points": {
+            "mean": 4.981304591183454,
+            "sd": 1.1566070777837452
+          }
+        },
+        "group_balanced_training": {
+          "SMS": {
+            "recall": {
+              "mean": 0.5972441557648024,
+              "sd": 0.05636316214896052
+            },
+            "fnr": {
+              "mean": 0.4027558442351976,
+              "sd": 0.05636316214896051
+            },
+            "ham_flagged": {
+              "mean": 0.03819759263634663,
+              "sd": 0.012091220310706753
+            },
+            "n": 3841,
+            "scams": 168,
+            "ham": 1868
+          },
+          "Telegram": {
+            "recall": {
+              "mean": 0.9431056796259709,
+              "sd": 0.008442183132344575
+            },
+            "fnr": {
+              "mean": 0.056894320374029084,
+              "sd": 0.008442183132344558
+            },
+            "ham_flagged": {
+              "mean": 0.412490890708773,
+              "sd": 0.08084829505368812
+            },
+            "n": 1292,
+            "scams": 1197,
+            "ham": 89
+          },
+          "fnr_gap_points": {
+            "mean": 34.58615238611685,
+            "sd": 5.949300950974316
+          }
+        },
+        "group_balanced_training_plus_equal_opportunity": {
+          "SMS": {
+            "recall": {
+              "mean": 0.885738365566688,
+              "sd": 0.03133276283689298
+            },
+            "fnr": {
+              "mean": 0.1142616344333121,
+              "sd": 0.031332762836893
+            },
+            "ham_flagged": {
+              "mean": 0.15344040325081693,
+              "sd": 0.026253354747708627
+            },
+            "n": 3841,
+            "scams": 168,
+            "ham": 1868
+          },
+          "Telegram": {
+            "recall": {
+              "mean": 0.9099346416845083,
+              "sd": 0.01438992060303993
+            },
+            "fnr": {
+              "mean": 0.09006535831549159,
+              "sd": 0.014389920603039924
+            },
+            "ham_flagged": {
+              "mean": 0.2980550929512261,
+              "sd": 0.08140086477741343
+            },
+            "n": 1292,
+            "scams": 1197,
+            "ham": 89
+          },
+          "fnr_gap_points": {
+            "mean": 3.656331293839325,
+            "sd": 1.4801872247426082
+          }
+        }
+      },
+      "pilot_3000_real_labels": {
+        "one_threshold": {
+          "SMS": {
+            "recall": {
+              "mean": 0.2977595578590576,
+              "sd": 0.03424128219403224
+            },
+            "fnr": {
+              "mean": 0.7022404421409425,
+              "sd": 0.03424128219403223
+            },
+            "ham_flagged": {
+              "mean": 0.004478073334731561,
+              "sd": 0.0016698523784594058
+            },
+            "n": 3841,
+            "scams": 168,
+            "ham": 1868
+          },
+          "Telegram": {
+            "recall": {
+              "mean": 0.9711716975659911,
+              "sd": 0.004864976047854854
+            },
+            "fnr": {
+              "mean": 0.028828302434008975,
+              "sd": 0.00486497604785483
+            },
+            "ham_flagged": {
+              "mean": 0.4214532593271693,
+              "sd": 0.05468047590907651
+            },
+            "n": 1292,
+            "scams": 1197,
+            "ham": 89
+          },
+          "fnr_gap_points": {
+            "mean": 67.34121397069333,
+            "sd": 3.093111352030326
+          }
+        },
+        "equal_opportunity": {
+          "SMS": {
+            "recall": {
+              "mean": 0.8907572615126043,
+              "sd": 0.05361844327782381
+            },
+            "fnr": {
+              "mean": 0.10924273848739574,
+              "sd": 0.0536184432778238
+            },
+            "ham_flagged": {
+              "mean": 0.11083341784059067,
+              "sd": 0.02759877960242043
+            },
+            "n": 3841,
+            "scams": 168,
+            "ham": 1868
+          },
+          "Telegram": {
+            "recall": {
+              "mean": 0.9027950393745574,
+              "sd": 0.019266580104061154
+            },
+            "fnr": {
+              "mean": 0.09720496062544279,
+              "sd": 0.019266580104061144
+            },
+            "ham_flagged": {
+              "mean": 0.1646910684857085,
+              "sd": 0.05065127557247987
+            },
+            "n": 1292,
+            "scams": 1197,
+            "ham": 89
+          },
+          "fnr_gap_points": {
+            "mean": 5.593975761355361,
+            "sd": 2.6048543958486112
+          }
+        },
+        "group_balanced_training": {
+          "SMS": {
+            "recall": {
+              "mean": 0.6351107187000181,
+              "sd": 0.03993291285982945
+            },
+            "fnr": {
+              "mean": 0.3648892812999818,
+              "sd": 0.03993291285982944
+            },
+            "ham_flagged": {
+              "mean": 0.020140663509947834,
+              "sd": 0.003361598400791523
+            },
+            "n": 3841,
+            "scams": 168,
+            "ham": 1868
+          },
+          "Telegram": {
+            "recall": {
+              "mean": 0.9241525955900667,
+              "sd": 0.015617146926053597
+            },
+            "fnr": {
+              "mean": 0.07584740440993328,
+              "sd": 0.015617146926053614
+            },
+            "ham_flagged": {
+              "mean": 0.20157163865640224,
+              "sd": 0.04800845969602054
+            },
+            "n": 1292,
+            "scams": 1197,
+            "ham": 89
+          },
+          "fnr_gap_points": {
+            "mean": 28.904187689004857,
+            "sd": 3.0242903769472704
+          }
+        },
+        "group_balanced_training_plus_equal_opportunity": {
+          "SMS": {
+            "recall": {
+              "mean": 0.8971023372793587,
+              "sd": 0.04137903030015007
+            },
+            "fnr": {
+              "mean": 0.10289766272064138,
+              "sd": 0.04137903030015007
+            },
+            "ham_flagged": {
+              "mean": 0.09708955143369419,
+              "sd": 0.021392528721814467
+            },
+            "n": 3841,
+            "scams": 168,
+            "ham": 1868
+          },
+          "Telegram": {
+            "recall": {
+              "mean": 0.9004102138061023,
+              "sd": 0.018118832197527523
+            },
+            "fnr": {
+              "mean": 0.09958978619389766,
+              "sd": 0.01811883219752754
+            },
+            "ham_flagged": {
+              "mean": 0.14020599908979473,
+              "sd": 0.041339089349302076
+            },
+            "n": 1292,
+            "scams": 1197,
+            "ham": 89
+          },
+          "fnr_gap_points": {
+            "mean": 3.496845157953833,
+            "sd": 2.364760370814318
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,7 +1,7 @@
 {
   "status": "measured",
   "title": "Adversarial testing: disguised scam text and disguised prompt injection",
-  "updated_at": "2026-10-07T04:24:25Z",
+  "updated_at": "2026-10-07T04:55:19Z",
   "source": "scripts/phase2/adversarial_text.py -> reports/phase2/adversarial_text.json",
   "summary": "Scammers disguise trigger words. We attacked the served AI-2 model on 5,486 held-out messages and added a normalisation defence that leaves normal text unchanged.",
   "headline": [

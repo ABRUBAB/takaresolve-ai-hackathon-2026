@@ -1,9 +1,9 @@
 {
   "status": "measured",
-  "title": "Fairness: the tenure gap in missed scams",
-  "updated_at": "2026-10-07T04:24:25Z",
-  "source": "scripts/phase2/integration_study.py (fairness, fairness2, dial) -> reports/phase2/integration/",
-  "summary": "Long-tenure customers' scams were missed more often (29.0% vs ~19%). We tested an equal-opportunity fix, searched for a fix with no extra false pauses, and built a policy dial.",
+  "title": "Fairness: synthetic tenure gap and a real-data check",
+  "updated_at": "2026-10-07T05:06:53Z",
+  "source": "scripts/phase2/integration_study.py (fairness, fairness2, dial), scripts/phase2/real_data_fairness.py -> reports/phase2/",
+  "summary": "Synthetic world: long-tenure customers' scams were missed more often; we tested an equal-opportunity fix and built a policy dial. Real messages (BTTC): we found and fixed a channel bias that synthetic data could not reveal.",
   "headline": [
     {
       "label": "Gap in missed scams across tenure groups",
@@ -16,9 +16,119 @@
       "value": 13.61954464920633,
       "format": "num1",
       "sub": "before 8.3"
+    },
+    {
+      "label": "Real messages: SMS vs Telegram gap in missed scams",
+      "value": 0.035,
+      "format": "pct1",
+      "sub": "before 67%"
     }
   ],
   "sections": [
+    {
+      "id": "real_channel",
+      "title": "Real messages: are SMS scams caught as well as Telegram scams?",
+      "lead": "BTTC, real Bangla messages (CC BY 4.0). 92% of the Telegram messages are scams but only 3.6% of the SMS, so a model trained on the mix learns the channel's style instead of the scam. Pilot model trained on 3,000 real labels; thresholds set on validation for 90% recall; 5 seeds, one test pass each.",
+      "chart": {
+        "kind": "bars",
+        "unit": "pct",
+        "x": [
+          "one threshold",
+          "group-balanced training",
+          "balanced training + per-channel thresholds"
+        ],
+        "series": [
+          {
+            "name": "SMS scams caught",
+            "values": [
+              0.2978,
+              0.6351,
+              0.8971
+            ]
+          },
+          {
+            "name": "Telegram scams caught",
+            "values": [
+              0.9712,
+              0.9242,
+              0.9004
+            ]
+          }
+        ]
+      },
+      "takeaway": "SMS scams caught: 30% → 90%; the gap in missed scams falls from 67 to 3.5 points. Synthetic data could not have shown this bias."
+    },
+    {
+      "id": "real_cost",
+      "title": "What the fix costs, on the same real messages",
+      "lead": "Normal messages wrongly flagged, by channel and by writing (Bangla script vs Bangla mixed with English). Mean of 5 seeds.",
+      "chart": {
+        "kind": "table",
+        "columns": [
+          "slice and method",
+          "scams caught",
+          "normal messages flagged",
+          "gap in missed scams (points)"
+        ],
+        "units": [
+          "text",
+          "pct",
+          "pct1",
+          "num1"
+        ],
+        "rows": [
+          [
+            "SMS, one threshold",
+            0.2978,
+            0.0045,
+            67.3
+          ],
+          [
+            "Telegram, one threshold",
+            0.9712,
+            0.4215,
+            67.3
+          ],
+          [
+            "SMS, balanced training + per-channel thresholds",
+            0.8971,
+            0.0971,
+            3.5
+          ],
+          [
+            "Telegram, balanced training + per-channel thresholds",
+            0.9004,
+            0.1402,
+            3.5
+          ],
+          [
+            "Bangla script only, one threshold",
+            0.8662,
+            0.045,
+            5.9
+          ],
+          [
+            "Bangla mixed with English, one threshold",
+            0.9254,
+            0.011,
+            5.9
+          ],
+          [
+            "Bangla script only, per-group thresholds",
+            0.8967,
+            0.0661,
+            2.3
+          ],
+          [
+            "Bangla mixed with English, per-group thresholds",
+            0.8875,
+            0.0065,
+            2.3
+          ]
+        ]
+      },
+      "takeaway": "Closing the channel gap flags 9.7% of normal SMS instead of 0.4%: a real cost, shown to the policy owner. The lasting fix is more real SMS scam labels (only 280 in this dataset)."
+    },
     {
       "id": "fnr_by_tenure",
       "title": "Missed scams by account tenure, before and after group-aware thresholds",
@@ -88,7 +198,7 @@
     }
   ],
   "caveats": [
-    "Fairness evidence is still synthetic; real-data slices are part of the pilot plan.",
-    "Tenure is an account attribute, not a protected characteristic; no sensitive attribute is used or invented."
+    "The tenure study is synthetic; the real-data check covers the text model (BTTC has no customer attributes). Transaction-level fairness on real data is part of the pilot plan.",
+    "Tenure, channel and writing are not protected characteristics; no sensitive attribute is used or invented."
   ]
 }
