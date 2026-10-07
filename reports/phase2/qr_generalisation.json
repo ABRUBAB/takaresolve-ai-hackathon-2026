@@ -1,0 +1,350 @@
+{
+  "protocol": "Phase-2: can QR Shield generalise better to a disguise family it never saw? (judges: \"the 42.1% recall on the unseen QR",
+  "variants": [
+    {
+      "name": "Phase 1 (fixed 70/30 fusion)",
+      "selection": "design choice",
+      "w_supervised": 0.7,
+      "recall_by_family": {
+        "A_round_amount_atm": 0.8780487804878049,
+        "B_split_under_limit": 0.8444444444444444,
+        "C_cash_in_pass_through": 0.9090909090909091,
+        "D_rotating_ring": 0.42105263157894735
+      },
+      "recall_known_families_mean": 0.8771947113410529,
+      "pr_auc_D_vs_honest": 0.12213063749823326,
+      "pr_auc_seen_families": 0.8075934912173722,
+      "weekly_precision_at_20": 0.925,
+      "fpr_honest": 0.10168067226890756
+    },
+    {
+      "name": "LOFO-selected fusion weight",
+      "selection": {
+        "0.0": 0.3256,
+        "0.2": 0.4095,
+        "0.3": 0.4025,
+        "0.4": 0.3846,
+        "0.5": 0.3658,
+        "0.6": 0.3442,
+        "0.7": 0.3172,
+        "0.8": 0.2833,
+        "1.0": 0.1397
+      },
+      "w_supervised": 0.2,
+      "recall_by_family": {
+        "A_round_amount_atm": 0.8536585365853658,
+        "B_split_under_limit": 0.8,
+        "C_cash_in_pass_through": 0.8363636363636363,
+        "D_rotating_ring": 0.42105263157894735
+      },
+      "recall_known_families_mean": 0.8300073909830008,
+      "pr_auc_D_vs_honest": 0.09566976571952537,
+      "pr_auc_seen_families": 0.6947673492960583,
+      "weekly_precision_at_20": 0.85,
+      "fpr_honest": 0.12016806722689076
+    },
+    {
+      "name": "LOFO-selected fusion + shared-payer ring signal",
+      "selection": {
+        "0.0": 0.2783,
+        "0.2": 0.4347,
+        "0.3": 0.4421,
+        "0.4": 0.4392,
+        "0.5": 0.4289,
+        "0.6": 0.4109,
+        "0.7": 0.3867,
+        "0.8": 0.3472,
+        "1.0": 0.1544
+      },
+      "w_supervised": 0.3,
+      "recall_by_family": {
+        "A_round_amount_atm": 0.8780487804878049,
+        "B_split_under_limit": 0.8222222222222222,
+        "C_cash_in_pass_through": 0.8363636363636363,
+        "D_rotating_ring": 0.47368421052631576
+      },
+      "recall_known_families_mean": 0.8455448796912212,
+      "pr_auc_D_vs_honest": 0.09749597965458623,
+      "pr_auc_seen_families": 0.7039297956497061,
+      "weekly_precision_at_20": 0.825,
+      "fpr_honest": 0.11890756302521008
+    }
+  ],
+  "lofo_rows": {
+    "base": [
+      {
+        "held_out_family": "A_round_amount_atm",
+        "w_supervised": 0.0,
+        "pr_auc_unseen": 0.23863864665814455
+      },
+      {
+        "held_out_family": "A_round_amount_atm",
+        "w_supervised": 0.2,
+        "pr_auc_unseen": 0.3851795056474507
+      },
+      {
+        "held_out_family": "A_round_amount_atm",
+        "w_supervised": 0.3,
+        "pr_auc_unseen": 0.38722043538815776
+      },
+      {
+        "held_out_family": "A_round_amount_atm",
+        "w_supervised": 0.4,
+        "pr_auc_unseen": 0.3760624822053533
+      },
+      {
+        "held_out_family": "A_round_amount_atm",
+        "w_supervised": 0.5,
+        "pr_auc_unseen": 0.3669019630286128
+      },
+      {
+        "held_out_family": "A_round_amount_atm",
+        "w_supervised": 0.6,
+        "pr_auc_unseen": 0.3460010215081281
+      },
+      {
+        "held_out_family": "A_round_amount_atm",
+        "w_supervised": 0.7,
+        "pr_auc_unseen": 0.3223940404366895
+      },
+      {
+        "held_out_family": "A_round_amount_atm",
+        "w_supervised": 0.8,
+        "pr_auc_unseen": 0.29127822177308726
+      },
+      {
+        "held_out_family": "A_round_amount_atm",
+        "w_supervised": 1.0,
+        "pr_auc_unseen": 0.09370075004919967
+      },
+      {
+        "held_out_family": "B_split_under_limit",
+        "w_supervised": 0.0,
+        "pr_auc_unseen": 0.41395148365111223
+      },
+      {
+        "held_out_family": "B_split_under_limit",
+        "w_supervised": 0.2,
+        "pr_auc_unseen": 0.4377221938902042
+      },
+      {
+        "held_out_family": "B_split_under_limit",
+        "w_supervised": 0.3,
+        "pr_auc_unseen": 0.40199109576351144
+      },
+      {
+        "held_out_family": "B_split_under_limit",
+        "w_supervised": 0.4,
+        "pr_auc_unseen": 0.3549081428005703
+      },
+      {
+        "held_out_family": "B_split_under_limit",
+        "w_supervised": 0.5,
+        "pr_auc_unseen": 0.3100772704782221
+      },
+      {
+        "held_out_family": "B_split_under_limit",
+        "w_supervised": 0.6,
+        "pr_auc_unseen": 0.25900617206966065
+      },
+      {
+        "held_out_family": "B_split_under_limit",
+        "w_supervised": 0.7,
+        "pr_auc_unseen": 0.21176059539838993
+      },
+      {
+        "held_out_family": "B_split_under_limit",
+        "w_supervised": 0.8,
+        "pr_auc_unseen": 0.16514284354957165
+      },
+      {
+        "held_out_family": "B_split_under_limit",
+        "w_supervised": 1.0,
+        "pr_auc_unseen": 0.04542510418905416
+      },
+      {
+        "held_out_family": "C_cash_in_pass_through",
+        "w_supervised": 0.0,
+        "pr_auc_unseen": 0.324271077580335
+      },
+      {
+        "held_out_family": "C_cash_in_pass_through",
+        "w_supervised": 0.2,
+        "pr_auc_unseen": 0.40557268008209185
+      },
+      {
+        "held_out_family": "C_cash_in_pass_through",
+        "w_supervised": 0.3,
+        "pr_auc_unseen": 0.4182193885733336
+      },
+      {
+        "held_out_family": "C_cash_in_pass_through",
+        "w_supervised": 0.4,
+        "pr_auc_unseen": 0.4227308120218938
+      },
+      {
+        "held_out_family": "C_cash_in_pass_through",
+        "w_supervised": 0.5,
+        "pr_auc_unseen": 0.420306859280908
+      },
+      {
+        "held_out_family": "C_cash_in_pass_through",
+        "w_supervised": 0.6,
+        "pr_auc_unseen": 0.42744914469780965
+      },
+      {
+        "held_out_family": "C_cash_in_pass_through",
+        "w_supervised": 0.7,
+        "pr_auc_unseen": 0.41749262925023933
+      },
+      {
+        "held_out_family": "C_cash_in_pass_through",
+        "w_supervised": 0.8,
+        "pr_auc_unseen": 0.3933380441191408
+      },
+      {
+        "held_out_family": "C_cash_in_pass_through",
+        "w_supervised": 1.0,
+        "pr_auc_unseen": 0.2800467927259831
+      }
+    ],
+    "ring": [
+      {
+        "held_out_family": "A_round_amount_atm",
+        "w_supervised": 0.0,
+        "pr_auc_unseen": 0.24553659203539166
+      },
+      {
+        "held_out_family": "A_round_amount_atm",
+        "w_supervised": 0.2,
+        "pr_auc_unseen": 0.41582192616005426
+      },
+      {
+        "held_out_family": "A_round_amount_atm",
+        "w_supervised": 0.3,
+        "pr_auc_unseen": 0.4190838160671084
+      },
+      {
+        "held_out_family": "A_round_amount_atm",
+        "w_supervised": 0.4,
+        "pr_auc_unseen": 0.4126400326660356
+      },
+      {
+        "held_out_family": "A_round_amount_atm",
+        "w_supervised": 0.5,
+        "pr_auc_unseen": 0.40392796349298116
+      },
+      {
+        "held_out_family": "A_round_amount_atm",
+        "w_supervised": 0.6,
+        "pr_auc_unseen": 0.38652544190922866
+      },
+      {
+        "held_out_family": "A_round_amount_atm",
+        "w_supervised": 0.7,
+        "pr_auc_unseen": 0.3607977650256296
+      },
+      {
+        "held_out_family": "A_round_amount_atm",
+        "w_supervised": 0.8,
+        "pr_auc_unseen": 0.32632853283599944
+      },
+      {
+        "held_out_family": "A_round_amount_atm",
+        "w_supervised": 1.0,
+        "pr_auc_unseen": 0.11534893088687041
+      },
+      {
+        "held_out_family": "B_split_under_limit",
+        "w_supervised": 0.0,
+        "pr_auc_unseen": 0.3157808261608116
+      },
+      {
+        "held_out_family": "B_split_under_limit",
+        "w_supervised": 0.2,
+        "pr_auc_unseen": 0.5031724668694596
+      },
+      {
+        "held_out_family": "B_split_under_limit",
+        "w_supervised": 0.3,
+        "pr_auc_unseen": 0.4961949997680425
+      },
+      {
+        "held_out_family": "B_split_under_limit",
+        "w_supervised": 0.4,
+        "pr_auc_unseen": 0.4771587631685027
+      },
+      {
+        "held_out_family": "B_split_under_limit",
+        "w_supervised": 0.5,
+        "pr_auc_unseen": 0.44744816250364927
+      },
+      {
+        "held_out_family": "B_split_under_limit",
+        "w_supervised": 0.6,
+        "pr_auc_unseen": 0.4033082708725885
+      },
+      {
+        "held_out_family": "B_split_under_limit",
+        "w_supervised": 0.7,
+        "pr_auc_unseen": 0.3559788494029375
+      },
+      {
+        "held_out_family": "B_split_under_limit",
+        "w_supervised": 0.8,
+        "pr_auc_unseen": 0.2953479577730099
+      },
+      {
+        "held_out_family": "B_split_under_limit",
+        "w_supervised": 1.0,
+        "pr_auc_unseen": 0.06826982627079006
+      },
+      {
+        "held_out_family": "C_cash_in_pass_through",
+        "w_supervised": 0.0,
+        "pr_auc_unseen": 0.2736661897155523
+      },
+      {
+        "held_out_family": "C_cash_in_pass_through",
+        "w_supervised": 0.2,
+        "pr_auc_unseen": 0.3851734804639136
+      },
+      {
+        "held_out_family": "C_cash_in_pass_through",
+        "w_supervised": 0.3,
+        "pr_auc_unseen": 0.41110317996403895
+      },
+      {
+        "held_out_family": "C_cash_in_pass_through",
+        "w_supervised": 0.4,
+        "pr_auc_unseen": 0.4277232454604244
+      },
+      {
+        "held_out_family": "C_cash_in_pass_through",
+        "w_supervised": 0.5,
+        "pr_auc_unseen": 0.4354380372864799
+      },
+      {
+        "held_out_family": "C_cash_in_pass_through",
+        "w_supervised": 0.6,
+        "pr_auc_unseen": 0.4429997390905269
+      },
+      {
+        "held_out_family": "C_cash_in_pass_through",
+        "w_supervised": 0.7,
+        "pr_auc_unseen": 0.4432173840717171
+      },
+      {
+        "held_out_family": "C_cash_in_pass_through",
+        "w_supervised": 0.8,
+        "pr_auc_unseen": 0.419808484617495
+      },
+      {
+        "held_out_family": "C_cash_in_pass_through",
+        "w_supervised": 1.0,
+        "pr_auc_unseen": 0.2794504942471713
+      }
+    ]
+  },
+  "ring_signal_auc_D_vs_honest_all_weeks": 0.5361296882616381
+}

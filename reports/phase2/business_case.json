@@ -1,0 +1,272 @@
+{
+  "measured": {
+    "window": {
+      "transfers": 24827,
+      "days": 20,
+      "scams": 179,
+      "scam_money_bdt": 753140.0
+    },
+    "per_million": {
+      "scams": 7209.892455794095,
+      "scam_money_bdt": 30335521.81093165,
+      "scams_paused": 6082.088049301165,
+      "scam_money_paused_bdt": 26462319.249204498,
+      "false_pauses": 8257.139404680389,
+      "unsure_reviews": 6404.317879727716,
+      "alerts": 15185.08075885125,
+      "linked_cases": 7934.909574253837
+    },
+    "share_of_scam_money_paused": 0.8723212151791168,
+    "share_of_scams_paused": 0.8435754189944135,
+    "false_pauses_per_1000_normal": 8.317104836092177,
+    "rule_baseline_at_same_alert_budget": {
+      "scam_money_caught_bdt_window": 437300.0,
+      "model_scam_money_caught_bdt_window": 692660.0
+    }
+  },
+  "agent_service": {
+    "usual_cash": {
+      "cash_out_requests": 19301,
+      "requests_refused": 3420,
+      "share_refused": 0.1771928915600228,
+      "unmet_bdt": 30842200.0,
+      "agent_days_short": 0.21035714285714285,
+      "mean_cash_held_bdt": 15543.771484375
+    },
+    "uvera_forecast_q90": {
+      "cash_out_requests": 19301,
+      "requests_refused": 2014,
+      "share_refused": 0.1043469250297912,
+      "unmet_bdt": 20370100.0,
+      "agent_days_short": 0.12630952380952382,
+      "mean_cash_held_bdt": 20463.468410608813
+    },
+    "customers_served_extra": 1406,
+    "refusals_avoided_share": 0.4111111111111111,
+    "extra_cash_held_bdt_per_agent_day": 4919.696926233813,
+    "unmet_bdt_recovered": 10472100.0,
+    "agent_days": 8400,
+    "test_days": 14,
+    "fee_revenue_recovered_bdt_per_agent_per_month": 561.0053571428572
+  },
+  "user_study_used": false,
+  "stated_stop_rate": null,
+  "assumptions_low_base_high": {
+    "customer_minutes_lost_per_false_pause": [
+      1.0,
+      2.0,
+      5.0
+    ],
+    "customer_value_per_minute_bdt": [
+      1.0,
+      2.0,
+      4.0
+    ],
+    "support_contact_rate_per_false_pause": [
+      0.02,
+      0.1,
+      0.25
+    ],
+    "support_contact_cost_bdt": [
+      20.0,
+      40.0,
+      80.0
+    ],
+    "abandon_rate_after_false_pause": [
+      0.01,
+      0.05,
+      0.1
+    ],
+    "fee_revenue_lost_per_abandoned_transfer_bdt": [
+      0.0,
+      5.0,
+      15.0
+    ],
+    "analyst_cost_per_minute_bdt": [
+      3.0,
+      5.0,
+      10.0
+    ],
+    "minutes_per_unsure_review": [
+      2.0,
+      3.0,
+      6.0
+    ],
+    "minutes_per_alert_item": [
+      3.0,
+      6.0,
+      10.0
+    ],
+    "minutes_per_linked_case": [
+      5.0,
+      8.0,
+      15.0
+    ],
+    "cashout_fee_rate": [
+      0.013,
+      0.015,
+      0.0185
+    ],
+    "server_cost_bdt_per_month": [
+      3000.0,
+      6000.0,
+      15000.0
+    ],
+    "p2p_transfers_per_month": [
+      1000000,
+      1000000,
+      1000000
+    ]
+  },
+  "per_million_p2p_transfers": [
+    {
+      "follow_rate": 0.01,
+      "scam_money_prevented_bdt": 264623.192492045,
+      "analyst_cost_saved_bdt": 138156.03979538401,
+      "agent_fee_revenue_gained_bdt": 0.0,
+      "false_pause_cost_bdt": 68121.40008861321,
+      "unsure_review_cost_bdt": 96064.76819591575,
+      "infrastructure_bdt": 6000.0,
+      "net_benefit_bdt": 232593.0640029001,
+      "benefit_cost_ratio": 2.366697813032814
+    },
+    {
+      "follow_rate": 0.05,
+      "scam_money_prevented_bdt": 1323115.962460225,
+      "analyst_cost_saved_bdt": 138156.03979538401,
+      "agent_fee_revenue_gained_bdt": 0.0,
+      "false_pause_cost_bdt": 68121.40008861321,
+      "unsure_review_cost_bdt": 96064.76819591575,
+      "infrastructure_bdt": 6000.0,
+      "net_benefit_bdt": 1291085.8339710801,
+      "benefit_cost_ratio": 8.586314722196189
+    },
+    {
+      "follow_rate": 0.1,
+      "scam_money_prevented_bdt": 2646231.92492045,
+      "analyst_cost_saved_bdt": 138156.03979538401,
+      "agent_fee_revenue_gained_bdt": 0.0,
+      "false_pause_cost_bdt": 68121.40008861321,
+      "unsure_review_cost_bdt": 96064.76819591575,
+      "infrastructure_bdt": 6000.0,
+      "net_benefit_bdt": 2614201.796431305,
+      "benefit_cost_ratio": 16.360835858650407
+    },
+    {
+      "follow_rate": 0.3,
+      "scam_money_prevented_bdt": 7938695.774761349,
+      "analyst_cost_saved_bdt": 138156.03979538401,
+      "agent_fee_revenue_gained_bdt": 0.0,
+      "false_pause_cost_bdt": 68121.40008861321,
+      "unsure_review_cost_bdt": 96064.76819591575,
+      "infrastructure_bdt": 6000.0,
+      "net_benefit_bdt": 7906665.646272204,
+      "benefit_cost_ratio": 47.45892040446728
+    },
+    {
+      "follow_rate": 0.5,
+      "scam_money_prevented_bdt": 13231159.624602249,
+      "analyst_cost_saved_bdt": 138156.03979538401,
+      "agent_fee_revenue_gained_bdt": 0.0,
+      "false_pause_cost_bdt": 68121.40008861321,
+      "unsure_review_cost_bdt": 96064.76819591575,
+      "infrastructure_bdt": 6000.0,
+      "net_benefit_bdt": 13199129.496113103,
+      "benefit_cost_ratio": 78.55700495028415
+    }
+  ],
+  "break_even_follow_rate": {
+    "base_assumptions": 0.001210405187372524,
+    "all_assumptions_pessimistic": 0.05112013303296904
+  },
+  "tornado_net_benefit_at_10pct_follow": {
+    "reference_net_bdt": 2614201.796431305,
+    "rows": [
+      {
+        "assumption": "minutes_per_alert_item",
+        "low": 3.0,
+        "high": 10.0,
+        "net_at_low": 2386425.5850485363,
+        "net_at_high": 2917903.41160833
+      },
+      {
+        "assumption": "minutes_per_linked_case",
+        "low": 5.0,
+        "high": 15.0,
+        "net_at_low": 2733225.4400451127,
+        "net_at_high": 2336479.961332421
+      },
+      {
+        "assumption": "minutes_per_unsure_review",
+        "low": 2.0,
+        "high": 6.0,
+        "net_at_low": 2646223.385829943,
+        "net_at_high": 2518137.028235389
+      },
+      {
+        "assumption": "support_contact_rate_per_false_pause",
+        "low": 0.02,
+        "high": 0.25,
+        "net_at_low": 2640624.642526282,
+        "net_at_high": 2564658.9600032223
+      },
+      {
+        "assumption": "customer_minutes_lost_per_false_pause",
+        "low": 1.0,
+        "high": 5.0,
+        "net_at_low": 2630716.0752406656,
+        "net_at_high": 2564658.9600032223
+      },
+      {
+        "assumption": "analyst_cost_per_minute_bdt",
+        "low": 3.0,
+        "high": 10.0,
+        "net_at_low": 2597365.287791518,
+        "net_at_high": 2656293.068030773
+      },
+      {
+        "assumption": "customer_value_per_minute_bdt",
+        "low": 1.0,
+        "high": 4.0,
+        "net_at_low": 2630716.0752406656,
+        "net_at_high": 2581173.2388125835
+      },
+      {
+        "assumption": "support_contact_cost_bdt",
+        "low": 20.0,
+        "high": 80.0,
+        "net_at_low": 2630716.0752406656,
+        "net_at_high": 2581173.2388125835
+      },
+      {
+        "assumption": "server_cost_bdt_per_month",
+        "low": 3000.0,
+        "high": 15000.0,
+        "net_at_low": 2617201.796431305,
+        "net_at_high": 2605201.796431305
+      },
+      {
+        "assumption": "fee_revenue_lost_per_abandoned_transfer_bdt",
+        "low": 0.0,
+        "high": 15.0,
+        "net_at_low": 2616266.081282475,
+        "net_at_high": 2610073.2267289646
+      },
+      {
+        "assumption": "abandon_rate_after_false_pause",
+        "low": 0.01,
+        "high": 0.1,
+        "net_at_low": 2615853.2243122407,
+        "net_at_high": 2612137.5115801347
+      },
+      {
+        "assumption": "cashout_fee_rate",
+        "low": 0.013,
+        "high": 0.0185,
+        "net_at_low": 2614201.796431305,
+        "net_at_high": 2614201.796431305
+      }
+    ]
+  },
+  "reading": "UVERA pays for itself if at least the break-even share of paused scam victims stop. All money figures are synthetic-world estimates per 1 million P2P transfers; they show the economics are robust, not real savings."
+}

@@ -1,0 +1,49 @@
+{
+  "job": "shift_older_mules",
+  "kind": "distribution_shift",
+  "shift": "older_mules",
+  "spec": {
+    "assumptions": {
+      "mule_fresh_share": 0.1
+    }
+  },
+  "world_events": 2204247,
+  "world_scams": 3590,
+  "deployed_model": {
+    "n": 24976,
+    "positives": 186,
+    "prevalence": 0.007447149263292761,
+    "pr_auc": 0.632207639411274,
+    "roc_auc": 0.9419119528772875,
+    "ece": 0.0016905327546868072,
+    "recall_at_5pct": 0.8548387096774194,
+    "precision_at_5pct": 0.12730184147317855,
+    "recall_at_red": 0.7634408602150538,
+    "false_alerts_per_1000_at_red": 8.511496571198062,
+    "conformal_coverage_scams": 0.9247311827956989,
+    "conformal_coverage_all": 0.9419843049327354,
+    "rule_pr_auc": 0.03820587365778724,
+    "rule_recall_at_5pct": 0.21505376344086022
+  },
+  "retrained": {
+    "n": 24976,
+    "positives": 186,
+    "prevalence": 0.007447149263292761,
+    "pr_auc": 0.6601170749990095,
+    "roc_auc": 0.9471100252876854,
+    "ece": 0.0011140126674568471,
+    "recall_at_5pct": 0.8494623655913979,
+    "precision_at_5pct": 0.1265012009607686,
+    "recall_at_red": 0.7903225806451613,
+    "false_alerts_per_1000_at_red": 8.390480032271077,
+    "conformal_coverage_scams": 0.9301075268817204,
+    "conformal_coverage_all": 0.938821268417681,
+    "rule_pr_auc": 0.03820587365778724,
+    "rule_recall_at_5pct": 0.21505376344086022,
+    "max_single_feature_auc": 0.7754,
+    "train_rows": 147016,
+    "train_positives": 1041,
+    "seconds": 21.3
+  },
+  "seconds_total": 45.3
+}

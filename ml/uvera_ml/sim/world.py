@@ -170,7 +170,8 @@ def generate_world(scale: str = "small", seed: int | None = None) -> World:
     mule_end = np.full(N, -1)
     mule_start[mules] = rng.integers(0, max(1, D - 10), n_mule)
     mule_end[mules] = mule_start[mules] + rng.integers(7, 26, n_mule)
-    fresh = mules[rng.random(n_mule) < 0.45]  # 45% newly opened accounts, 55% older "bought" accounts
+    # 45% newly opened accounts, 55% older "bought" accounts (overridable for distribution-shift tests)
+    fresh = mules[rng.random(n_mule) < float(cfg.get("mule_fresh_share", 0.45))]
     reg_day[fresh] = mule_start[fresh] - rng.integers(0, 6, len(fresh))
     susc[mules] = 0
 

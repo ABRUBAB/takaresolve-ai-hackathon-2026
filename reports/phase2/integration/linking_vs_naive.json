@@ -1,0 +1,55 @@
+{
+  "alerts": 377,
+  "real_scam_alerts": 151,
+  "methods": [
+    {
+      "method": "A. one item per alert (ranked by AI-1)",
+      "analyst_items": 377,
+      "items_reduction_vs_alerts": 0.0,
+      "real_scam_alerts_in_top_5": 0.033112582781456956,
+      "real_scam_alerts_in_top_10": 0.06622516556291391,
+      "real_scam_alerts_in_top_20": 0.13245033112582782,
+      "mule_wallets_identified": 37,
+      "scam_cashouts_identified": 0.0,
+      "sees_downstream_cash_out": false
+    },
+    {
+      "method": "B. simple aggregation: same receiving wallet",
+      "analyst_items": 229,
+      "items_reduction_vs_alerts": 0.3925729442970822,
+      "real_scam_alerts_in_top_5": 0.2980132450331126,
+      "real_scam_alerts_in_top_10": 0.5033112582781457,
+      "real_scam_alerts_in_top_20": 0.7284768211920529,
+      "mule_wallets_identified": 37,
+      "scam_cashouts_identified": 0.0,
+      "sees_downstream_cash_out": false
+    },
+    {
+      "method": "C. UVERA Case Linker without QR Shield",
+      "analyst_items": 197,
+      "items_reduction_vs_alerts": 0.47745358090185674,
+      "real_scam_alerts_in_top_5": 0.9403973509933775,
+      "real_scam_alerts_in_top_10": 0.9602649006622517,
+      "real_scam_alerts_in_top_20": 0.9933774834437086,
+      "mule_wallets_identified": 42,
+      "scam_cashouts_identified": 0.7241379310344828,
+      "sees_downstream_cash_out": true
+    },
+    {
+      "method": "D. UVERA Case Linker + QR Shield",
+      "analyst_items": 197,
+      "items_reduction_vs_alerts": 0.47745358090185674,
+      "real_scam_alerts_in_top_5": 0.9403973509933775,
+      "real_scam_alerts_in_top_10": 0.9602649006622517,
+      "real_scam_alerts_in_top_20": 0.9801324503311258,
+      "mule_wallets_identified": 42,
+      "scam_cashouts_identified": 0.7241379310344828,
+      "sees_downstream_cash_out": true
+    }
+  ],
+  "linker_meta": {
+    "alerts": 377,
+    "true_scam_alerts": 151,
+    "events_in_graph": 375399
+  }
+}

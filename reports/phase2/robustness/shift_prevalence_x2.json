@@ -1,0 +1,51 @@
+{
+  "job": "shift_prevalence_x2",
+  "kind": "distribution_shift",
+  "shift": "prevalence_x2",
+  "spec": {
+    "assumptions": {
+      "rates": {
+        "scam_share_of_p2p": 0.012
+      }
+    }
+  },
+  "world_events": 2207287,
+  "world_scams": 7326,
+  "deployed_model": {
+    "n": 24994,
+    "positives": 368,
+    "prevalence": 0.014723533648075538,
+    "pr_auc": 0.7781251881277633,
+    "roc_auc": 0.9362950721047744,
+    "ece": 0.0027346929994978403,
+    "recall_at_5pct": 0.8722826086956522,
+    "precision_at_5pct": 0.2568,
+    "recall_at_red": 0.842391304347826,
+    "false_alerts_per_1000_at_red": 8.486964996345325,
+    "conformal_coverage_scams": 0.907608695652174,
+    "conformal_coverage_all": 0.9422261342722253,
+    "rule_pr_auc": 0.07202693082166552,
+    "rule_recall_at_5pct": 0.2391304347826087
+  },
+  "retrained": {
+    "n": 24994,
+    "positives": 368,
+    "prevalence": 0.014723533648075538,
+    "pr_auc": 0.7796605853578418,
+    "roc_auc": 0.9410692106080883,
+    "ece": 0.0016121761732347884,
+    "recall_at_5pct": 0.8804347826086957,
+    "precision_at_5pct": 0.2592,
+    "recall_at_red": 0.8641304347826086,
+    "false_alerts_per_1000_at_red": 9.0554698286364,
+    "conformal_coverage_scams": 0.8885869565217391,
+    "conformal_coverage_all": 0.9635112426982476,
+    "rule_pr_auc": 0.07202693082166552,
+    "rule_recall_at_5pct": 0.2391304347826087,
+    "max_single_feature_auc": 0.8514,
+    "train_rows": 148033,
+    "train_positives": 2147,
+    "seconds": 47.5
+  },
+  "seconds_total": 74.7
+}

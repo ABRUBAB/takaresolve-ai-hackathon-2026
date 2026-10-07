@@ -5,6 +5,7 @@ import re
 
 import numpy as np
 
+from uvera_ml.serving.normalize import normalize_text
 from uvera_ml.serving.store import ArtifactStore
 from uvera_ml.sim.text import CLASSES
 from uvera_ml.uncertainty.calibration import IsotonicCalibrator
@@ -55,7 +56,8 @@ class TextEngine:
         self.source = self.source + "+fallback"
 
     def raw_scam_prob(self, texts: list[str]) -> np.ndarray:
-        return 1 - self.model.predict_proba(texts)[:, LEGIT]
+        # undo disguises (invisible characters, look-alike letters, p.r.i.z.e, pr1ze) before scoring; clean text is unchanged
+        return 1 - self.model.predict_proba([normalize_text(t) for t in texts])[:, LEGIT]
 
     def scam_prob(self, texts: list[str]) -> np.ndarray:
         p = self.raw_scam_prob(texts)
@@ -64,7 +66,7 @@ class TextEngine:
 
     def check(self, text: str) -> dict:
         text = text.strip()[:1000]
-        pr = self.model.predict_proba([text])[0]
+        pr = self.model.predict_proba([normalize_text(text)])[0]
         p = float(self.scam_prob([text])[0])
         order = np.argsort(-pr)
         fam = CLASSES[int(order[0])] if order[0] != LEGIT or p < 0.5 else CLASSES[int(order[1])]
@@ -76,6 +78,6 @@ class TextEngine:
             "family_text_bn": bn if state != "likely_safe" else FAMILY_TEXT["legit"][1],
             "top_families": [{"family": CLASSES[int(i)], "probability": float(pr[i])} for i in order[:3]],
             "highlights": occlusion(text, self.raw_scam_prob) if state != "likely_safe" else [],
-            "contains_ai_instructions": bool(INJECTION_RE.search(text)),
+            "contains_ai_instructions": bool(INJECTION_RE.search(text) or INJECTION_RE.search(normalize_text(text))),
             "note": "Model estimate on synthetic training data. If you are unsure, do not send money and contact the provider.",
         }

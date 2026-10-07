@@ -1,0 +1,50 @@
+{
+  "job": "shift_adaptive_scammers",
+  "kind": "distribution_shift",
+  "shift": "adaptive_scammers",
+  "spec": {
+    "assumptions": {
+      "mule_fresh_share": 0.1
+    },
+    "patterns_amount_scale": 0.5
+  },
+  "world_events": 2204393,
+  "world_scams": 3695,
+  "deployed_model": {
+    "n": 25000,
+    "positives": 149,
+    "prevalence": 0.00596,
+    "pr_auc": 0.48946023359564905,
+    "roc_auc": 0.8927466762306028,
+    "ece": 0.0020492100560448915,
+    "recall_at_5pct": 0.7651006711409396,
+    "precision_at_5pct": 0.0912,
+    "recall_at_red": 0.6040268456375839,
+    "false_alerts_per_1000_at_red": 6.156693895617883,
+    "conformal_coverage_scams": 0.8523489932885906,
+    "conformal_coverage_all": 0.9464,
+    "rule_pr_auc": 0.01906741966899522,
+    "rule_recall_at_5pct": 0.11409395973154363
+  },
+  "retrained": {
+    "n": 25000,
+    "positives": 149,
+    "prevalence": 0.00596,
+    "pr_auc": 0.5448257467803693,
+    "roc_auc": 0.9065762143718847,
+    "ece": 0.0017659903970009573,
+    "recall_at_5pct": 0.7919463087248322,
+    "precision_at_5pct": 0.0944,
+    "recall_at_red": 0.6510067114093959,
+    "false_alerts_per_1000_at_red": 7.967486217858435,
+    "conformal_coverage_scams": 0.9194630872483222,
+    "conformal_coverage_all": 0.94724,
+    "rule_pr_auc": 0.01906741966899522,
+    "rule_recall_at_5pct": 0.11409395973154363,
+    "max_single_feature_auc": 0.7796,
+    "train_rows": 146938,
+    "train_positives": 1154,
+    "seconds": 43.9
+  },
+  "seconds_total": 73.2
+}

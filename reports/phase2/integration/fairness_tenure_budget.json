@@ -1,0 +1,63 @@
+{
+  "slice": "tenure_bucket",
+  "method": "Equal opportunity WITHOUT spending more false pauses: per-tenure thresholds (each a quantile of that group's normal     validation transfers) chosen on VALIDATION to minimise the FNR gap, subject to: overall validation false-pause rate no     higher than the global threshold's, and overall validation recall not lower. One test pass afterwards.",
+  "validation": {
+    "before": {
+      "fnr": {
+        "90-365d": 0.19270833333333337,
+        "<90d": 0.24390243902439024,
+        ">365d": 0.2894736842105263
+      },
+      "gap": 0.09676535087719296,
+      "recall": 0.7588652482269503,
+      "fpr": 0.010014513788098693
+    },
+    "after": {
+      "fnr": {
+        "90-365d": 0.1875,
+        "<90d": 0.24390243902439024,
+        ">365d": 0.2947368421052632
+      },
+      "gap": 0.10723684210526319,
+      "recall": 0.7588652482269503,
+      "fpr": 0.009496164213145345
+    },
+    "chosen_false_pause_level_per_group": {
+      "90-365d": 0.012,
+      "<90d": 0.012,
+      ">365d": 0.008
+    }
+  },
+  "test_window": {
+    "before": {
+      "fnr": {
+        "90-365d": 0.19217081850533813,
+        "<90d": 0.18604651162790697,
+        ">365d": 0.29007633587786263
+      },
+      "gap": 0.10402982424995566,
+      "recall": 0.764505119453925,
+      "fpr": 0.00832841181646157
+    },
+    "after": {
+      "fnr": {
+        "90-365d": 0.18861209964412806,
+        "<90d": 0.18604651162790697,
+        ">365d": 0.3015267175572519
+      },
+      "gap": 0.11548020592934494,
+      "recall": 0.7610921501706485,
+      "fpr": 0.007737829791849968
+    },
+    "false_pauses_per_1000_normal": {
+      "before": 8.32841181646157,
+      "after": 7.737829791849968
+    }
+  },
+  "group_thresholds": {
+    "90-365d": 0.13643261495008224,
+    "<90d": 0.21806357848977087,
+    ">365d": 0.16975173791735798
+  },
+  "global_threshold": 0.1500801419275889
+}

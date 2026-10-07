@@ -1,0 +1,101 @@
+{
+  "protocol": "train without one scam family (its scam transfers removed from training), thresholds frozen on validation (1% of normal validation transfers), measured on the whole test window",
+  "rows": [
+    {
+      "family": "fake_customer_care",
+      "held_out_from_training": false,
+      "test_scams_of_family": 108,
+      "recall_on_family_at_pause": 0.8703703703703703,
+      "recall_on_other_families": 0.820040899795501,
+      "train_positives": 1146
+    },
+    {
+      "family": "fake_customer_care",
+      "held_out_from_training": true,
+      "test_scams_of_family": 108,
+      "recall_on_family_at_pause": 0.8518518518518519,
+      "recall_on_other_families": 0.8139059304703476,
+      "train_positives": 998
+    },
+    {
+      "family": "gold_jar_offer",
+      "held_out_from_training": false,
+      "test_scams_of_family": 55,
+      "recall_on_family_at_pause": 0.8,
+      "recall_on_other_families": 0.8321033210332104,
+      "train_positives": 1146
+    },
+    {
+      "family": "gold_jar_offer",
+      "held_out_from_training": true,
+      "test_scams_of_family": 55,
+      "recall_on_family_at_pause": 0.7272727272727273,
+      "recall_on_other_families": 0.8284132841328413,
+      "train_positives": 1069
+    },
+    {
+      "family": "investment_group",
+      "held_out_from_training": false,
+      "test_scams_of_family": 170,
+      "recall_on_family_at_pause": 0.8470588235294118,
+      "recall_on_other_families": 0.8220140515222483,
+      "train_positives": 1146
+    },
+    {
+      "family": "investment_group",
+      "held_out_from_training": true,
+      "test_scams_of_family": 170,
+      "recall_on_family_at_pause": 0.35294117647058826,
+      "recall_on_other_families": 0.7892271662763466,
+      "train_positives": 792
+    },
+    {
+      "family": "otp_reversal_counter",
+      "held_out_from_training": false,
+      "test_scams_of_family": 106,
+      "recall_on_family_at_pause": 0.7924528301886793,
+      "recall_on_other_families": 0.8370672097759674,
+      "train_positives": 1146
+    },
+    {
+      "family": "otp_reversal_counter",
+      "held_out_from_training": true,
+      "test_scams_of_family": 106,
+      "recall_on_family_at_pause": 0.7830188679245284,
+      "recall_on_other_families": 0.8085539714867617,
+      "train_positives": 998
+    },
+    {
+      "family": "prize_lottery",
+      "held_out_from_training": false,
+      "test_scams_of_family": 85,
+      "recall_on_family_at_pause": 0.8823529411764706,
+      "recall_on_other_families": 0.8203125,
+      "train_positives": 1146
+    },
+    {
+      "family": "prize_lottery",
+      "held_out_from_training": true,
+      "test_scams_of_family": 85,
+      "recall_on_family_at_pause": 0.788235294117647,
+      "recall_on_other_families": 0.833984375,
+      "train_positives": 984
+    },
+    {
+      "family": "refund_government",
+      "held_out_from_training": false,
+      "test_scams_of_family": 73,
+      "recall_on_family_at_pause": 0.7397260273972602,
+      "recall_on_other_families": 0.8416030534351145,
+      "train_positives": 1146
+    },
+    {
+      "family": "refund_government",
+      "held_out_from_training": true,
+      "test_scams_of_family": 73,
+      "recall_on_family_at_pause": 0.5342465753424658,
+      "recall_on_other_families": 0.8454198473282443,
+      "train_positives": 1000
+    }
+  ]
+}

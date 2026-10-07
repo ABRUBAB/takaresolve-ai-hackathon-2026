@@ -1,0 +1,77 @@
+{
+  "slice": "tenure_bucket",
+  "method": "post-processing for equal opportunity: one pause threshold per tenure group, chosen on the VALIDATION window so each group reaches the overall validation recall, capped at 2% of the group's normal transfers; evaluated once on the test window with the same reported labels as the phase-1 fairness report",
+  "validation_target_recall": 0.7588652482269503,
+  "group_thresholds": {
+    "90-365d": 0.1500801419275889,
+    "<90d": 0.1500801419275889,
+    ">365d": 0.05413489105242622
+  },
+  "global_threshold": 0.1500801419275889,
+  "before": {
+    "slices": [
+      {
+        "group": "90-365d",
+        "n": 23651,
+        "scams": 281,
+        "threshold": 0.1500801419275889,
+        "fnr": 0.19217081850533813,
+        "fpr": 0.009242618741976894
+      },
+      {
+        "group": "<90d",
+        "n": 6713,
+        "scams": 43,
+        "threshold": 0.1500801419275889,
+        "fnr": 0.18604651162790697,
+        "fpr": 0.01649175412293853
+      },
+      {
+        "group": ">365d",
+        "n": 53191,
+        "scams": 262,
+        "threshold": 0.1500801419275889,
+        "fnr": 0.29007633587786263,
+        "fpr": 0.0068960305314666815
+      }
+    ],
+    "overall": {
+      "recall": 0.764505119453925,
+      "false_pauses_per_1000_normal": 8.32841181646157
+    },
+    "fnr_gap": 0.10402982424995566
+  },
+  "after": {
+    "slices": [
+      {
+        "group": "90-365d",
+        "n": 23651,
+        "scams": 281,
+        "threshold": 0.1500801419275889,
+        "fnr": 0.19217081850533813,
+        "fpr": 0.009242618741976894
+      },
+      {
+        "group": "<90d",
+        "n": 6713,
+        "scams": 43,
+        "threshold": 0.1500801419275889,
+        "fnr": 0.18604651162790697,
+        "fpr": 0.01649175412293853
+      },
+      {
+        "group": ">365d",
+        "n": 53191,
+        "scams": 262,
+        "threshold": 0.05413489105242622,
+        "fnr": 0.21755725190839692,
+        "fpr": 0.015190160403559486
+      }
+    ],
+    "overall": {
+      "recall": 0.7969283276450512,
+      "false_pauses_per_1000_normal": 13.61954464920633
+    },
+    "fnr_gap": 0.031510740280489946
+  }
+}
