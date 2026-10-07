@@ -1,0 +1,52 @@
+{
+  "status": "pending",
+  "title": "On-site user study",
+  "updated_at": null,
+  "source": "TBD (exported from /v1/study/results after the session)",
+  "summary": "TBD",
+  "headline": [
+    {
+      "label": "participants",
+      "value": null,
+      "format": "num",
+      "sub": "TBD"
+    },
+    {
+      "label": "understood the Pause screen",
+      "value": null,
+      "format": "pct",
+      "sub": "TBD"
+    },
+    {
+      "label": "would not send anyway (stated stop rate)",
+      "value": null,
+      "format": "pct",
+      "sub": "TBD"
+    },
+    {
+      "label": "understood “not sure”: a person checks",
+      "value": null,
+      "format": "pct",
+      "sub": "TBD"
+    }
+  ],
+  "sections": [
+    {
+      "id": "triage",
+      "title": "Analyst task: plain alert list (A) vs linked cases (B)",
+      "lead": "Same 12 alerts, 3 hidden rings.",
+      "chart": null,
+      "takeaway": "TBD"
+    },
+    {
+      "id": "ratings",
+      "title": "Ratings (mean, 1–5)",
+      "lead": "Clarity, trust, annoyance, and “not sure”.",
+      "chart": null,
+      "takeaway": "TBD"
+    }
+  ],
+  "caveats": [
+    "TBD"
+  ]
+}

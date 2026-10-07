@@ -64,3 +64,10 @@ def qr_merchant(merchant_id: str, request: Request, user: dict = Depends(require
         return envelope(request, s.qr.merchant(merchant_id), s.qr.version)
     except KeyError as e:
         raise HTTPException(404, "Merchant not in the scored set") from e
+
+
+@router.get("/ops/audit/verify")
+def audit_verify(request: Request, user: dict = Depends(require("ops"))) -> dict:
+    """Recompute the audit log's hash chain: ok, number of rows, first broken row (None if intact) and the head hash.
+    Works while the AI engines are still loading: it only reads the decision database."""
+    return {"trace_id": getattr(request.state, "trace_id", ""), **db.verify_audit()}

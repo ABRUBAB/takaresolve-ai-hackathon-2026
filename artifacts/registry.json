@@ -1,0 +1,329 @@
+{
+ "schema_version": 1,
+ "about": "Model registry: the served version of every model, its file hashes, approval and history. Edit only with scripts/model_registry.py (see docs/model_registry.md).",
+ "models": {
+  "ai1": {
+   "active": "v1",
+   "versions": [
+    {
+     "version": "v1",
+     "status": "approved",
+     "approved_by": "team (phase-1 release)",
+     "approved_at": "2026-10-03T22:32:31Z",
+     "notebook": "NB01",
+     "code_commit": "4599b2e045ce415250a97248dadafe2687288f8b",
+     "data_version": "41d324455a71",
+     "files": [
+      {
+       "path": "ai1/calibrator.json",
+       "bytes": 2983,
+       "sha256": "cb5424457ca71fc19bd7e850a190190da75eff6d74878c2ee17fd576cb9e2aba"
+      },
+      {
+       "path": "ai1/conformal.json",
+       "bytes": 117,
+       "sha256": "5ac7d0dfdfc507dd35605e5d362a332627398c26a5fe7f812d8a6120e94622d6"
+      },
+      {
+       "path": "ai1/features.json",
+       "bytes": 1153,
+       "sha256": "f6692b1b785948baa76eb310ed9408aae3bd96996476e45603b23f74294014e7"
+      },
+      {
+       "path": "ai1/model.txt",
+       "bytes": 1677523,
+       "sha256": "ddcd41651ea1bf9a5314611a0b27f35fea3755bde9e5cff2573ae940638d8838"
+      },
+      {
+       "path": "ai1/novelty.json",
+       "bytes": 1503,
+       "sha256": "489ae576435efd128380c7c65795b72724e28932131709229185f186a80507e6"
+      },
+      {
+       "path": "ai1/test_scores.parquet",
+       "bytes": 4680548,
+       "sha256": "b78d2d0d9bb6548d40d36a2df81be337d43557fb033fec30ad2c251a5c9abf1d"
+      },
+      {
+       "path": "ai1/thresholds.json",
+       "bytes": 257,
+       "sha256": "4615a22d6f270da3ed60969057ec5f93642bbe43e2a5f3ec96bc4587e99f4cca"
+      }
+     ],
+     "notes": "Phase-1 release: the files the official Kaggle notebook runs exported (artifacts/manifest.json, commit 2026-10-04).",
+     "metrics": {
+      "report": "reports/metrics_ai1.json",
+      "sha256": "a05a5568fb34dc358f3e2c83fda9f8ec497c9a59794375319709f6ddd8ee774e"
+     },
+     "model_card": "reports/model_cards/AI-1.md"
+    }
+   ]
+  },
+  "ai2": {
+   "active": "v1",
+   "versions": [
+    {
+     "version": "v1",
+     "status": "approved",
+     "approved_by": "team (phase-1 release)",
+     "approved_at": "2026-10-03T22:32:31Z",
+     "notebook": "NB02",
+     "code_commit": "ef989c6b691f73f8397256d2453a7d2bc4952129",
+     "data_version": "41d324455a71",
+     "files": [
+      {
+       "path": "ai2/corpus.parquet",
+       "bytes": 422098,
+       "sha256": "b3bfd8fcffd8ca6538be6e38e16cd78959015ed00d855799ff03c544e85874c2"
+      },
+      {
+       "path": "ai2/emb_evidential.pt",
+       "bytes": 1059427,
+       "sha256": "f36f991178226ffaec11e3402e7a0ffa6c825fa5625747adf1f82d5845dd5e9c"
+      },
+      {
+       "path": "ai2/emb_lr.npz",
+       "bytes": 55409,
+       "sha256": "00c1c94d7b09f16ec14ba517fd6eb5b88a2432ec7e04e6c6689ce95d7763ee60"
+      },
+      {
+       "path": "ai2/model_info.json",
+       "bytes": 9080,
+       "sha256": "1e1b3b8cfe1bcfae87a4b5519ec7648553d7b3c528b7ac0527bd9c9f4addcdf7"
+      },
+      {
+       "path": "ai2/tfidf_lr.joblib",
+       "bytes": 3009908,
+       "sha256": "8ac8f6a1ef202b3c61dff916616446087584466482087cbaa78a8ea5817f28d0"
+      }
+     ],
+     "notes": "Phase-1 release: the files the official Kaggle notebook runs exported (artifacts/manifest.json, commit 2026-10-04).",
+     "metrics": {
+      "report": "reports/metrics_ai2.json",
+      "sha256": "502b744b27c2a4a615a7d3b2001a0ae4412eaade9b668d239f98970a3c3b7171"
+     },
+     "model_card": "reports/model_cards/AI-2.md"
+    }
+   ]
+  },
+  "ai3": {
+   "active": "v1",
+   "versions": [
+    {
+     "version": "v1",
+     "status": "approved",
+     "approved_by": "team (phase-1 release)",
+     "approved_at": "2026-10-03T22:32:31Z",
+     "notebook": "NB03",
+     "code_commit": "856988681c000618c0b7fe4ca60d11edfe204d4d",
+     "data_version": "41d324455a71",
+     "files": [
+      {
+       "path": "ai3/forecasts.parquet",
+       "bytes": 2835091,
+       "sha256": "eb3398a4ee7c4090608f141703f0a470cdae8453a0b3ce8d1504670d126ecf63"
+      },
+      {
+       "path": "ai3/residuals.json",
+       "bytes": 25553,
+       "sha256": "a9e1fe77c89fbdac41a399db46369c3805fee07269637f6fdddc1284006b0b65"
+      },
+      {
+       "path": "ai3/shortfall.parquet",
+       "bytes": 1378827,
+       "sha256": "7c8a88d11ca6ba15af27aea2eeb43bb7cabd8758ca7d1b8f64fddaf57df5312f"
+      },
+      {
+       "path": "ai3/shortfall_calibrator.json",
+       "bytes": 1729,
+       "sha256": "239c0d0351e79eaa468e0d31534aca9bca1ce48ab7f6c9642b5fd595000d2cb0"
+      }
+     ],
+     "notes": "Phase-1 release: the files the official Kaggle notebook runs exported (artifacts/manifest.json, commit 2026-10-04).",
+     "metrics": {
+      "report": "reports/metrics_ai3.json",
+      "sha256": "6f4e90d76043859a1c424f7879de0250119a54658dfb8a78d4b6db1d6adf13ea"
+     },
+     "model_card": "reports/model_cards/AI-3.md"
+    }
+   ]
+  },
+  "ai4": {
+   "active": "v1",
+   "versions": [
+    {
+     "version": "v1",
+     "status": "approved",
+     "approved_by": "team (phase-1 release)",
+     "approved_at": "2026-10-03T22:32:31Z",
+     "notebook": "NB04",
+     "code_commit": "856988681c000618c0b7fe4ca60d11edfe204d4d",
+     "data_version": "41d324455a71",
+     "files": [
+      {
+       "path": "ai4/capacity.parquet",
+       "bytes": 7962,
+       "sha256": "7ddbb562c7ec5a7d607a67a782ab7c09b2d5d1f16cd4b0740fc73bef504362ce"
+      },
+      {
+       "path": "ai4/forecasts.parquet",
+       "bytes": 558874,
+       "sha256": "0266e1b4b3bace5ecc77bc3268c4248ea171574c3e5222654ea1ceaf95d040aa"
+      },
+      {
+       "path": "ai4/residuals.json",
+       "bytes": 25268,
+       "sha256": "8ac44ebb22129f7f77d5aa649acc3144aca85c4c9fd883b80addad12151b16f6"
+      }
+     ],
+     "notes": "Phase-1 release: the files the official Kaggle notebook runs exported (artifacts/manifest.json, commit 2026-10-04).",
+     "metrics": {
+      "report": "reports/metrics_ai4.json",
+      "sha256": "3cc33eb9c465beede3fff9b429b28b4962f4ae73d7639d382b7b3d7a9f6521b5"
+     },
+     "model_card": "reports/model_cards/AI-4.md"
+    }
+   ]
+  },
+  "ai5": {
+   "active": "v1",
+   "versions": [
+    {
+     "version": "v1",
+     "status": "approved",
+     "approved_by": "team (phase-1 release)",
+     "approved_at": "2026-10-03T22:32:31Z",
+     "notebook": "NB05",
+     "code_commit": "59792ea847d453077806e3dc792397cf1d79f062",
+     "data_version": "41d324455a71",
+     "files": [
+      {
+       "path": "ai5/calibrator.json",
+       "bytes": 1920,
+       "sha256": "f5c67f1393d1b4ed0b7ed044dc39cf77273ae831409323014eab22bda0a7bad3"
+      },
+      {
+       "path": "ai5/conformal.json",
+       "bytes": 101,
+       "sha256": "5e2c58ab709336ed6233b59031edc7c2eee9942851da00cfbe6aac20c6007b8d"
+      },
+      {
+       "path": "ai5/merchant_scores.parquet",
+       "bytes": 542819,
+       "sha256": "9a5e01e282b0e28a9997b5c949621c7a06b63d977773b7e2e2cbc91489c42785"
+      },
+      {
+       "path": "ai5/model.txt",
+       "bytes": 525623,
+       "sha256": "543077913785d27a48bba7e08de5c634ed73ce1aa7e5a1e71ba84325bda38f9f"
+      },
+      {
+       "path": "ai5/thresholds.json",
+       "bytes": 229,
+       "sha256": "6747e64f0a1e691845b949c7a705e0b3fa789ee1f55748f51063438636c0edc3"
+      },
+      {
+       "path": "ai5/zone_summary.parquet",
+       "bytes": 3762,
+       "sha256": "4a050f378c1135da82d457c30956a5cbfaacb38b4fc3815ac55bbc5f8f663f97"
+      }
+     ],
+     "notes": "Phase-1 release: the files the official Kaggle notebook runs exported (artifacts/manifest.json, commit 2026-10-04).",
+     "metrics": {
+      "report": "reports/metrics_ai5.json",
+      "sha256": "cb054fb197d5a8e07b5ba50d9d117737e506f5c490dd6abe3987911be8fd35bd"
+     },
+     "model_card": "reports/model_cards/AI-5.md"
+    }
+   ]
+  },
+  "ai6": {
+   "active": "v1",
+   "versions": [
+    {
+     "version": "v1",
+     "status": "approved",
+     "approved_by": "team (phase-1 release)",
+     "approved_at": "2026-10-03T22:32:31Z",
+     "notebook": "NB06",
+     "code_commit": "856988681c000618c0b7fe4ca60d11edfe204d4d",
+     "data_version": "41d324455a71",
+     "files": [
+      {
+       "path": "ai6/cases.json",
+       "bytes": 248080,
+       "sha256": "2649cecbeb0e81017cc819ab3a820bf37913432b058b78fe757e1326fa08425e"
+      }
+     ],
+     "notes": "Phase-1 release: the files the official Kaggle notebook runs exported (artifacts/manifest.json, commit 2026-10-04).",
+     "metrics": {
+      "report": "reports/metrics_ai6.json",
+      "sha256": "165cecaa88836af0915ab078b75460582c9294ae53ec64cdd62bc75a65e861a4"
+     },
+     "model_card": "reports/model_cards/AI-6.md"
+    }
+   ]
+  },
+  "ai7": {
+   "active": "v1",
+   "versions": [
+    {
+     "version": "v1",
+     "status": "approved",
+     "approved_by": "team (phase-1 release)",
+     "approved_at": "2026-10-03T22:32:31Z",
+     "notebook": "NB07",
+     "code_commit": "393877746daa9c714b0dce9995736dfb435b3d71",
+     "data_version": "41d324455a71",
+     "files": [
+      {
+       "path": "ai7/briefs_cache.json",
+       "bytes": 450298,
+       "sha256": "b9911f8e9b1200df66cb3c157cea6909fcb5eb900412248b6cda907a1afd1673"
+      }
+     ],
+     "notes": "Phase-1 release: the files the official Kaggle notebook runs exported (artifacts/manifest.json, commit 2026-10-04).",
+     "metrics": {
+      "report": "reports/metrics_ai7.json",
+      "sha256": "fe4f843d921368ebfb51988aa87296a488bc4c037b5e383b0ab0ad5f8193dc67"
+     },
+     "model_card": "reports/model_cards/AI-7.md"
+    }
+   ]
+  },
+  "web": {
+   "active": "v1",
+   "versions": [
+    {
+     "version": "v1",
+     "status": "approved",
+     "approved_by": "team (phase-1 release)",
+     "approved_at": "2026-10-03T22:32:31Z",
+     "notebook": "NB00",
+     "code_commit": "7a215ccffe75ac6d0baa97514764924fd9b0cb60",
+     "data_version": "41d324455a71",
+     "files": [
+      {
+       "path": "web/world_sample.json",
+       "bytes": 462335,
+       "sha256": "37580789700b68f1147af49e6790554b396ad5fb80b2abb42195f715492aae8d"
+      }
+     ],
+     "notes": "Phase-1 release: the files the official Kaggle notebook runs exported (artifacts/manifest.json, commit 2026-10-04).",
+     "metrics": null,
+     "model_card": null
+    }
+   ]
+  }
+ },
+ "history": [
+  {
+   "at": "2026-10-07T03:32:13Z",
+   "action": "init",
+   "model": "*",
+   "version": "v1",
+   "by": "team (phase-1 release)",
+   "notes": "Phase-1 release: the files the official Kaggle notebook runs exported (artifacts/manifest.json, commit 2026-10-04)."
+  }
+ ]
+}

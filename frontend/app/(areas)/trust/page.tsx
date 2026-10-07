@@ -1,6 +1,7 @@
 "use client";
 
-import { AlertTriangle, CheckCircle2, ChevronDown, CircleDashed } from "lucide-react";
+import Link from "next/link";
+import { AlertTriangle, ArrowRight, CheckCircle2, ChevronDown, CircleDashed } from "lucide-react";
 import { motion } from "motion/react";
 import { useState, type ReactNode } from "react";
 import { AreaIntro } from "@/components/customer/phone";
@@ -134,6 +135,17 @@ export default function TrustCenter() {
         }
         text="Read live from the result files the notebooks wrote. A green badge means the number comes from the official Kaggle run; a dashed badge means a local build is shown until that notebook is run."
       />
+      <div className="mt-6 flex flex-wrap gap-2 text-sm">
+        <Link href="/trust/phase2" className="inline-flex items-center gap-1.5 rounded-full bg-foreground px-4 py-2 font-medium text-background">
+          What we changed after Phase 1 <ArrowRight className="size-3.5" />
+        </Link>
+        <Link href="/study/results" className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 hover:border-foreground/40">
+          On-site user study results <ArrowRight className="size-3.5" />
+        </Link>
+        <Link href="/study" className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-border px-4 py-2 text-muted-foreground hover:text-foreground">
+          Take the 5-minute study
+        </Link>
+      </div>
       <Guard q={{ ...q, reload: () => location.reload() }}>
         {(m) => {
           const P = m.per_ai as Record<string, J>;

@@ -5,7 +5,7 @@ from typing import Literal
 
 import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, Request
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from uvera_ml.common import load_config
 from uvera_ml.sim.world import START
 
@@ -33,6 +33,13 @@ class PauseIn(BaseModel):
     channel: Literal["app", "ussd"] = "app"
     note: str | None = Field(None, max_length=1000)
     simulated_context: SimContext | None = None
+
+    @field_validator("amount", "hour", mode="before")
+    @classmethod
+    def _no_booleans(cls, v):
+        if isinstance(v, bool):  # lax mode would read true as Tk 1
+            raise ValueError("must be a number")
+        return v
 
 
 class TextIn(BaseModel):

@@ -1,0 +1,207 @@
+{
+  "status": "measured",
+  "title": "Robustness beyond one synthetic world",
+  "updated_at": "2026-10-07T04:12:02Z",
+  "source": "scripts/phase2/robustness_ai1.py, integration_study.py (lofo), qr_feedback.py -> reports/phase2/",
+  "summary": "We re-ran AI-1 on five independently generated worlds and six shifted worlds, removed each scam family from training in turn, and tested QR Shield on a disguise it never saw.",
+  "headline": [
+    {
+      "label": "Scams caught at 5% alerts, 5 new worlds (mean)",
+      "value": 0.8625767954748806,
+      "format": "pct",
+      "sub": "min 82% · max 89% · Phase 1 86%"
+    },
+    {
+      "label": "PR-AUC, 5 new worlds (mean)",
+      "value": 0.6795652444557094,
+      "format": "num3",
+      "sub": "min 0.633 · max 0.718 · rule ≈ 0.04"
+    },
+    {
+      "label": "Worst shift (adaptive scammers): scams caught",
+      "value": 0.7651006711409396,
+      "format": "pct",
+      "sub": "rule: 11%"
+    }
+  ],
+  "sections": [
+    {
+      "id": "multi_world",
+      "title": "Five independently generated worlds (new seeds)",
+      "lead": "The deployed Phase-1 model, unchanged, on five new worlds of ~2.2 million events each; test = unseen customers.",
+      "chart": {
+        "kind": "bars",
+        "unit": "pct",
+        "x": [
+          "seed 1",
+          "seed 2",
+          "seed 3",
+          "seed 4",
+          "seed 5"
+        ],
+        "series": [
+          {
+            "name": "UVERA AI-1 (scams caught at 5% alerts)",
+            "values": [
+              0.8901,
+              0.8229,
+              0.8782,
+              0.8579,
+              0.8639
+            ]
+          },
+          {
+            "name": "rule baseline",
+            "values": [
+              0.1675,
+              0.2344,
+              0.2437,
+              0.2335,
+              0.2356
+            ]
+          }
+        ]
+      },
+      "takeaway": "Across 5 new worlds the unchanged model catches 82%-89% of scams at a 5% alert rate; the rule catches 17%-24%."
+    },
+    {
+      "id": "shifts",
+      "title": "Six distribution shifts (scam process changed, model NOT retrained)",
+      "lead": "Each world changes how scammers behave; we measure the deployed model before any retraining, then after retraining.",
+      "chart": {
+        "kind": "bars",
+        "unit": "num3",
+        "x": [
+          "2x scams",
+          "half the scams",
+          "smaller amounts",
+          "older mule wallets",
+          "20% label noise",
+          "adaptive scammers"
+        ],
+        "series": [
+          {
+            "name": "PR-AUC, deployed model unchanged",
+            "values": [
+              0.7781,
+              0.4076,
+              0.6948,
+              0.6322,
+              0.472,
+              0.4895
+            ]
+          },
+          {
+            "name": "PR-AUC, after retraining",
+            "values": [
+              0.7797,
+              0.4148,
+              0.6969,
+              0.6601,
+              0.4637,
+              0.5448
+            ]
+          },
+          {
+            "name": "PR-AUC, rule baseline",
+            "values": [
+              0.072,
+              0.0186,
+              0.0269,
+              0.0382,
+              0.0399,
+              0.0191
+            ]
+          }
+        ]
+      },
+      "takeaway": "Robust to prevalence, amount and label-noise shifts; the hardest case (older bought mule accounts AND smaller amounts) lowers PR-AUC, still far above the rule, and the drop in conformal coverage is the drift signal that triggers retraining."
+    },
+    {
+      "id": "unseen_scam_families",
+      "title": "Scam families the model never saw",
+      "lead": "Each scam family is removed from training in turn; recall on that family at the pause threshold.",
+      "chart": {
+        "kind": "bars",
+        "unit": "pct",
+        "x": [
+          "fake customer care",
+          "gold jar offer",
+          "investment group",
+          "otp reversal counter",
+          "prize lottery",
+          "refund government"
+        ],
+        "series": [
+          {
+            "name": "family seen in training",
+            "values": [
+              0.8704,
+              0.8,
+              0.8471,
+              0.7925,
+              0.8824,
+              0.7397
+            ]
+          },
+          {
+            "name": "family never seen",
+            "values": [
+              0.8519,
+              0.7273,
+              0.3529,
+              0.783,
+              0.7882,
+              0.5342
+            ]
+          }
+        ]
+      },
+      "takeaway": "Most new scam types are still caught because the receiving mule wallet behaves the same; 'investment group' (repeat payments into a group) generalises worst, which is why the Case Linker feedback loop exists."
+    },
+    {
+      "id": "qr_new_trick",
+      "title": "QR Shield: a disguise trick it never saw, and learning from analysts",
+      "lead": "Family D (rotating payer ring) was hidden from training. Analysts confirm a few D shops from the weekly review list; those become labels.",
+      "chart": {
+        "kind": "line",
+        "unit": "pct",
+        "x": [
+          0,
+          3,
+          5,
+          10,
+          20
+        ],
+        "x_label": "analyst-confirmed examples of the new trick",
+        "series": [
+          {
+            "name": "recall on the new trick (D)",
+            "values": [
+              0.4211,
+              0.4474,
+              0.5263,
+              0.5789,
+              0.6053
+            ]
+          },
+          {
+            "name": "weekly top-20 precision",
+            "values": [
+              0.925,
+              0.925,
+              0.925,
+              0.925,
+              0.925
+            ]
+          }
+        ]
+      },
+      "takeaway": "With 0 examples D recall is 42%; with 10 confirmed examples it is 58% and precision stays 92.5%."
+    }
+  ],
+  "caveats": [
+    "All worlds come from our simulator; independent worlds and shifts test robustness, not real-world accuracy.",
+    "Retraining on shifted worlds uses the Phase-1 protocol with a fixed number of trees (no new cross-validation)."
+  ]
+}

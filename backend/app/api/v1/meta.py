@@ -5,11 +5,13 @@ from functools import lru_cache
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Request
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from uvera_ml.common import repo_root
 from uvera_ml.eval.report import AIS, fairness_summary, headline, served_text_by_language
+from uvera_ml.registry import summary as registry_summary
 
 from app.api.v1.deps import engines, envelope
+from app.core.config import settings
 from app.core.security import issue
 from app.core.telemetry import telemetry
 from app.state import state
@@ -27,11 +29,13 @@ def _served_text_by_language() -> dict | None:
 class LoginIn(BaseModel):
     model_config = ConfigDict(extra="forbid")
     role: Literal["customer", "agent", "ops"]
-    subject_id: str | None = None
+    subject_id: str | None = Field(None, max_length=64)
 
 
 @router.post("/auth/demo-login")
 def demo_login(body: LoginIn) -> dict:
+    if not settings.demo_mode:  # DEMO_MODE=false: no self-service role tokens (a real deployment uses its identity provider)
+        raise HTTPException(403, "Demo login is disabled on this server")
     s = engines()
     p = s.demo["personas"]
     default = {"customer": p["customer"]["id"], "agent": p["agent"]["id"], "ops": p["ops"]["id"]}[body.role]
@@ -60,6 +64,10 @@ def meta(request: Request) -> dict:
         "models": {"ai1": s.pause.version, "ai2": s.text.version, "ai3": s.forecasts.source["ai3"], "ai4": s.forecasts.source["ai4"],
                    "ai5": s.qr.version, "ai6": s.cases.source, "ai7": s.briefs.mode},
         "artifact_sources": {ai: s.store.source_of(ai) for ai in ("ai1", "ai2", "ai3", "ai4", "ai5", "ai6", "ai7")},
+        # additive: the registry version, approval status and SHA-256 check of every served model (docs/model_registry.md)
+        "model_registry": {"verified": bool(s.integrity and s.integrity["ok"]),
+                           "checked_at": s.integrity["checked_at"] if s.integrity else None,
+                           "models": registry_summary(s.integrity) if s.integrity else {}},
     })
 
 

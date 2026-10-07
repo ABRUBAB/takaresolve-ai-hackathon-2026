@@ -1,0 +1,94 @@
+{
+  "status": "measured",
+  "title": "Fairness: the tenure gap in missed scams",
+  "updated_at": "2026-10-07T04:12:02Z",
+  "source": "scripts/phase2/integration_study.py (fairness, fairness2, dial) -> reports/phase2/integration/",
+  "summary": "Long-tenure customers' scams were missed more often (29.0% vs ~19%). We tested an equal-opportunity fix, searched for a fix with no extra false pauses, and built a policy dial.",
+  "headline": [
+    {
+      "label": "Gap in missed scams across tenure groups",
+      "value": 0.031510740280489946,
+      "format": "pct1",
+      "sub": "before 10.4%"
+    },
+    {
+      "label": "False pauses per 1,000 normal transfers",
+      "value": 13.61954464920633,
+      "format": "num1",
+      "sub": "before 8.3"
+    }
+  ],
+  "sections": [
+    {
+      "id": "fnr_by_tenure",
+      "title": "Missed scams by account tenure, before and after group-aware thresholds",
+      "lead": "Thresholds per tenure group chosen on validation so each group reaches the overall recall; one test pass.",
+      "chart": {
+        "kind": "bars",
+        "unit": "pct1",
+        "x": [
+          "<90d",
+          "90-365d",
+          ">365d"
+        ],
+        "series": [
+          {
+            "name": "before (one threshold)",
+            "values": [
+              0.186,
+              0.1922,
+              0.2901
+            ]
+          },
+          {
+            "name": "after (equal opportunity)",
+            "values": [
+              0.186,
+              0.1922,
+              0.2176
+            ]
+          }
+        ]
+      },
+      "takeaway": "The gap falls from 10.4% to 3.2% and overall recall rises, but false pauses rise from 8.3 to 13.6 per 1,000."
+    },
+    {
+      "id": "dial",
+      "title": "A policy dial instead of a hidden choice",
+      "lead": "Lowering only the long-tenure threshold step by step: how much gap closes per extra false pause.",
+      "chart": {
+        "kind": "line",
+        "unit": "pct1",
+        "x": [
+          8.3,
+          8.3,
+          9.1,
+          10.3,
+          11.7,
+          14.5,
+          17.8
+        ],
+        "x_label": "false pauses per 1,000 normal transfers",
+        "series": [
+          {
+            "name": "gap in missed scams",
+            "values": [
+              0.104,
+              0.104,
+              0.0811,
+              0.0544,
+              0.043,
+              0.0277,
+              0.0124
+            ]
+          }
+        ]
+      },
+      "takeaway": "A budget-neutral search on validation found no threshold set that narrows the gap without more false pauses, so the trade-off is shown to the policy owner as a dial."
+    }
+  ],
+  "caveats": [
+    "Fairness evidence is still synthetic; real-data slices are part of the pilot plan.",
+    "Tenure is an account attribute, not a protected characteristic; no sensitive attribute is used or invented."
+  ]
+}

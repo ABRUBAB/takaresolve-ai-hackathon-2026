@@ -6,6 +6,7 @@ import json
 import os
 
 from uvera_ml.brief import grounding as G
+from uvera_ml.brief.pii import scrub_obj
 from uvera_ml.serving.store import ArtifactStore
 
 
@@ -36,8 +37,14 @@ class BriefEngine:
             return {**self.cache[k], "source": self.cache[k].get("source", "gemini") + "_cached"}
         if self.gemini is not None:
             try:
-                out = self.gemini.json(G.prompt_for(ev), G.Brief, temperature=0.3, system=G.SYSTEM)
-                ok, problems = G.validate(out, ev)
+                # PII never leaves the API: phone numbers, NID/card-like numbers, emails, links and codes are replaced
+                # by placeholders before the prompt is built (the cache key above still uses the original evidence)
+                safe_ev, found = scrub_obj(ev)
+                for kind, n in found.items():
+                    self.stats["pii_redactions"] = self.stats.get("pii_redactions", 0) + n
+                    self.stats[f"pii_{kind.lower()}"] = self.stats.get(f"pii_{kind.lower()}", 0) + n
+                out = self.gemini.json(G.prompt_for(safe_ev), G.Brief, temperature=0.3, system=G.SYSTEM)
+                ok, problems = G.validate(out, safe_ev)
                 if ok:
                     out = {**out, "source": "gemini"}
                     self.cache[k] = out

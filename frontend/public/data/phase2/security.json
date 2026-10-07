@@ -1,0 +1,39 @@
+{
+  "status": "pending",
+  "title": "Security and governance",
+  "updated_at": null,
+  "source": "TBD (backend/tests, scans, audit log, model registry)",
+  "summary": "TBD",
+  "headline": [
+    {
+      "label": "security tests passing",
+      "value": null,
+      "format": "text",
+      "sub": "TBD"
+    },
+    {
+      "label": "dependency / secret scan findings",
+      "value": null,
+      "format": "text",
+      "sub": "TBD"
+    },
+    {
+      "label": "models verified in the registry",
+      "value": null,
+      "format": "text",
+      "sub": "TBD"
+    }
+  ],
+  "sections": [
+    {
+      "id": "checks",
+      "title": "Checks",
+      "lead": "Each control and how it is verified.",
+      "chart": null,
+      "takeaway": "TBD"
+    }
+  ],
+  "caveats": [
+    "TBD"
+  ]
+}

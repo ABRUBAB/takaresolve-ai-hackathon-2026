@@ -1,0 +1,61 @@
+{
+  "status": "measured",
+  "title": "Real-world evidence",
+  "updated_at": "2026-10-07T04:12:02Z",
+  "source": "public sources (cited) and scripts/phase2/real_data_validation.py",
+  "summary": "Public data on the size of the problem, and tests of our models on real public datasets we did not create.",
+  "headline": [],
+  "sections": [
+    {
+      "id": "public_data",
+      "title": "The problem in public data (verified sources)",
+      "lead": "Figures read on the source pages; dates as published.",
+      "chart": {
+        "kind": "table",
+        "columns": [
+          "fact",
+          "source"
+        ],
+        "units": [
+          "text",
+          "text"
+        ],
+        "rows": [
+          [
+            "258.7 million MFS accounts; 184 million P2P transfers worth Tk 639.7 billion in July 2026",
+            "Bangladesh Bank, MFS statistics tables 8-9"
+          ],
+          [
+            "81,423 fraud cases in 2025; MFS Tk 813 million of Tk 926 million lost; only 8.7% recovered as money moves fast through many wallets",
+            "The Financial Express, 16 Jun 2026, citing Bangladesh Bank data"
+          ],
+          [
+            "6.3% of MFS users were fraud victims; 42.1% of frauds via phone call or SMS; 58.8% did not complain",
+            "TIB, Governance Challenges in MFS, May 2025 (n = 1,784 users)"
+          ],
+          [
+            "Bangla QR mandatory from 1 Jul 2026; ~3-4 million merchants; dispute rules with 2-working-day issuer decision and 30-day fraud investigation",
+            "Dhaka Tribune, 24 Aug, 28 Sep, 30 Sep 2026"
+          ],
+          [
+            "Risk-based warning + cancel button: scam payments 22% → 4% in a randomised experiment",
+            "The Behaviouralist for UK Open Banking (OBIE), Feb 2021"
+          ],
+          [
+            "12% of flagged payments abandoned after a scam prompt at a real bank",
+            "National Australia Bank, Jul 2023"
+          ],
+          [
+            "Bangladesh: 5% of agent transactions denied for lack of cash/e-float; 34% of agents deny at least one a day",
+            "Helix Institute / MicroSave Agent Network Accelerator"
+          ]
+        ]
+      },
+      "takeaway": "Authorised scams through mule wallets, low recovery and agent liquidity gaps are documented in Bangladesh; warnings measurably stop scam payments elsewhere."
+    }
+  ],
+  "caveats": [
+    "News figures cite Bangladesh Bank data whose original report was not found online.",
+    "Public datasets differ from upay data; they test generalisation, not production accuracy."
+  ]
+}

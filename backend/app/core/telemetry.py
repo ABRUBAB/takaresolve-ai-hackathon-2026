@@ -77,10 +77,12 @@ class TraceMiddleware(BaseHTTPMiddleware):
         q = self.hits[client]
         while q and now - q[0] > 60:
             q.popleft()
-        if len(q) >= settings.rate_limit_per_minute and request.url.path.startswith("/v1/") and "/health/" not in request.url.path:
+        limited = request.url.path.startswith("/v1/") and "/health/" not in request.url.path
+        if limited and len(q) >= settings.rate_limit_per_minute:
             return JSONResponse({"detail": "Too many requests, slow down", "trace_id": trace}, status_code=429,
                                 headers={"x-trace-id": trace})
-        q.append(now)
+        if limited:  # health probes are never limited and do not use up the caller's budget either
+            q.append(now)
         t0 = time.perf_counter()
         response = await call_next(request)
         ms = (time.perf_counter() - t0) * 1000

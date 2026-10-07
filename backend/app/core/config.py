@@ -20,10 +20,15 @@ class Settings(BaseSettings):
     db_path: str = "../_outputs/uvera.db"
     llm_mode: str = "cached"
     jwt_secret: str = ""  # empty: a random secret per start (demo tokens are simply issued again)
+    # key rotation (docs/security.md): "kid:secret,kid:secret" (first signs, all verify) or a file outside the repo
+    jwt_keys: str = ""
+    jwt_keys_file: str = ""
+    artifact_verify: str = "strict"  # strict: refuse to serve models whose files fail the SHA-256/approval check
     demo_mode: bool = True
     rate_limit_per_minute: int = 120
     log_level: str = "info"
     warm_on_start: bool = True
+    study_results_pin: str = "uvera2026"  # STUDY_RESULTS_PIN: opens /v1/study/results without the ops role
 
     @property
     def allowed_origins_list(self) -> list[str]:

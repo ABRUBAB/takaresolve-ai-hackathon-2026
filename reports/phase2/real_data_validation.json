@@ -1,0 +1,50 @@
+{
+  "bttc": {
+    "dataset": "BTTC - Bangla Telegram and Text Communications (Mendeley Data, CC BY 4.0, 2026)",
+    "note": "10,267 complete rows (the download cut the last 15 rows); exact duplicates removed",
+    "zero_shot_served_model": {
+      "messages_after_dedup": 10267,
+      "spam": 2668,
+      "ham": 3904,
+      "promo": 3695,
+      "pr_auc_spam_vs_ham": 0.5486977629079771,
+      "pr_auc_spam_vs_ham_and_promo": 0.40548679653112957,
+      "spam_caught_at_0.5": 0.4535232383808096,
+      "ham_flagged_at_0.5": 0.5888831967213115,
+      "promo_flagged_at_0.5": 0.31231393775372124
+    },
+    "pilot_learning_curve": [
+      {
+        "real_training_messages": 0,
+        "real_only": [],
+        "synthetic_plus_real": 0.5008394044851527,
+        "base_rate": 0.25986169280218174
+      },
+      {
+        "real_training_messages": 100,
+        "real_only": 0.9550991595231736,
+        "synthetic_plus_real": 0.8761027697225057,
+        "base_rate": 0.25986169280218174
+      },
+      {
+        "real_training_messages": 300,
+        "real_only": 0.9689164311947842,
+        "synthetic_plus_real": 0.9405464080318516,
+        "base_rate": 0.25986169280218174
+      },
+      {
+        "real_training_messages": 1000,
+        "real_only": 0.9747194541506399,
+        "synthetic_plus_real": 0.9653060897905938,
+        "base_rate": 0.25986169280218174
+      },
+      {
+        "real_training_messages": 3000,
+        "real_only": 0.9791429255190927,
+        "synthetic_plus_real": 0.9746080241536166,
+        "base_rate": 0.25986169280218174
+      }
+    ]
+  },
+  "paysim": null
+}

@@ -1,0 +1,188 @@
+{
+  "status": "measured",
+  "title": "Business case: from metrics to money",
+  "updated_at": "2026-10-07T04:12:02Z",
+  "source": "scripts/phase2/business_case.py -> reports/phase2/business_case.json",
+  "summary": "We measured what is measurable (scams and money paused, false pauses, reviews, analyst items, agent refusals), stated every other assumption with a range, and solved for break-even.",
+  "headline": [
+    {
+      "label": "Break-even follow rate (base)",
+      "value": 0.001210405187372524,
+      "format": "pct1",
+      "sub": "pessimistic: 5.1%"
+    },
+    {
+      "label": "Scam money paused (unseen customers)",
+      "value": 0.8723212151791168,
+      "format": "pct",
+      "sub": "false pauses 8.3 per 1,000 normal"
+    },
+    {
+      "label": "Customers served instead of refused (agents, 2 test weeks)",
+      "value": 1406,
+      "format": "num",
+      "sub": "41% fewer refusals"
+    }
+  ],
+  "sections": [
+    {
+      "id": "break_even",
+      "title": "How many warned victims must stop for UVERA to pay for itself?",
+      "lead": "Instead of assuming a 30-70% follow rate, we solve for the break-even rate.",
+      "chart": {
+        "kind": "table",
+        "columns": [
+          "assumptions",
+          "break-even share of paused scam victims who stop"
+        ],
+        "units": [
+          null,
+          "pct1"
+        ],
+        "rows": [
+          [
+            "base",
+            0.001210405187372524
+          ],
+          [
+            "every assumption pessimistic",
+            0.05112013303296904
+          ]
+        ]
+      },
+      "takeaway": "Break-even is 0.12% (base) and 5.1% with every assumption pessimistic. Published evidence: 12% of flagged payments abandoned at a real bank (NAB 2023); a randomised UK study cut scam payments from 22% to 4% with a risk-based warning and a cancel button (OBIE / Behaviouralist 2021)."
+    },
+    {
+      "id": "net_benefit",
+      "title": "Net benefit per 1 million P2P transfers (synthetic test window, base assumptions)",
+      "lead": "Prevented = follow rate × scam money paused. Costs = false pauses (customer time, support, abandoned transfers) + 'not sure' reviews + servers.",
+      "chart": {
+        "kind": "table",
+        "columns": [
+          "follow rate",
+          "scam money prevented",
+          "costs",
+          "analyst time saved",
+          "net benefit"
+        ],
+        "units": [
+          null,
+          "bdt",
+          "bdt",
+          "bdt",
+          "bdt"
+        ],
+        "rows": [
+          [
+            "1%",
+            264623.192492045,
+            170186.16828452895,
+            138156.03979538401,
+            232593.0640029001
+          ],
+          [
+            "5%",
+            1323115.962460225,
+            170186.16828452895,
+            138156.03979538401,
+            1291085.8339710801
+          ],
+          [
+            "10%",
+            2646231.92492045,
+            170186.16828452895,
+            138156.03979538401,
+            2614201.796431305
+          ],
+          [
+            "30%",
+            7938695.774761349,
+            170186.16828452895,
+            138156.03979538401,
+            7906665.646272204
+          ],
+          [
+            "50%",
+            13231159.624602249,
+            170186.16828452895,
+            138156.03979538401,
+            13199129.496113103
+          ]
+        ]
+      },
+      "takeaway": "Net benefit is positive at every follow rate tested, including 1%."
+    },
+    {
+      "id": "sensitivity",
+      "title": "Which assumption matters most? (net benefit at a 10% follow rate)",
+      "lead": "Each assumption moved from its low to its high value, one at a time.",
+      "chart": {
+        "kind": "bars",
+        "unit": "bdt",
+        "x": [
+          "minutes per alert item",
+          "minutes per linked case",
+          "minutes per unsure review",
+          "support contact rate per false pause",
+          "customer minutes lost per false pause",
+          "analyst cost per minute bdt",
+          "customer value per minute bdt"
+        ],
+        "series": [
+          {
+            "name": "assumption low",
+            "values": [
+              2386426,
+              2733225,
+              2646223,
+              2640625,
+              2630716,
+              2597365,
+              2630716
+            ]
+          },
+          {
+            "name": "assumption high",
+            "values": [
+              2917903,
+              2336480,
+              2518137,
+              2564659,
+              2564659,
+              2656293,
+              2581173
+            ]
+          }
+        ]
+      },
+      "takeaway": "No single assumption turns the net benefit negative."
+    },
+    {
+      "id": "agent_service",
+      "title": "Agent service: customers no longer turned away",
+      "lead": "Every real cash-out request in the test days (19,301) replayed against the cash an agent holds.",
+      "chart": {
+        "kind": "bars",
+        "unit": "num",
+        "x": [
+          "usual cash",
+          "UVERA 90% forecast"
+        ],
+        "series": [
+          {
+            "name": "cash-out requests refused",
+            "values": [
+              3420,
+              2014
+            ]
+          }
+        ]
+      },
+      "takeaway": "1,406 more customers served (41% fewer refusals) and Tk 10,472,100 of demand met, for Tk 4,920 more cash per agent-day. Field data: in Bangladesh 5% of agent transactions are denied for lack of float (Helix Institute)."
+    }
+  ],
+  "caveats": [
+    "Money figures are synthetic-world estimates per 1 million transfers; they show the economics are robust, not real savings.",
+    "Follow rates come from public studies of warnings in other markets; a controlled pilot must measure ours."
+  ]
+}

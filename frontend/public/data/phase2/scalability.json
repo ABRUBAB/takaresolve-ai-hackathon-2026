@@ -1,0 +1,52 @@
+{
+  "status": "pending",
+  "title": "Scale and latency",
+  "updated_at": null,
+  "source": "TBD (deploy/scale load test)",
+  "summary": "TBD",
+  "headline": [
+    {
+      "label": "p95 latency at peak tested concurrency",
+      "value": null,
+      "format": "ms",
+      "sub": "TBD"
+    },
+    {
+      "label": "p99 latency at peak tested concurrency",
+      "value": null,
+      "format": "ms",
+      "sub": "TBD"
+    },
+    {
+      "label": "throughput at peak",
+      "value": null,
+      "format": "num",
+      "sub": "TBD"
+    },
+    {
+      "label": "replicas",
+      "value": null,
+      "format": "num",
+      "sub": "TBD"
+    }
+  ],
+  "sections": [
+    {
+      "id": "latency",
+      "title": "Latency against concurrency",
+      "lead": "p50, p95 and p99 of the Pause Check.",
+      "chart": null,
+      "takeaway": "TBD"
+    },
+    {
+      "id": "replicas",
+      "title": "Throughput against replicas",
+      "lead": "Same load, more API replicas.",
+      "chart": null,
+      "takeaway": "TBD"
+    }
+  ],
+  "caveats": [
+    "TBD"
+  ]
+}

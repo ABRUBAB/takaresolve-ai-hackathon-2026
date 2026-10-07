@@ -1,0 +1,128 @@
+{
+  "criteria": [
+    {
+      "id": "problem",
+      "name": "Problem relevance",
+      "score": 17.33,
+      "max": 20,
+      "concern": {
+        "text": "no evidence of interviews, deployment observations ... controlled customer testing",
+        "quote": true
+      },
+      "built": [
+        "An on-site user study on participants' own phones, in Bangla and English: do people understand the Pause and the “not sure” state, and would they stop?",
+        "Anonymous by design: no names or phone numbers, balanced random assignment of screen language and analyst view."
+      ],
+      "evidence": [
+        "study"
+      ]
+    },
+    {
+      "id": "ai_ml",
+      "name": "AI/ML depth",
+      "score": 17.0,
+      "max": 20,
+      "concern": {
+        "text": "TBD",
+        "quote": true
+      },
+      "built": [
+        "The full pipeline re-run on five independently seeded synthetic worlds.",
+        "Six distribution-shift tests: adaptive scammers, noisier labels, older mule wallets, half and double scam prevalence, smaller amounts.",
+        "A system ablation ladder: what each layer adds on top of the last."
+      ],
+      "evidence": [
+        "robustness",
+        "ablation#ladder"
+      ]
+    },
+    {
+      "id": "business",
+      "name": "Business impact",
+      "score": 13.33,
+      "max": 20,
+      "concern": {
+        "text": "Customer impact depends on an assumed 30–70% intervention rate.",
+        "quote": false
+      },
+      "built": [
+        "An economic model that solves for the follow rate UVERA needs to break even, instead of assuming one.",
+        "Net benefit per million transfers at several follow rates, and a sensitivity analysis over every assumption.",
+        "The stated stop rate from the on-site study as a first real-world anchor."
+      ],
+      "evidence": [
+        "business"
+      ]
+    },
+    {
+      "id": "prototype",
+      "name": "Prototype",
+      "score": 12,
+      "max": 15,
+      "concern": {
+        "text": "TBD",
+        "quote": true
+      },
+      "built": [
+        "A closed loop: analyst decisions on cases feed the QR watchlist.",
+        "TBD"
+      ],
+      "evidence": [
+        "ablation#closed_loop"
+      ]
+    },
+    {
+      "id": "innovation",
+      "name": "Innovation",
+      "score": 7.67,
+      "max": 10,
+      "concern": {
+        "text": "quantify whether linking and evidence generation actually improve analyst decisions beyond simple alert aggregation",
+        "quote": true
+      },
+      "built": [
+        "Case Linker measured against naive alert aggregation on the same alerts.",
+        "A between-subject A/B analyst task in the user study: plain alert list vs linked cases."
+      ],
+      "evidence": [
+        "ablation#linking_vs_naive",
+        "study#triage"
+      ]
+    },
+    {
+      "id": "scalability",
+      "name": "Scalability",
+      "score": 5.67,
+      "max": 10,
+      "concern": {
+        "text": "TBD",
+        "quote": true
+      },
+      "built": [
+        "A scale-out deployment: several API replicas behind nginx, Postgres, Prometheus and Grafana (deploy/scale).",
+        "A load test of p50/p95/p99 latency against concurrency."
+      ],
+      "evidence": [
+        "scalability"
+      ]
+    },
+    {
+      "id": "responsible",
+      "name": "Responsible AI",
+      "score": 3.67,
+      "max": 5,
+      "concern": {
+        "text": "TBD",
+        "quote": true
+      },
+      "built": [
+        "Fairness by account tenure, before and after the fix.",
+        "Rotating signing keys, an append-only audit log, a model registry with SHA-256 checks and a PII guard for generated briefs."
+      ],
+      "evidence": [
+        "fairness",
+        "security"
+      ]
+    }
+  ]
+}

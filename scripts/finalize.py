@@ -93,8 +93,8 @@ def write_manifest() -> None:
     world = json.loads((ROOT / "reports" / "world_meta.json").read_text(encoding="utf-8")) if (ROOT / "reports" / "world_meta.json").exists() else {}
     rows = []
     for f in sorted((ROOT / "artifacts").rglob("*")):
-        if not f.is_file() or f.name in ("manifest.json", "README.md"):
-            continue
+        if not f.is_file() or f.name in ("manifest.json", "README.md", "registry.json") or "_versions" in f.parts:
+            continue  # the model registry and archived versions are managed by scripts/model_registry.py
         rel = f.relative_to(ROOT / "artifacts").as_posix()
         nb = NOTEBOOK_OF.get(rel.split("/")[0], "?")
         rows.append({"path": f"artifacts/{rel}", "bytes": f.stat().st_size, "sha256": hashlib.sha256(f.read_bytes()).hexdigest(),
