@@ -1,0 +1,28 @@
+groups:
+  - name: uvera
+    rules:
+      - alert: FeatureDriftAlert            # PSI >= 0.2 on any feature -> open a retraining ticket (see README)
+        expr: uvera_drift_status >= 2
+        for: 1m
+        labels: {severity: page}
+        annotations: {summary: "AI-1 input drift: PSI >= 0.2 on at least one feature"}
+      - alert: FeatureDriftWarn
+        expr: uvera_drift_status == 1
+        for: 5m
+        labels: {severity: ticket}
+      - alert: ScoringLatencyP99High        # SLO: p99 < 100 ms at the scorer
+        expr: histogram_quantile(0.99, sum by (le) (rate(uvera_request_seconds_bucket{endpoint="transfer"}[1m]))) > 0.1
+        for: 2m
+        labels: {severity: page}
+      - alert: ScoringErrors
+        expr: sum(rate(uvera_requests_total{outcome="error"}[1m])) > 0
+        for: 1m
+        labels: {severity: page}
+      - alert: StreamLagHigh                # feature freshness: events applied > 5 s after they were produced
+        expr: histogram_quantile(0.95, sum by (le) (rate(uvera_worker_lag_seconds_bucket[1m]))) > 5
+        for: 2m
+        labels: {severity: ticket}
+      - alert: ScorerReplicaDown
+        expr: up{job="scorer"} == 0
+        for: 30s
+        labels: {severity: page}

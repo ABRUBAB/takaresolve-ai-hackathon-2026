@@ -1,52 +1,289 @@
 {
-  "status": "pending",
-  "title": "Scale and latency",
-  "updated_at": null,
-  "source": "TBD (deploy/scale load test)",
-  "summary": "TBD",
+  "status": "measured",
+  "title": "Scale and latency, measured on one laptop",
+  "updated_at": "2026-10-07T05:52:15+00:00",
+  "source": "deploy/scale/export_web.py -> reports/scalability/loadtest_*.json, shadow_replay.json, parity.json",
+  "summary": "Redis Streams, online features, Postgres and scorer replicas were tested together on one laptop. More replicas helped at some loads but four replicas contended for the same CPU and did not always win.",
   "headline": [
     {
-      "label": "p95 latency at peak tested concurrency",
-      "value": null,
+      "label": "Transfer p95, 32 clients / 2 scorers",
+      "value": 129.69,
       "format": "ms",
-      "sub": "TBD"
+      "sub": "p99 195.4 ms; 0 errors"
     },
     {
-      "label": "p99 latency at peak tested concurrency",
-      "value": null,
-      "format": "ms",
-      "sub": "TBD"
+      "label": "Transfer throughput, 32 clients / 2 scorers",
+      "value": 468.8,
+      "format": "num1",
+      "sub": "one laptop, 30-second load point"
     },
     {
-      "label": "throughput at peak",
-      "value": null,
-      "format": "num",
-      "sub": "TBD"
+      "label": "Shadow replay decisions / second",
+      "value": 553.7,
+      "format": "num1",
+      "sub": "83,659 synthetic transfers scored"
     },
     {
-      "label": "replicas",
-      "value": null,
-      "format": "num",
-      "sub": "TBD"
+      "label": "Online / batch risk-level agreement",
+      "value": 0.99995,
+      "format": "pct1",
+      "sub": "4 decisions changed level"
     }
   ],
   "sections": [
     {
       "id": "latency",
-      "title": "Latency against concurrency",
-      "lead": "p50, p95 and p99 of the Pause Check.",
-      "chart": null,
-      "takeaway": "TBD"
+      "title": "Transfer p95 latency under load",
+      "lead": "Same transfer endpoint, 1, 2 or 4 scorer processes behind nginx.",
+      "chart": {
+        "kind": "line",
+        "unit": "ms",
+        "x": [
+          1,
+          8,
+          32,
+          64,
+          128
+        ],
+        "x_label": "concurrent clients",
+        "series": [
+          {
+            "name": "1 scorer",
+            "values": [
+              15.01,
+              117.47,
+              204.93,
+              395.63,
+              752.94
+            ]
+          },
+          {
+            "name": "2 scorers",
+            "values": [
+              14.37,
+              109.89,
+              129.69,
+              643.01,
+              1438.02
+            ]
+          },
+          {
+            "name": "4 scorers",
+            "values": [
+              21.0,
+              183.52,
+              251.71,
+              818.84,
+              2090.34
+            ]
+          }
+        ]
+      },
+      "takeaway": "At 32 clients, 2 scorers reached 468.8 requests/s at p95 129.7 ms. At 128 clients, latency rose sharply. Four scorers were slower than two on this shared laptop."
+    },
+    {
+      "id": "p99",
+      "title": "Transfer p99 latency under load",
+      "lead": "The slowest 1% of requests matter during a payment.",
+      "chart": {
+        "kind": "line",
+        "unit": "ms",
+        "x": [
+          1,
+          8,
+          32,
+          64,
+          128
+        ],
+        "x_label": "concurrent clients",
+        "series": [
+          {
+            "name": "1 scorer",
+            "values": [
+              38.88,
+              207.83,
+              266.15,
+              499.65,
+              930.24
+            ]
+          },
+          {
+            "name": "2 scorers",
+            "values": [
+              24.2,
+              190.73,
+              195.43,
+              1122.84,
+              2187.23
+            ]
+          },
+          {
+            "name": "4 scorers",
+            "values": [
+              29.83,
+              368.06,
+              472.32,
+              1373.29,
+              3650.92
+            ]
+          }
+        ]
+      },
+      "takeaway": "At 32 clients with 2 scorers, p99 was 195.4 ms. One of the 2-scorer, 64-client runs had 2 request errors; raw files retain them."
     },
     {
       "id": "replicas",
-      "title": "Throughput against replicas",
-      "lead": "Same load, more API replicas.",
-      "chart": null,
-      "takeaway": "TBD"
+      "title": "Throughput at the same 32-client load",
+      "lead": "All processes shared one laptop, so extra replicas eventually competed for CPU.",
+      "chart": {
+        "kind": "bars",
+        "unit": "num1",
+        "x": [
+          "1 scorer",
+          "2 scorers",
+          "4 scorers"
+        ],
+        "series": [
+          {
+            "name": "requests / second",
+            "values": [
+              294.5,
+              468.8,
+              330.9
+            ]
+          }
+        ]
+      },
+      "takeaway": "294.5 → 468.8 → 330.9 requests/s. This proves the fleet runs with several scorers, not unlimited horizontal scaling."
+    },
+    {
+      "id": "database",
+      "title": "Postgres decision-write test",
+      "lead": "Three separate 4-scorer, 64-client runs; synchronous insert, batched COPY and write disabled.",
+      "chart": {
+        "kind": "table",
+        "columns": [
+          "write mode",
+          "requests/s",
+          "p95 ms",
+          "p99 ms",
+          "errors"
+        ],
+        "units": [
+          null,
+          "num1",
+          "ms",
+          "ms",
+          "num"
+        ],
+        "rows": [
+          [
+            "sync",
+            275.9,
+            864.75,
+            1484.86,
+            0
+          ],
+          [
+            "batch",
+            194.7,
+            1118.48,
+            1840.19,
+            0
+          ],
+          [
+            "off",
+            225.1,
+            942.41,
+            1661.32,
+            0
+          ]
+        ]
+      },
+      "takeaway": "Postgres writes were exercised. In this run, batched COPY did not beat synchronous inserts; we do not claim it did."
+    },
+    {
+      "id": "mixed",
+      "title": "Mixed transfer, text, alert and case workload",
+      "lead": "70% transfer checks, 20% SMS checks, 10% alert/case operations; 4 scorers and Postgres.",
+      "chart": {
+        "kind": "table",
+        "columns": [
+          "clients",
+          "requests/s",
+          "p95 ms",
+          "p99 ms",
+          "errors"
+        ],
+        "units": [
+          "num",
+          "num1",
+          "ms",
+          "ms",
+          "num"
+        ],
+        "rows": [
+          [
+            32,
+            289.6,
+            288.91,
+            528.11,
+            0
+          ],
+          [
+            64,
+            167.3,
+            1237.08,
+            2042.8,
+            0
+          ]
+        ]
+      },
+      "takeaway": "At 32 clients the mixed workload reached 289.6 requests/s, p95 288.9 ms, with zero errors. At 64 clients p95 rose to 1,237 ms."
+    },
+    {
+      "id": "shadow",
+      "title": "Full synthetic test-window replay",
+      "lead": "Event stream → online feature worker → scorer → Postgres; labels were joined afterwards.",
+      "chart": {
+        "kind": "table",
+        "columns": [
+          "measure",
+          "value"
+        ],
+        "units": [
+          null,
+          "num1"
+        ],
+        "rows": [
+          [
+            "transfers scored",
+            83659
+          ],
+          [
+            "scams paused",
+            448
+          ],
+          [
+            "decisions / second",
+            553.7
+          ],
+          [
+            "end-to-end p95 ms",
+            601.69
+          ],
+          [
+            "end-to-end p99 ms",
+            959.65
+          ]
+        ]
+      },
+      "takeaway": "83,659 synthetic transfers were scored at 553.7 decisions/s; produced-to-decision p95 was 601.7 ms. This is a replay, not live MFS traffic."
     }
   ],
   "caveats": [
-    "TBD"
+    "All load tests ran on one laptop with the load generator and services sharing CPU and memory; this is not a production cluster or live upay integration.",
+    "The old monolith performs more work per call than the new focused scorer, so their response times are not an identical-endpoint comparison.",
+    "The test stream uses our synthetic world. User-study results remain pending until real volunteers participate."
   ]
 }

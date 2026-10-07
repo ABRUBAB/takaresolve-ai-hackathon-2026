@@ -1,0 +1,122 @@
+# UVERA production-path reference stack (single host). Run from deploy/scale:
+#   docker compose up -d --build --scale scorer=4
+#   docker compose --profile tools run --rm producer      # replay events into the stream
+#   docker compose --profile dashboards up -d grafana     # optional Grafana on http://127.0.0.1:3001
+name: uvera-scale
+
+x-repo-volumes: &repo-ro
+  - ../../artifacts:/repo/artifacts:ro
+  - ../../ml:/repo/ml:ro
+  - ../../configs:/repo/configs:ro
+
+services:
+  redis:                      # event bus (Redis Streams) + online feature store / shared cache
+    image: redis:7-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no", "--maxmemory", "1500mb", "--maxmemory-policy", "noeviction"]
+    ports: ["127.0.0.1:6379:6379"]
+    healthcheck: {test: ["CMD", "redis-cli", "ping"], interval: 3s, retries: 20}
+
+  postgres:                   # transactional store: decisions, alerts, cases, audit, labels
+    image: postgres:16-alpine
+    environment: {POSTGRES_USER: uvera, POSTGRES_PASSWORD: "${UVERA_PG_PASSWORD:?Set UVERA_PG_PASSWORD}", POSTGRES_DB: uvera}
+    command: ["postgres", "-c", "shared_buffers=256MB", "-c", "max_connections=200", "-c", "synchronous_commit=on"]
+    volumes:
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - pgdata:/var/lib/postgresql/data
+    ports: ["127.0.0.1:5433:5432"]
+    healthcheck: {test: ["CMD", "pg_isready", "-U", "uvera"], interval: 3s, retries: 30}
+
+  scorer:                     # stateless model-serving replicas (scale with --scale scorer=N)
+    image: uvera-scale:latest
+    build: .
+    restart: unless-stopped
+    command: ["uvicorn", "uvscale.scorer:app", "--host", "0.0.0.0", "--port", "8000", "--loop", "uvloop",
+              "--http", "httptools", "--no-access-log", "--log-level", "warning"]
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      PG_DSN: "postgresql://uvera:${UVERA_PG_PASSWORD:?Set UVERA_PG_PASSWORD}@postgres:5432/uvera"
+      DB_WRITE: ${DB_WRITE:-batch}
+      EXPLAIN: ${EXPLAIN:-auto}
+      PG_POOL: "8"
+    volumes: *repo-ro
+    depends_on:
+      redis: {condition: service_healthy}
+      postgres: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2)"]
+      interval: 5s
+      retries: 20
+    deploy:
+      resources:
+        limits: {cpus: "1.0", memory: 512M}   # one vCPU per replica, like a k8s pod limit
+
+  nginx:                      # load balancer in front of the scorer replicas (re-resolves the replica set)
+    image: nginx:alpine
+    volumes: ["./nginx/nginx.conf:/etc/nginx/nginx.conf:ro"]
+    ports: ["127.0.0.1:8080:8080"]
+    depends_on: [scorer]
+
+  feature-worker:             # consumes the event stream, updates rolling per-wallet features, drift monitor
+    image: uvera-scale:latest
+    command: ["python", "-m", "uvscale.worker"]
+    restart: unless-stopped
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      BATCH: ${WORKER_BATCH:-500}
+      SHADOW_URL: ${SHADOW_URL:-}
+      SHADOW_CONC: "8"
+      PARITY_OUT: ${PARITY_OUT:-}
+      DRIFT_SAMPLE: ${DRIFT_SAMPLE:-1.0}
+      DRIFT_WINDOW: ${DRIFT_WINDOW:-30000}
+    volumes:
+      - ../../artifacts:/repo/artifacts:ro
+      - ../../ml:/repo/ml:ro
+      - ../../configs:/repo/configs:ro
+      - ../../_outputs/scale:/repo/_outputs/scale
+    depends_on:
+      redis: {condition: service_healthy}
+    deploy:
+      resources:
+        limits: {cpus: "1.0", memory: 768M}
+
+  prometheus:                 # central metrics: scrapes every scorer replica and worker via DNS discovery
+    image: prom/prometheus:latest
+    command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.retention.time=2d"]
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+    ports: ["127.0.0.1:9090:9090"]
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    profiles: ["dashboards"]
+    environment: {GF_AUTH_ANONYMOUS_ENABLED: "true", GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer}
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    ports: ["127.0.0.1:3001:3000"]
+    depends_on: [prometheus]
+
+  producer:                   # replays _outputs/world_full/events.parquet into the stream
+    image: uvera-scale:latest
+    profiles: ["tools"]
+    command: ["python", "-m", "uvscale.producer", "--from-day", "100", "--to-day", "120", "--rate", "2000"]
+    environment: {REDIS_URL: "redis://redis:6379/0"}
+    volumes:
+      - ../../_outputs:/repo/_outputs:ro
+      - ../../reports/scalability:/repo/reports/scalability
+
+  loadgen:                    # load generator + one-off jobs (bootstrap, stream bench, shadow report)
+    image: uvera-scale:latest
+    profiles: ["tools"]
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      PG_DSN: "postgresql://uvera:${UVERA_PG_PASSWORD:?Set UVERA_PG_PASSWORD}@postgres:5432/uvera"
+    volumes:
+      - ../../artifacts:/repo/artifacts:ro
+      - ../../ml:/repo/ml:ro
+      - ../../configs:/repo/configs:ro
+      - ../../_outputs:/repo/_outputs
+      - ../../reports/scalability:/repo/reports/scalability
+
+volumes:
+  pgdata:

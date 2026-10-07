@@ -1,0 +1,227 @@
+{
+ "what": "Point-in-time features computed by the streaming feature-worker (Redis Streams + Lua online store, whole event log replayed in order) vs the batch training builder build_ai1_features() on the same transfers of the test window (days 100-119).",
+ "rows": {
+  "batch": 83555,
+  "online": 83659,
+  "joined": 83555
+ },
+ "per_feature": {
+  "sender_tenure_days": {
+   "exact_pct": 100.0,
+   "within_1pct": 100.0,
+   "within_5pct": 100.0,
+   "nan_mismatch": 0,
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0
+  },
+  "amount_log": {
+   "exact_pct": 100.0,
+   "within_1pct": 100.0,
+   "within_5pct": 100.0,
+   "nan_mismatch": 0,
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0
+  },
+  "amount_z_30d": {
+   "exact_pct": 100.0,
+   "within_1pct": 100.0,
+   "within_5pct": 100.0,
+   "nan_mismatch": 0,
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0
+  },
+  "amount_to_balance": {
+   "exact_pct": 100.0,
+   "within_1pct": 100.0,
+   "within_5pct": 100.0,
+   "nan_mismatch": 0,
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0
+  },
+  "sender_out_count_7d": {
+   "exact_pct": 100.0,
+   "within_1pct": 100.0,
+   "within_5pct": 100.0,
+   "nan_mismatch": 0,
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0
+  },
+  "cash_in_gap_min": {
+   "exact_pct": 100.0,
+   "within_1pct": 100.0,
+   "within_5pct": 100.0,
+   "nan_mismatch": 0,
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0
+  },
+  "device_change_72h": {
+   "exact_pct": 100.0,
+   "within_1pct": 100.0,
+   "within_5pct": 100.0,
+   "nan_mismatch": 0,
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0
+  },
+  "pin_reset_72h": {
+   "exact_pct": 100.0,
+   "within_1pct": 100.0,
+   "within_5pct": 100.0,
+   "nan_mismatch": 0,
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0
+  },
+  "first_time_pair": {
+   "exact_pct": 100.0,
+   "within_1pct": 100.0,
+   "within_5pct": 100.0,
+   "nan_mismatch": 0,
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0
+  },
+  "recipient_age_days": {
+   "exact_pct": 100.0,
+   "within_1pct": 100.0,
+   "within_5pct": 100.0,
+   "nan_mismatch": 0,
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0
+  },
+  "recipient_in_count_7d": {
+   "exact_pct": 100.0,
+   "within_1pct": 100.0,
+   "within_5pct": 100.0,
+   "nan_mismatch": 0,
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0
+  },
+  "recipient_sender_days_7d": {
+   "exact_pct": 100.0,
+   "within_1pct": 100.0,
+   "within_5pct": 100.0,
+   "nan_mismatch": 0,
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0
+  },
+  "recipient_in_today_before": {
+   "exact_pct": 99.917,
+   "within_1pct": 99.917,
+   "within_5pct": 99.917,
+   "nan_mismatch": 0,
+   "max_abs_diff": 2.0,
+   "mean_abs_diff": 0.000898
+  },
+  "recipient_out_in_ratio_7d": {
+   "exact_pct": 100.0,
+   "within_1pct": 100.0,
+   "within_5pct": 100.0,
+   "nan_mismatch": 0,
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0
+  },
+  "recipient_cashout_count_7d": {
+   "exact_pct": 100.0,
+   "within_1pct": 100.0,
+   "within_5pct": 100.0,
+   "nan_mismatch": 0,
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0
+  },
+  "hour": {
+   "exact_pct": 100.0,
+   "within_1pct": 100.0,
+   "within_5pct": 100.0,
+   "nan_mismatch": 0,
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0
+  },
+  "is_night": {
+   "exact_pct": 100.0,
+   "within_1pct": 100.0,
+   "within_5pct": 100.0,
+   "nan_mismatch": 0,
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0
+  },
+  "dow": {
+   "exact_pct": 100.0,
+   "within_1pct": 100.0,
+   "within_5pct": 100.0,
+   "nan_mismatch": 0,
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0
+  },
+  "channel_ussd": {
+   "exact_pct": 100.0,
+   "within_1pct": 100.0,
+   "within_5pct": 100.0,
+   "nan_mismatch": 0,
+   "max_abs_diff": 0.0,
+   "mean_abs_diff": 0.0
+  }
+ },
+ "features_exact": [
+  "sender_tenure_days",
+  "amount_log",
+  "amount_z_30d",
+  "amount_to_balance",
+  "sender_out_count_7d",
+  "cash_in_gap_min",
+  "device_change_72h",
+  "pin_reset_72h",
+  "first_time_pair",
+  "recipient_age_days",
+  "recipient_in_count_7d",
+  "recipient_sender_days_7d",
+  "recipient_out_in_ratio_7d",
+  "recipient_cashout_count_7d",
+  "hour",
+  "is_night",
+  "dow",
+  "channel_ussd"
+ ],
+ "features_approximate": [
+  "recipient_in_today_before"
+ ],
+ "model_on_batch_features": {
+  "window": {
+   "n": 83555,
+   "positives": 586,
+   "roc_auc": 0.9429,
+   "pr_auc": 0.668,
+   "recall_at_red": 0.7645,
+   "red_rate": 0.01363
+  },
+  "unseen_customers_test_split": {
+   "n": 24827,
+   "positives": 181,
+   "roc_auc": 0.9321,
+   "pr_auc": 0.6637,
+   "recall_at_red": 0.7569,
+   "red_rate": 0.01434
+  }
+ },
+ "model_on_online_features": {
+  "window": {
+   "n": 83555,
+   "positives": 586,
+   "roc_auc": 0.9431,
+   "pr_auc": 0.6702,
+   "recall_at_red": 0.7645,
+   "red_rate": 0.01366
+  },
+  "unseen_customers_test_split": {
+   "n": 24827,
+   "positives": 181,
+   "roc_auc": 0.9321,
+   "pr_auc": 0.6649,
+   "recall_at_red": 0.7569,
+   "red_rate": 0.01434
+  }
+ },
+ "score_agreement": {
+  "max_abs_raw_score_diff": 0.342987,
+  "mean_abs_raw_score_diff": 2.425e-05,
+  "same_risk_level_pct": 99.995,
+  "risk_level_changes": 4
+ }
+}

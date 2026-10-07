@@ -1,0 +1,213 @@
+[
+ {
+  "label": "1 worker",
+  "target_rate": 1000.0,
+  "producer": {
+   "sent": 30000,
+   "seconds": 30.0,
+   "rate_achieved": 1000.0,
+   "target_rate": 1000.0,
+   "backpressure_wait_s": 0.0,
+   "next": 30000
+  },
+  "n_workers": 1,
+  "events_processed": 30000,
+  "worker_events_per_s": 1003.8,
+  "lag_ms_p50_max_over_workers": 2.1,
+  "lag_ms_p95_max_over_workers": 11.75,
+  "lag_ms_p99_max_over_workers": 129.18,
+  "lag_ms_max": 793.55,
+  "drain_s": 1.51,
+  "workers": [
+   {
+    "consumer": "6fc7e42c47b6",
+    "events": 30000,
+    "featured": 7272,
+    "shadow_scored": 0,
+    "shadow_errors": 0,
+    "active_seconds": 29.887,
+    "events_per_s": 1003.8,
+    "lag_ms": {
+     "p50": 2.1,
+     "p95": 11.75,
+     "p99": 129.18,
+     "max": 793.55
+    },
+    "batch_ms": {
+     "p50": 0.84,
+     "p95": 1.65,
+     "n": 16592
+    }
+   }
+  ]
+ },
+ {
+  "label": "1 worker",
+  "target_rate": 2000.0,
+  "producer": {
+   "sent": 59979,
+   "seconds": 30.08,
+   "rate_achieved": 1994.0,
+   "target_rate": 2000.0,
+   "backpressure_wait_s": 0.0,
+   "next": 89979
+  },
+  "n_workers": 1,
+  "events_processed": 59979,
+  "worker_events_per_s": 1994.1,
+  "lag_ms_p50_max_over_workers": 7.99,
+  "lag_ms_p95_max_over_workers": 1266.75,
+  "lag_ms_p99_max_over_workers": 1519.11,
+  "lag_ms_max": 1628.18,
+  "drain_s": 1.51,
+  "workers": [
+   {
+    "consumer": "6fc7e42c47b6",
+    "events": 59979,
+    "featured": 12256,
+    "shadow_scored": 0,
+    "shadow_errors": 0,
+    "active_seconds": 30.078,
+    "events_per_s": 1994.1,
+    "lag_ms": {
+     "p50": 7.99,
+     "p95": 1266.75,
+     "p99": 1519.11,
+     "max": 1628.18
+    },
+    "batch_ms": {
+     "p50": 1.4,
+     "p95": 8.37,
+     "n": 7350
+    }
+   }
+  ]
+ },
+ {
+  "label": "1 worker",
+  "target_rate": 5000.0,
+  "producer": {
+   "sent": 149989,
+   "seconds": 30.02,
+   "rate_achieved": 4996.6,
+   "target_rate": 5000.0,
+   "backpressure_wait_s": 0.0,
+   "next": 239968
+  },
+  "n_workers": 1,
+  "events_processed": 149989,
+  "worker_events_per_s": 4979.7,
+  "lag_ms_p50_max_over_workers": 31.92,
+  "lag_ms_p95_max_over_workers": 636.25,
+  "lag_ms_p99_max_over_workers": 771.74,
+  "lag_ms_max": 827.78,
+  "drain_s": 1.51,
+  "workers": [
+   {
+    "consumer": "6fc7e42c47b6",
+    "events": 149989,
+    "featured": 28876,
+    "shadow_scored": 0,
+    "shadow_errors": 0,
+    "active_seconds": 30.12,
+    "events_per_s": 4979.7,
+    "lag_ms": {
+     "p50": 31.92,
+     "p95": 636.25,
+     "p99": 771.74,
+     "max": 827.78
+    },
+    "batch_ms": {
+     "p50": 4.39,
+     "p95": 44.03,
+     "n": 2622
+    }
+   }
+  ]
+ },
+ {
+  "label": "1 worker",
+  "target_rate": 10000.0,
+  "producer": {
+   "sent": 298898,
+   "seconds": 30.01,
+   "rate_achieved": 9958.3,
+   "target_rate": 10000.0,
+   "backpressure_wait_s": 0.0,
+   "next": 538866
+  },
+  "n_workers": 1,
+  "events_processed": 298898,
+  "worker_events_per_s": 5193.8,
+  "lag_ms_p50_max_over_workers": 12703.0,
+  "lag_ms_p95_max_over_workers": 26248.4,
+  "lag_ms_p99_max_over_workers": 27236.93,
+  "lag_ms_max": 27588.39,
+  "drain_s": 27.97,
+  "workers": [
+   {
+    "consumer": "6fc7e42c47b6",
+    "events": 298898,
+    "featured": 62858,
+    "shadow_scored": 0,
+    "shadow_errors": 0,
+    "active_seconds": 57.549,
+    "events_per_s": 5193.8,
+    "lag_ms": {
+     "p50": 12703.0,
+     "p95": 26248.4,
+     "p99": 27236.93,
+     "max": 27588.39
+    },
+    "batch_ms": {
+     "p50": 85.28,
+     "p95": 115.98,
+     "n": 609
+    }
+   }
+  ]
+ },
+ {
+  "label": "1 worker",
+  "target_rate": "max",
+  "producer": {
+   "sent": 1294787,
+   "seconds": 257.57,
+   "rate_achieved": 5027.0,
+   "target_rate": "max",
+   "backpressure_wait_s": 145.43,
+   "next": 1833653
+  },
+  "n_workers": 1,
+  "events_processed": 1294787,
+  "worker_events_per_s": 4633.0,
+  "lag_ms_p50_max_over_workers": 24485.8,
+  "lag_ms_p95_max_over_workers": 34408.88,
+  "lag_ms_p99_max_over_workers": 35893.92,
+  "lag_ms_max": 37115.31,
+  "drain_s": 23.38,
+  "workers": [
+   {
+    "consumer": "6fc7e42c47b6",
+    "events": 1294787,
+    "featured": 284636,
+    "shadow_scored": 0,
+    "shadow_errors": 0,
+    "active_seconds": 279.473,
+    "events_per_s": 4633.0,
+    "lag_ms": {
+     "p50": 24485.8,
+     "p95": 34408.88,
+     "p99": 35893.92,
+     "max": 37115.31
+    },
+    "batch_ms": {
+     "p50": 99.82,
+     "p95": 135.34,
+     "n": 2591
+    }
+   }
+  ],
+  "note": "rest of the range at max producer speed; backpressure holds the stream at <=150k unread events"
+ }
+]

@@ -1,0 +1,44 @@
+# PRODUCTION TEMPLATE - NOT RUN. Feature workers are a consumer group: scale replicas to stream volume.
+# Note: per-wallet ordering across several consumers is only guaranteed if the stream is partitioned by wallet
+# (one consumer per partition, as with Kafka partitions); see deploy/scale/README.md "Limitations".
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uvera-feature-worker
+  labels: {app: uvera-feature-worker}
+spec:
+  replicas: 2
+  selector:
+    matchLabels: {app: uvera-feature-worker}
+  template:
+    metadata:
+      labels: {app: uvera-feature-worker}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9100"
+    spec:
+      containers:
+        - name: worker
+          image: registry.example.internal/uvera-scale:1.0.0
+          args: ["python", "-m", "uvscale.worker"]
+          ports: [{containerPort: 9100, name: metrics}]
+          env:
+            - {name: REDIS_URL, valueFrom: {secretKeyRef: {name: uvera-backends, key: redis_url}}}
+            - {name: BATCH, value: "500"}
+          resources:
+            requests: {cpu: "1", memory: 512Mi}
+            limits: {cpu: "1", memory: 768Mi}
+          readinessProbe:
+            httpGet: {path: /health, port: metrics}
+---
+# KEDA (if installed) can scale workers on stream lag instead of CPU:
+# apiVersion: keda.sh/v1alpha1
+# kind: ScaledObject
+# metadata: {name: uvera-feature-worker}
+# spec:
+#   scaleTargetRef: {name: uvera-feature-worker}
+#   minReplicaCount: 1
+#   maxReplicaCount: 8
+#   triggers:
+#     - type: redis-streams
+#       metadata: {address: redis:6379, stream: uvera:events, consumerGroup: features, pendingEntriesCount: "5000"}

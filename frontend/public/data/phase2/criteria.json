@@ -6,14 +6,16 @@
       "score": 17.33,
       "max": 20,
       "concern": {
-        "text": "no evidence of interviews, deployment observations ... controlled customer testing",
+        "text": "The submission does not provide convincing real-world user validation. There is no evidence of interviews, deployment observations, real incident datasets, controlled customer testing, or measured prevalence from an actual MFS.",
         "quote": true
       },
       "built": [
-        "An on-site user study on participants' own phones, in Bangla and English: do people understand the Pause and the “not sure” state, and would they stop?",
-        "Anonymous by design: no names or phone numbers, balanced random assignment of screen language and analyst view."
+        "Measured prevalence from public sources: 81,423 fraud cases in 2025 with MFS taking Tk 813 million and only 8.7% recovered (Bangladesh Bank data via The Financial Express); 6.3% of MFS users defrauded, 42% via call or SMS (TIB survey, n = 1,784).",
+        "A public labelled message dataset we did not create: AI-2 tested on 10,267 Bangla SMS/Telegram messages (BTTC, CC BY 4.0), including the honest zero-shot gap and pilot results with real labels. These are not verified upay fraud incidents.",
+        "Anonymous user-study tool for participants' own phones (Pause comprehension, stated stop rate, 'not sure' understanding, analyst triage A/B); results remain pending until people participate."
       ],
       "evidence": [
+        "evidence",
         "study"
       ]
     },
@@ -23,17 +25,18 @@
       "score": 17.0,
       "max": 20,
       "concern": {
-        "text": "TBD",
+        "text": "Add repeated independently generated worlds, distribution-shift tests and real-data shadow evaluation; the 42.1% recall on the unseen QR disguise family shows generalisation remains imperfect.",
         "quote": true
       },
       "built": [
-        "The full pipeline re-run on five independently seeded synthetic worlds.",
-        "Six distribution-shift tests: adaptive scammers, noisier labels, older mule wallets, half and double scam prevalence, smaller amounts.",
-        "A system ablation ladder: what each layer adds on top of the last."
+        "AI-1 re-evaluated on five independently generated worlds and six distribution shifts, unchanged and retrained.",
+        "Leave-one-scam-family-out: recall on scam types the model never saw.",
+        "QR Shield on the unseen disguise: recall rises from 42% to 58% after analysts confirm 10 examples, with weekly precision unchanged.",
+        "Real-data evaluation of AI-2 on 10,267 real Bangla messages, and a shadow-mode replay of the test window through the production stack."
       ],
       "evidence": [
         "robustness",
-        "ablation#ladder"
+        "evidence#real_sms"
       ]
     },
     {
@@ -42,32 +45,38 @@
       "score": 13.33,
       "max": 20,
       "concern": {
-        "text": "Customer impact depends on an assumed 30–70% intervention rate.",
-        "quote": false
+        "text": "Customer money actually saved depends on an assumed 30–70% intervention rate. Validate false-pause cost, confirmed scams prevented, analyst minutes saved, agent service availability and net economic benefit.",
+        "quote": true
       },
       "built": [
-        "An economic model that solves for the follow rate UVERA needs to break even, instead of assuming one.",
-        "Net benefit per million transfers at several follow rates, and a sensitivity analysis over every assumption.",
-        "The stated stop rate from the on-site study as a first real-world anchor."
+        "An economic model that solves for the break-even follow rate instead of assuming one, with every assumption stated as low / base / high.",
+        "False-pause cost, 'not sure' review cost, analyst time and servers priced explicitly; net benefit per 1 million transfers and a sensitivity analysis.",
+        "Agent service measured by replaying every real cash-out request of the test days: customers served instead of turned away.",
+        "Follow-rate evidence from published warning studies, and the stated stop rate from our on-site study."
       ],
       "evidence": [
-        "business"
+        "business",
+        "study#ratings"
       ]
     },
     {
       "id": "prototype",
-      "name": "Prototype",
+      "name": "Prototype quality",
       "score": 12,
       "max": 15,
       "concern": {
-        "text": "TBD",
+        "text": "Strengthen runtime validation with concurrent-load, failure-recovery and stale-artifact tests, especially because the public demo can operate in recorded-response mode when the live API is unavailable.",
         "quote": true
       },
       "built": [
-        "A closed loop: analyst decisions on cases feed the QR watchlist.",
-        "TBD"
+        "Stale-artifact protection: every model file is checked against its SHA-256 at start; a stale or tampered model is never served and readiness says which file.",
+        "Failure-recovery test: the API is killed and the supervisor brings it back; restart time measured.",
+        "Concurrent-load tests with p50/p95/p99 latency on the monolith and on the scaled stack.",
+        "A closed loop across components (Case Linker findings protect the next victims), measured end to end."
       ],
       "evidence": [
+        "security",
+        "scalability",
         "ablation#closed_loop"
       ]
     },
@@ -77,30 +86,33 @@
       "score": 7.67,
       "max": 10,
       "concern": {
-        "text": "quantify whether linking and evidence generation actually improve analyst decisions beyond simple alert aggregation",
+        "text": "Run ablations such as Pause Check only → Pause + QR Shield → Pause + QR + Case Linker, and quantify whether linking and evidence generation actually improve analyst decisions beyond simple alert aggregation.",
         "quote": true
       },
       "built": [
-        "Case Linker measured against naive alert aggregation on the same alerts.",
-        "A between-subject A/B analyst task in the user study: plain alert list vs linked cases."
+        "An ablation ladder on the same transfers: rule → Pause Check → Pause Check with Case Linker feedback.",
+        "Case Linker against simple alert aggregation on the same 377 alerts: items, scam alerts in the top cases, mule wallets and cash-outs found.",
+        "QR Shield inside the chain: share of scam QR cash-outs that pass through flagged shops.",
+        "An analyst triage A/B (alert list vs linked cases) in the on-site study: accuracy and time."
       ],
       "evidence": [
-        "ablation#linking_vs_naive",
+        "ablation",
         "study#triage"
       ]
     },
     {
       "id": "scalability",
-      "name": "Scalability",
+      "name": "Scalability & integration",
       "score": 5.67,
       "max": 10,
       "concern": {
-        "text": "TBD",
+        "text": "There is no distributed queue/event stream, shared cache, persistent transactional database, model-serving fleet, centralized monitoring, or demonstrated horizontal scaling.",
         "quote": true
       },
       "built": [
-        "A scale-out deployment: several API replicas behind nginx, Postgres, Prometheus and Grafana (deploy/scale).",
-        "A load test of p50/p95/p99 latency against concurrency."
+        "A production-path stack: Redis Streams event bus, streaming feature worker with a shared online feature store, Postgres for decisions and audit, a fleet of small scoring replicas behind a load balancer, Prometheus monitoring.",
+        "Measured p50/p95/p99 latency and throughput under concurrent load with 1, 2 and 4 scorers. Two improved throughput at the tested 32-client load; four slowed down on the same laptop because resources were shared.",
+        "Training-serving parity test (streaming vs batch features), drift monitoring (PSI) with a retrain-and-approve policy, and the model registry."
       ],
       "evidence": [
         "scalability"
@@ -108,20 +120,25 @@
     },
     {
       "id": "responsible",
-      "name": "Responsible AI",
+      "name": "Responsible AI & security",
       "score": 3.67,
       "max": 5,
       "concern": {
-        "text": "TBD",
+        "text": "Strengthen production governance with key rotation/secrets management, immutable audit storage, adversarial testing, explicit model rollback/version approval and real-data fairness validation.",
         "quote": true
       },
       "built": [
-        "Fairness by account tenure, before and after the fix.",
-        "Rotating signing keys, an append-only audit log, a model registry with SHA-256 checks and a PII guard for generated briefs."
+        "JWT key ring with key ids and rotation; secrets only from the environment or a file outside the repository.",
+        "Tamper-evident audit log: hash-chained, append-only, with a verify endpoint that names the first altered row.",
+        "Model registry with approval and rollback; unapproved or altered models are not served.",
+        "Adversarial testing: disguised scam text and disguised prompt injection, with a defence now live; PII removed before any text reaches the LLM.",
+        "Fairness: the tenure gap in missed scams, an equal-opportunity fix and a policy dial that shows its cost.",
+        "Real-data fairness on 10,267 real Bangla messages: we found a channel bias synthetic data could not show (SMS scams caught 30% vs Telegram 97%) and fixed it with group-balanced training and per-channel thresholds (90% vs 90%), with the cost in false flags shown."
       ],
       "evidence": [
-        "fairness",
-        "security"
+        "security",
+        "adversarial",
+        "fairness"
       ]
     }
   ]

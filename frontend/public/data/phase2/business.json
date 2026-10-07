@@ -1,7 +1,7 @@
 {
   "status": "measured",
   "title": "Business case: from metrics to money",
-  "updated_at": "2026-10-07T04:24:25Z",
+  "updated_at": "2026-10-07T04:55:19Z",
   "source": "scripts/phase2/business_case.py -> reports/phase2/business_case.json",
   "summary": "We measured what is measurable (scams and money paused, false pauses, reviews, analyst items, agent refusals), stated every other assumption with a range, and solved for break-even.",
   "headline": [
@@ -9,7 +9,7 @@
       "label": "Break-even follow rate (base)",
       "value": 0.001210405187372524,
       "format": "pct1",
-      "sub": "pessimistic: 5.1%"
+      "sub": "pessimistic: 5.6%"
     },
     {
       "label": "Scam money paused (unseen customers)",
@@ -25,6 +25,148 @@
     }
   ],
   "sections": [
+    {
+      "id": "calculator",
+      "title": "Don't trust our assumptions? Set your own.",
+      "lead": "Move any slider. The measured counts (per 1 million P2P transfers, unseen customers) stay fixed; everything else is yours.",
+      "chart": {
+        "kind": "calculator",
+        "per_million": {
+          "scam_money_paused_bdt": 26462319.249204498,
+          "false_pauses": 8257.139404680389,
+          "unsure_reviews": 6404.317879727716,
+          "alerts": 15185.08075885125,
+          "linked_cases": 7934.909574253837
+        },
+        "transfers_per_month": 1000000,
+        "assumptions": [
+          {
+            "key": "customer_minutes_lost_per_false_pause",
+            "label": "Customer minutes lost per false pause",
+            "unit": "min",
+            "low": 1.0,
+            "base": 2.0,
+            "high": 5.0,
+            "pessimistic": "high"
+          },
+          {
+            "key": "customer_value_per_minute_bdt",
+            "label": "Value of a customer's minute",
+            "unit": "bdt",
+            "low": 1.0,
+            "base": 2.0,
+            "high": 4.0,
+            "pessimistic": "high"
+          },
+          {
+            "key": "support_contact_rate_per_false_pause",
+            "label": "Share of false pauses that call support",
+            "unit": "pct",
+            "low": 0.02,
+            "base": 0.1,
+            "high": 0.25,
+            "pessimistic": "high"
+          },
+          {
+            "key": "support_contact_cost_bdt",
+            "label": "Cost of one support contact",
+            "unit": "bdt",
+            "low": 20.0,
+            "base": 40.0,
+            "high": 80.0,
+            "pessimistic": "high"
+          },
+          {
+            "key": "abandon_rate_after_false_pause",
+            "label": "Share of falsely paused customers who give up",
+            "unit": "pct",
+            "low": 0.01,
+            "base": 0.05,
+            "high": 0.1,
+            "pessimistic": "high"
+          },
+          {
+            "key": "fee_revenue_lost_per_abandoned_transfer_bdt",
+            "label": "Fee revenue lost per abandoned transfer",
+            "unit": "bdt",
+            "low": 0.0,
+            "base": 5.0,
+            "high": 15.0,
+            "pessimistic": "high"
+          },
+          {
+            "key": "analyst_cost_per_minute_bdt",
+            "label": "Analyst cost per minute",
+            "unit": "bdt",
+            "low": 3.0,
+            "base": 5.0,
+            "high": 10.0,
+            "pessimistic": "high"
+          },
+          {
+            "key": "minutes_per_unsure_review",
+            "label": "Minutes per 'not sure' review",
+            "unit": "min",
+            "low": 2.0,
+            "base": 3.0,
+            "high": 6.0,
+            "pessimistic": "high"
+          },
+          {
+            "key": "minutes_per_alert_item",
+            "label": "Minutes per alert, plain alert list",
+            "unit": "min",
+            "low": 3.0,
+            "base": 6.0,
+            "high": 10.0,
+            "pessimistic": "low"
+          },
+          {
+            "key": "minutes_per_linked_case",
+            "label": "Minutes per linked case",
+            "unit": "min",
+            "low": 5.0,
+            "base": 8.0,
+            "high": 15.0,
+            "pessimistic": "high"
+          },
+          {
+            "key": "server_cost_bdt_per_month",
+            "label": "Servers per month",
+            "unit": "bdt",
+            "low": 3000.0,
+            "base": 6000.0,
+            "high": 15000.0,
+            "pessimistic": "high"
+          }
+        ],
+        "follow_rate": {
+          "min": 0.0,
+          "max": 0.5,
+          "base": 0.1
+        },
+        "markers": [
+          {
+            "label": "break-even (base)",
+            "value": 0.001210405187372524
+          },
+          {
+            "label": "break-even (all pessimistic)",
+            "value": 0.05580064081098359
+          },
+          {
+            "label": "NAB: 12% of flagged payments abandoned",
+            "value": 0.12
+          }
+        ],
+        "check": {
+          "follow_rate": 0.1,
+          "net_benefit_bdt": 2614201.796431305,
+          "break_even_follow_rate": 0.001210405187372524
+        }
+      },
+      "takeaway": "Even with every slider at its most pessimistic end, UVERA pays for itself once 5.6% of paused victims stop (about 1 in 18)."
+    },
     {
       "id": "break_even",
       "title": "How many warned victims must stop for UVERA to pay for itself?",
@@ -46,11 +188,11 @@
           ],
           [
             "every assumption pessimistic",
-            0.05112013303296904
+            0.05580064081098359
           ]
         ]
       },
-      "takeaway": "Break-even is 0.12% (base) and 5.1% with every assumption pessimistic. Published evidence: 12% of flagged payments abandoned at a real bank (NAB 2023); a randomised UK study cut scam payments from 22% to 4% with a risk-based warning and a cancel button (OBIE / Behaviouralist 2021)."
+      "takeaway": "Break-even is 0.12% (base) and 5.6% with every assumption pessimistic. Published evidence: 12% of flagged payments abandoned at a real bank (NAB 2023); a randomised UK study cut scam payments from 22% to 4% with a risk-based warning and a cancel button (OBIE / Behaviouralist 2021)."
     },
     {
       "id": "net_benefit",

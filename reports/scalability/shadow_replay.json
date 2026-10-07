@@ -1,0 +1,90 @@
+{
+ "window": "days 100-119 (test window), every customer-to-customer p2p transfer",
+ "pipeline": "producer (events.parquet, labels stripped) -> Redis Stream -> feature-worker (point-in-time features, Lua) -> nginx -> scorer replicas -> Postgres decisions; outcomes joined afterwards",
+ "definitions": {
+  "paused_red": "risk_level = high (red: 'wait 10 minutes' pause)",
+  "warned_any": "risk_level medium/high or unsure (any on-screen warning)",
+  "false_pause": "paused_red on a transfer that was not a scam"
+ },
+ "slices": {
+  "all_p2p": {
+   "slice": "all_p2p",
+   "transfers_scored": 83659,
+   "with_outcome": 83659,
+   "scams_in_window": 586,
+   "paused_red": 1218,
+   "scams_paused_red": 448,
+   "false_pauses_red": 770,
+   "warned_any": 4435,
+   "scams_warned_any": 515,
+   "false_warnings_any": 3920,
+   "unsure": 483,
+   "scam_amount_paused_bdt": 1814600.0,
+   "scam_amount_total_bdt": 2156270.69,
+   "recall_red": 0.7645,
+   "precision_red": 0.3678,
+   "false_pauses_per_1000_transfers": 9.2,
+   "recall_any_warning": 0.8788,
+   "pause_rate": 0.0146
+  },
+  "excluding_mule_flows": {
+   "slice": "excluding_mule_flows",
+   "transfers_scored": 83555,
+   "with_outcome": 83555,
+   "scams_in_window": 586,
+   "paused_red": 1141,
+   "scams_paused_red": 448,
+   "false_pauses_red": 693,
+   "warned_any": 4347,
+   "scams_warned_any": 515,
+   "false_warnings_any": 3832,
+   "unsure": 471,
+   "scam_amount_paused_bdt": 1814600.0,
+   "scam_amount_total_bdt": 2156270.69,
+   "recall_red": 0.7645,
+   "precision_red": 0.3926,
+   "false_pauses_per_1000_transfers": 8.29,
+   "recall_any_warning": 0.8788,
+   "pause_rate": 0.0137
+  },
+  "unseen_customers_only": {
+   "slice": "unseen_customers_only",
+   "transfers_scored": 24827,
+   "with_outcome": 24827,
+   "scams_in_window": 181,
+   "paused_red": 356,
+   "scams_paused_red": 137,
+   "false_pauses_red": 219,
+   "warned_any": 1304,
+   "scams_warned_any": 156,
+   "false_warnings_any": 1148,
+   "unsure": 166,
+   "scam_amount_paused_bdt": 611590.0,
+   "scam_amount_total_bdt": 744223.57,
+   "recall_red": 0.7569,
+   "precision_red": 0.3848,
+   "false_pauses_per_1000_transfers": 8.82,
+   "recall_any_warning": 0.8619,
+   "pause_rate": 0.0143
+  }
+ },
+ "latency_ms": {
+  "end_to_end_produce_to_decision": {
+   "p50": 152.86,
+   "p95": 601.69,
+   "p99": 959.65,
+   "max": "1273.67"
+  },
+  "scorer_internal": {
+   "p50": 0.33,
+   "p95": 0.95,
+   "p99": 1.51,
+   "max": 7.0
+  }
+ },
+ "replay_span_s": 151.1,
+ "scorer_replicas_used": 2,
+ "model_versions_seen": 1,
+ "model_version": "ai1-lightgbm-ddcd41651ea1",
+ "decisions_per_s": 553.7
+}

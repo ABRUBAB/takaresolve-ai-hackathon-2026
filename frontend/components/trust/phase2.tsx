@@ -1,7 +1,8 @@
 "use client";
 
 import { CheckCircle2, CircleDashed } from "lucide-react";
-import type { ReactNode } from "react";
+import { Component, type ReactNode } from "react";
+import { Calculator, type CalculatorChart } from "@/components/trust/phase2-calculator";
 import { cn } from "@/lib/utils";
 
 /**
@@ -14,7 +15,8 @@ export type Series = { name: string; values: (number | null)[] };
 export type Chart =
   | { kind: "bars"; unit?: Unit; x: string[]; series: Series[]; higher_is_better?: boolean }
   | { kind: "line"; unit?: Unit; x: (number | string)[]; x_label?: string; series: Series[] }
-  | { kind: "table"; columns: string[]; rows: (string | number | null)[][]; units?: (Unit | null)[] };
+  | { kind: "table"; columns: string[]; rows: (string | number | null)[][]; units?: (Unit | null)[] }
+  | CalculatorChart;
 export type EvidenceSection = { id: string; title: string; lead?: string; chart?: Chart | null; takeaway?: string };
 export type EvidenceFile = {
   status: "pending" | "measured";
@@ -210,20 +212,39 @@ function TableChart({ c }: { c: Extract<Chart, { kind: "table" }> }) {
   );
 }
 
+const Measuring = () => <p className="rounded-xl border border-dashed border-border px-3 py-6 text-center text-sm text-faint">measuring…</p>;
+
+/** A chart whose data is malformed shows "measuring…" instead of taking the page down. */
+class ChartBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  render() {
+    return this.state.failed ? <Measuring /> : this.props.children;
+  }
+}
+
 export function ChartView({ chart }: { chart?: Chart | null }) {
-  if (!chart) return <p className="rounded-xl border border-dashed border-border px-3 py-6 text-center text-sm text-faint">measuring…</p>;
+  if (!chart) return <Measuring />;
   if (chart.kind === "bars") return <BarsChart c={chart} />;
   if (chart.kind === "line") return <LineChart c={chart} />;
   if (chart.kind === "table") return <TableChart c={chart} />;
-  return null;
+  if (chart.kind === "calculator") return <Calculator c={chart} />;
+  return <Measuring />;
 }
+
+/** Interactive kinds need the full width of the evidence column. */
+const WIDE = new Set(["calculator", "pipeline"]);
 
 export function SectionView({ s, measured }: { s: EvidenceSection; measured: boolean }) {
   return (
-    <div className="rounded-2xl border border-border p-5">
+    <div className={cn("rounded-2xl border border-border p-5", WIDE.has(String(s.chart?.kind)) && "lg:col-span-2")}>
       <p className="font-medium">{isTbd(s.title) ? "Evidence" : s.title}</p>
       {s.lead && !isTbd(s.lead) && <p className="mt-1 text-sm text-muted-foreground">{s.lead}</p>}
-      <div className="mt-4">{measured ? <ChartView chart={s.chart} /> : <ChartView chart={null} />}</div>
+      <div className="mt-4">
+        <ChartBoundary key={s.id}>{measured ? <ChartView chart={s.chart} /> : <ChartView chart={null} />}</ChartBoundary>
+      </div>
       {measured && s.takeaway && !isTbd(s.takeaway) && <p className="mt-4 border-t border-border pt-3 text-sm">{s.takeaway}</p>}
     </div>
   );

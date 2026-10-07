@@ -1,0 +1,22 @@
+{
+ "consumer": "b9cb59aaac3b",
+ "events": 377722,
+ "featured": 83659,
+ "shadow_scored": 83659,
+ "shadow_errors": 0,
+ "active_seconds": 151.422,
+ "events_per_s": 2494.5,
+ "lag_ms": {
+  "p50": 130.32,
+  "p95": 612.68,
+  "p99": 975.75,
+  "max": 1320.25
+ },
+ "batch_ms": {
+  "p50": 31.52,
+  "p95": 173.61,
+  "n": 2525
+ },
+ "what": "shadow replay of days 100-119 at a 2,500 events/s target; every p2p transfer gets point-in-time features and is scored by the fleet via POST /score/batch",
+ "redis_used_memory_mb": 80.1
+}

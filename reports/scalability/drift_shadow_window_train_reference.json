@@ -1,0 +1,64 @@
+{
+ "status": "alert",
+ "max_psi": 3.6677,
+ "window_n": 20000,
+ "window_size": 20000,
+ "events_seen": 479557,
+ "thresholds": {
+  "warn": 0.1,
+  "alert": 0.2
+ },
+ "top_drifted": [
+  {
+   "feature": "dow",
+   "psi": 3.6677
+  },
+  {
+   "feature": "first_time_pair",
+   "psi": 0.3381
+  },
+  {
+   "feature": "sender_tenure_days",
+   "psi": 0.2416
+  },
+  {
+   "feature": "amount_log",
+   "psi": 0.2135
+  },
+  {
+   "feature": "recipient_age_days",
+   "psi": 0.1907
+  }
+ ],
+ "psi": {
+  "sender_tenure_days": 0.2416,
+  "amount_log": 0.2135,
+  "amount_z_30d": 0.1419,
+  "amount_to_balance": 0.0914,
+  "sender_out_count_7d": 0.0199,
+  "cash_in_gap_min": 0.0847,
+  "device_change_72h": 0.0,
+  "pin_reset_72h": 0.0,
+  "first_time_pair": 0.3381,
+  "recipient_age_days": 0.1907,
+  "recipient_in_count_7d": 0.0073,
+  "recipient_sender_days_7d": 0.0071,
+  "recipient_in_today_before": 0.0265,
+  "recipient_out_in_ratio_7d": 0.0704,
+  "recipient_cashout_count_7d": 0.0009,
+  "hour": 0.0129,
+  "is_night": 0.0003,
+  "dow": 3.6677,
+  "channel_ussd": 0.0008
+ },
+ "features_alert": [
+  "sender_tenure_days",
+  "amount_log",
+  "first_time_pair",
+  "dow"
+ ],
+ "features_warn": [
+  "amount_z_30d",
+  "recipient_age_days"
+ ]
+}

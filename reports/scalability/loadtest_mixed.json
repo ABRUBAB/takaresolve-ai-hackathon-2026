@@ -1,0 +1,302 @@
+[
+ {
+  "scenario": "mixed",
+  "url": "http://nginx:8080",
+  "concurrency": 32,
+  "client_procs": 4,
+  "duration_s": 30.0,
+  "warmup_s": 5.0,
+  "explain": null,
+  "n": 8689,
+  "errors": 0,
+  "error_rate": 0.0,
+  "rps": 289.6,
+  "latency_ms": {
+   "p50": 78.26,
+   "p90": 202.48,
+   "p95": 288.91,
+   "p99": 528.11,
+   "max": 1442.75,
+   "mean": 110.13
+  },
+  "per_endpoint": {
+   "case_get": {
+    "n": 178,
+    "errors": 0,
+    "error_rate": 0.0,
+    "rps": 5.9,
+    "latency_ms": {
+     "p50": 70.01,
+     "p90": 214.54,
+     "p95": 316.5,
+     "p99": 483.38,
+     "max": 731.13,
+     "mean": 104.79
+    }
+   },
+   "transfer": {
+    "n": 6009,
+    "errors": 0,
+    "error_rate": 0.0,
+    "rps": 200.3,
+    "latency_ms": {
+     "p50": 77.72,
+     "p90": 201.48,
+     "p95": 290.35,
+     "p99": 520.9,
+     "max": 1166.07,
+     "mean": 109.34
+    }
+   },
+   "text": {
+    "n": 1839,
+    "errors": 0,
+    "error_rate": 0.0,
+    "rps": 61.3,
+    "latency_ms": {
+     "p50": 78.47,
+     "p90": 198.17,
+     "p95": 272.82,
+     "p99": 524.7,
+     "max": 1442.75,
+     "mean": 109.97
+    }
+   },
+   "alert": {
+    "n": 390,
+    "errors": 0,
+    "error_rate": 0.0,
+    "rps": 13.0,
+    "latency_ms": {
+     "p50": 82.99,
+     "p90": 226.84,
+     "p95": 356.71,
+     "p99": 579.88,
+     "max": 1031.05,
+     "mean": 122.37
+    }
+   },
+   "case_link": {
+    "n": 273,
+    "errors": 0,
+    "error_rate": 0.0,
+    "rps": 9.1,
+    "latency_ms": {
+     "p50": 83.96,
+     "p90": 214.87,
+     "p95": 246.84,
+     "p99": 440.1,
+     "max": 796.2,
+     "mean": 114.47
+    }
+   }
+  },
+  "label": "",
+  "finished_at": "2026-10-07T05:29:38",
+  "replicas": 4,
+  "db_write": "batch",
+  "explain_mode": "auto",
+  "docker_stats": {
+   "uvera-scale-feature-worker-1": {
+    "cpu_pct_mean": 1.2,
+    "cpu_pct_max": 4.3,
+    "mem_mb_max": 62.7
+   },
+   "uvera-scale-loadgen-run-7ece84f7047b": {
+    "cpu_pct_mean": 223.6,
+    "cpu_pct_max": 235.9,
+    "mem_mb_max": 202.8
+   },
+   "uvera-scale-nginx-1": {
+    "cpu_pct_mean": 17.9,
+    "cpu_pct_max": 24.1,
+    "mem_mb_max": 10.7
+   },
+   "uvera-scale-postgres-1": {
+    "cpu_pct_mean": 28.3,
+    "cpu_pct_max": 42.6,
+    "mem_mb_max": 179.7
+   },
+   "uvera-scale-prometheus-1": {
+    "cpu_pct_mean": 1.8,
+    "cpu_pct_max": 2.8,
+    "mem_mb_max": 68.5
+   },
+   "uvera-scale-redis-1": {
+    "cpu_pct_mean": 16.9,
+    "cpu_pct_max": 22.8,
+    "mem_mb_max": 86.3
+   },
+   "uvera-scale-scorer-1": {
+    "cpu_pct_mean": 54.6,
+    "cpu_pct_max": 98.7,
+    "mem_mb_max": 130.5
+   },
+   "uvera-scale-scorer-2": {
+    "cpu_pct_mean": 56.3,
+    "cpu_pct_max": 93.8,
+    "mem_mb_max": 127.8
+   },
+   "uvera-scale-scorer-3": {
+    "cpu_pct_mean": 55.3,
+    "cpu_pct_max": 92.6,
+    "mem_mb_max": 116.5
+   },
+   "uvera-scale-scorer-4": {
+    "cpu_pct_mean": 54.1,
+    "cpu_pct_max": 92.2,
+    "mem_mb_max": 125.8
+   }
+  }
+ },
+ {
+  "scenario": "mixed",
+  "url": "http://nginx:8080",
+  "concurrency": 64,
+  "client_procs": 4,
+  "duration_s": 30.0,
+  "warmup_s": 5.0,
+  "explain": null,
+  "n": 5020,
+  "errors": 0,
+  "error_rate": 0.0,
+  "rps": 167.3,
+  "latency_ms": {
+   "p50": 194.85,
+   "p90": 912.03,
+   "p95": 1237.08,
+   "p99": 2042.8,
+   "max": 5834.09,
+   "mean": 375.8
+  },
+  "per_endpoint": {
+   "transfer": {
+    "n": 3439,
+    "errors": 0,
+    "error_rate": 0.0,
+    "rps": 114.6,
+    "latency_ms": {
+     "p50": 194.81,
+     "p90": 924.14,
+     "p95": 1248.72,
+     "p99": 1997.21,
+     "max": 5834.09,
+     "mean": 377.11
+    }
+   },
+   "case_link": {
+    "n": 166,
+    "errors": 0,
+    "error_rate": 0.0,
+    "rps": 5.5,
+    "latency_ms": {
+     "p50": 198.99,
+     "p90": 993.05,
+     "p95": 1259.63,
+     "p99": 2295.34,
+     "max": 3437.84,
+     "mean": 395.46
+    }
+   },
+   "text": {
+    "n": 1085,
+    "errors": 0,
+    "error_rate": 0.0,
+    "rps": 36.2,
+    "latency_ms": {
+     "p50": 194.13,
+     "p90": 856.15,
+     "p95": 1201.35,
+     "p99": 2128.19,
+     "max": 3722.69,
+     "mean": 368.56
+    }
+   },
+   "alert": {
+    "n": 220,
+    "errors": 0,
+    "error_rate": 0.0,
+    "rps": 7.3,
+    "latency_ms": {
+     "p50": 204.18,
+     "p90": 900.41,
+     "p95": 1302.74,
+     "p99": 1939.89,
+     "max": 2249.73,
+     "mean": 381.03
+    }
+   },
+   "case_get": {
+    "n": 110,
+    "errors": 0,
+    "error_rate": 0.0,
+    "rps": 3.7,
+    "latency_ms": {
+     "p50": 195.33,
+     "p90": 860.56,
+     "p95": 1099.62,
+     "p99": 2018.47,
+     "max": 2246.13,
+     "mean": 366.13
+    }
+   }
+  },
+  "label": "",
+  "finished_at": "2026-10-07T05:30:25",
+  "replicas": 4,
+  "db_write": "batch",
+  "explain_mode": "auto",
+  "docker_stats": {
+   "uvera-scale-feature-worker-1": {
+    "cpu_pct_mean": 1.9,
+    "cpu_pct_max": 7.0,
+    "mem_mb_max": 62.7
+   },
+   "uvera-scale-loadgen-run-cc2e749cb064": {
+    "cpu_pct_mean": 190.7,
+    "cpu_pct_max": 224.9,
+    "mem_mb_max": 205.2
+   },
+   "uvera-scale-nginx-1": {
+    "cpu_pct_mean": 13.5,
+    "cpu_pct_max": 19.9,
+    "mem_mb_max": 10.4
+   },
+   "uvera-scale-postgres-1": {
+    "cpu_pct_mean": 22.0,
+    "cpu_pct_max": 33.7,
+    "mem_mb_max": 181.2
+   },
+   "uvera-scale-prometheus-1": {
+    "cpu_pct_mean": 2.1,
+    "cpu_pct_max": 4.8,
+    "mem_mb_max": 68.3
+   },
+   "uvera-scale-redis-1": {
+    "cpu_pct_mean": 12.6,
+    "cpu_pct_max": 21.0,
+    "mem_mb_max": 87.4
+   },
+   "uvera-scale-scorer-1": {
+    "cpu_pct_mean": 32.1,
+    "cpu_pct_max": 73.1,
+    "mem_mb_max": 127.2
+   },
+   "uvera-scale-scorer-2": {
+    "cpu_pct_mean": 50.1,
+    "cpu_pct_max": 106.0,
+    "mem_mb_max": 130.3
+   },
+   "uvera-scale-scorer-3": {
+    "cpu_pct_mean": 46.9,
+    "cpu_pct_max": 104.1,
+    "mem_mb_max": 127.8
+   },
+   "uvera-scale-scorer-4": {
+    "cpu_pct_mean": 48.0,
+    "cpu_pct_max": 105.6,
+    "mem_mb_max": 127.9
+   }
+  }
+ }
+]

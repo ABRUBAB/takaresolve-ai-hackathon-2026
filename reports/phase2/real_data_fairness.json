@@ -1,5 +1,5 @@
 {
-  "dataset": "BTTC - Bangla Telegram and Text Communications (Mendeley Data, CC BY 4.0, 2026)",
+  "dataset": "BTTC - Bangla Tri-class Text Corpus for Spam, Ham, and Promotional Messages (Mendeley Data, CC BY 4.0, 2026)",
   "protocol": "and after per-group (equal-opportunity) thresholds, with the same protocol as the tenure study:\n  - 5 seeds; half of the real messages held out for testing (exact duplicates removed first, as in real_data_validation.py)\n  - a pilot model (same AI-2 architecture: character TF-IDF + logistic regression) trained on n real labelled messages\n  - the global threshold is set on a separate validation part of the training pool to catch 90% of scams\n  - equal opportunity: one threshold per group, each set on validation to catch 90% of that group's scams\n  - zero-shot: the served AI-2 model (synthetic training only), per group, as the honest starting point\nWrites reports/phase2/real_data_fairness.json",
   "target_recall": 0.9,
   "messages": 10267,

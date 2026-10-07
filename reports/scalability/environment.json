@@ -1,0 +1,13 @@
+{
+ "host": "one laptop: AMD Ryzen 5 5600H (6 cores / 12 threads), 15 GB RAM, Windows 11 Home",
+ "container runtime": "Docker Desktop 29.4.2 on WSL2; Linux VM sees 12 CPUs and ~7.4 GiB RAM",
+ "contention": "load generator, nginx, Redis, Postgres, Prometheus and all replicas share the same 12 threads; other ML jobs were running on the host (about 2 GB host RAM free)",
+ "scorer replica": "1 uvicorn process (uvloop, httptools), Docker limit 1 vCPU and 512 MB",
+ "feature worker": "1 asyncio process, Docker limit 1 vCPU",
+ "load generator": "asyncio + httpx, up to 4 processes, closed loop, inside the Docker network (sections 1, 3-5); on the Windows host for section 2",
+ "model": "AI-1 LightGBM, 482 trees, 19 features, isotonic + Mondrian conformal + robust novelty; AI-2 TF-IDF + LR",
+ "data": "synthetic UVERA-World full scale: 20,000 customers, 120 days, 2,203,725 events + 7,650 security events",
+ "monolith_memory": "1,693 MB private bytes (876 MB resident at the time; host under memory pressure)",
+ "monolith_startup": "81.5 s from start to ready (loads the whole synthetic world and all engines)",
+ "scorer replica footprint": "167 MB RSS at idle, 1.24 s from start to ready (model files only, no world in memory)"
+}

@@ -1,0 +1,119 @@
+[
+ {
+  "scenario": "monolith",
+  "url": "http://127.0.0.1:8020",
+  "concurrency": 1,
+  "client_procs": 1,
+  "duration_s": 30.0,
+  "warmup_s": 5.0,
+  "explain": null,
+  "n": 857,
+  "errors": 0,
+  "error_rate": 0.0,
+  "rps": 28.6,
+  "latency_ms": {
+   "p50": 28.02,
+   "p90": 49.85,
+   "p95": 69.02,
+   "p99": 141.72,
+   "max": 261.14,
+   "mean": 34.98
+  },
+  "per_endpoint": {
+   "monolith": {
+    "n": 857,
+    "errors": 0,
+    "error_rate": 0.0,
+    "rps": 28.6,
+    "latency_ms": {
+     "p50": 28.02,
+     "p90": 49.85,
+     "p95": 69.02,
+     "p99": 141.72,
+     "max": 261.14,
+     "mean": 34.98
+    }
+   }
+  },
+  "label": "monolith_host",
+  "finished_at": "2026-10-07T09:51:35"
+ },
+ {
+  "scenario": "monolith",
+  "url": "http://127.0.0.1:8020",
+  "concurrency": 8,
+  "client_procs": 1,
+  "duration_s": 30.0,
+  "warmup_s": 5.0,
+  "explain": null,
+  "n": 2089,
+  "errors": 0,
+  "error_rate": 0.0,
+  "rps": 69.6,
+  "latency_ms": {
+   "p50": 101.34,
+   "p90": 167.93,
+   "p95": 203.78,
+   "p99": 320.48,
+   "max": 527.14,
+   "mean": 114.84
+  },
+  "per_endpoint": {
+   "monolith": {
+    "n": 2089,
+    "errors": 0,
+    "error_rate": 0.0,
+    "rps": 69.6,
+    "latency_ms": {
+     "p50": 101.34,
+     "p90": 167.93,
+     "p95": 203.78,
+     "p99": 320.48,
+     "max": 527.14,
+     "mean": 114.84
+    }
+   }
+  },
+  "label": "monolith_host",
+  "finished_at": "2026-10-07T09:52:11"
+ },
+ {
+  "scenario": "monolith",
+  "url": "http://127.0.0.1:8020",
+  "concurrency": 32,
+  "client_procs": 4,
+  "duration_s": 30.0,
+  "warmup_s": 5.0,
+  "explain": null,
+  "n": 2421,
+  "errors": 0,
+  "error_rate": 0.0,
+  "rps": 80.7,
+  "latency_ms": {
+   "p50": 378.62,
+   "p90": 484.56,
+   "p95": 551.9,
+   "p99": 673.74,
+   "max": 791.37,
+   "mean": 394.95
+  },
+  "per_endpoint": {
+   "monolith": {
+    "n": 2421,
+    "errors": 0,
+    "error_rate": 0.0,
+    "rps": 80.7,
+    "latency_ms": {
+     "p50": 378.62,
+     "p90": 484.56,
+     "p95": 551.9,
+     "p99": 673.74,
+     "max": 791.37,
+     "mean": 394.95
+    }
+   }
+  },
+  "label": "monolith_host",
+  "finished_at": "2026-10-07T09:52:49"
+ }
+]

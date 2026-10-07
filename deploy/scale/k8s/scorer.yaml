@@ -1,0 +1,82 @@
+# PRODUCTION TEMPLATE - NOT RUN in the hackathon measurements (those used docker compose on one laptop).
+# Scorer Deployment + Service + HorizontalPodAutoscaler. Redis/Postgres would be managed services (or operators).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uvera-scorer
+  labels: {app: uvera-scorer}
+spec:
+  replicas: 3
+  selector:
+    matchLabels: {app: uvera-scorer}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: {maxSurge: 1, maxUnavailable: 0}
+  template:
+    metadata:
+      labels: {app: uvera-scorer}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: /metrics
+    spec:
+      containers:
+        - name: scorer
+          image: registry.example.internal/uvera-scale:1.0.0   # same image as deploy/scale/Dockerfile
+          args: ["uvicorn", "uvscale.scorer:app", "--host", "0.0.0.0", "--port", "8000", "--loop", "uvloop",
+                 "--http", "httptools", "--no-access-log"]
+          ports: [{containerPort: 8000, name: http}]
+          env:
+            - {name: REDIS_URL, valueFrom: {secretKeyRef: {name: uvera-backends, key: redis_url}}}
+            - {name: PG_DSN, valueFrom: {secretKeyRef: {name: uvera-backends, key: pg_dsn}}}
+            - {name: DB_WRITE, value: batch}
+            - {name: EXPLAIN, value: auto}
+          resources:
+            requests: {cpu: "1", memory: 384Mi}
+            limits: {cpu: "1", memory: 512Mi}
+          readinessProbe:
+            httpGet: {path: /health, port: http}
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: {path: /health, port: http}
+            periodSeconds: 10
+            failureThreshold: 3
+          volumeMounts:
+            - {name: artifacts, mountPath: /repo/artifacts, readOnly: true}   # model files; SHA-256 checked at start
+      volumes:
+        - name: artifacts
+          persistentVolumeClaim: {claimName: uvera-model-artifacts}       # or an init container pulling a registry version
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: uvera-scorer
+spec:
+  selector: {app: uvera-scorer}
+  ports: [{name: http, port: 80, targetPort: http}]
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: uvera-scorer
+spec:
+  scaleTargetRef: {apiVersion: apps/v1, kind: Deployment, name: uvera-scorer}
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target: {type: Utilization, averageUtilization: 60}   # measured: one replica saturates near 100% of 1 vCPU
+  behavior:
+    scaleUp: {stabilizationWindowSeconds: 0, policies: [{type: Percent, value: 100, periodSeconds: 30}]}
+    scaleDown: {stabilizationWindowSeconds: 300}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: uvera-scorer
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels: {app: uvera-scorer}

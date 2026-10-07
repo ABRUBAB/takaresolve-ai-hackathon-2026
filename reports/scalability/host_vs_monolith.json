@@ -1,0 +1,119 @@
+[
+ {
+  "scenario": "transfer",
+  "url": "http://127.0.0.1:8080",
+  "concurrency": 1,
+  "client_procs": 1,
+  "duration_s": 30.0,
+  "warmup_s": 5.0,
+  "explain": null,
+  "n": 2120,
+  "errors": 0,
+  "error_rate": 0.0,
+  "rps": 70.7,
+  "latency_ms": {
+   "p50": 13.09,
+   "p90": 17.58,
+   "p95": 18.46,
+   "p99": 20.82,
+   "max": 35.27,
+   "mean": 14.14
+  },
+  "per_endpoint": {
+   "transfer": {
+    "n": 2120,
+    "errors": 0,
+    "error_rate": 0.0,
+    "rps": 70.7,
+    "latency_ms": {
+     "p50": 13.09,
+     "p90": 17.58,
+     "p95": 18.46,
+     "p99": 20.82,
+     "max": 35.27,
+     "mean": 14.14
+    }
+   }
+  },
+  "label": "stack_4_replicas_host_client",
+  "finished_at": "2026-10-07T11:31:07"
+ },
+ {
+  "scenario": "transfer",
+  "url": "http://127.0.0.1:8080",
+  "concurrency": 8,
+  "client_procs": 1,
+  "duration_s": 30.0,
+  "warmup_s": 5.0,
+  "explain": null,
+  "n": 2419,
+  "errors": 0,
+  "error_rate": 0.0,
+  "rps": 80.6,
+  "latency_ms": {
+   "p50": 66.44,
+   "p90": 169.24,
+   "p95": 292.44,
+   "p99": 598.7,
+   "max": 1529.86,
+   "mean": 98.88
+  },
+  "per_endpoint": {
+   "transfer": {
+    "n": 2419,
+    "errors": 0,
+    "error_rate": 0.0,
+    "rps": 80.6,
+    "latency_ms": {
+     "p50": 66.44,
+     "p90": 169.24,
+     "p95": 292.44,
+     "p99": 598.7,
+     "max": 1529.86,
+     "mean": 98.88
+    }
+   }
+  },
+  "label": "stack_4_replicas_host_client",
+  "finished_at": "2026-10-07T11:31:43"
+ },
+ {
+  "scenario": "transfer",
+  "url": "http://127.0.0.1:8080",
+  "concurrency": 32,
+  "client_procs": 4,
+  "duration_s": 30.0,
+  "warmup_s": 5.0,
+  "explain": null,
+  "n": 6757,
+  "errors": 0,
+  "error_rate": 0.0,
+  "rps": 225.2,
+  "latency_ms": {
+   "p50": 91.72,
+   "p90": 263.23,
+   "p95": 428.68,
+   "p99": 839.16,
+   "max": 1930.66,
+   "mean": 141.58
+  },
+  "per_endpoint": {
+   "transfer": {
+    "n": 6757,
+    "errors": 0,
+    "error_rate": 0.0,
+    "rps": 225.2,
+    "latency_ms": {
+     "p50": 91.72,
+     "p90": 263.23,
+     "p95": 428.68,
+     "p99": 839.16,
+     "max": 1930.66,
+     "mean": 141.58
+    }
+   }
+  },
+  "label": "stack_4_replicas_host_client",
+  "finished_at": "2026-10-07T11:32:20"
+ }
+]

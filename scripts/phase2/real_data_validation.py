@@ -65,8 +65,8 @@ def bttc():
         res["base_rate"] = float(y_spam.mean())
         curve.append(res)
         print("curve", res, flush=True)
-    return {"dataset": "BTTC - Bangla Telegram and Text Communications (Mendeley Data, CC BY 4.0, 2026)",
-            "note": "10,267 complete rows (the download cut the last 15 rows); exact duplicates removed",
+    return {"dataset": "BTTC - Bangla Tri-class Text Corpus for Spam, Ham, and Promotional Messages (Mendeley Data, CC BY 4.0, 2026)",
+            "note": "10,267 complete rows available from the local partial download, 16 fewer than the publisher's 10,283; exact duplicates removed",
             "zero_shot_served_model": zero, "pilot_learning_curve": curve}
 
 

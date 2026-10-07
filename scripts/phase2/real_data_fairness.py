@@ -82,7 +82,7 @@ def main():
     eng = TextEngine(ArtifactStore([ROOT]))
     p0 = np.asarray(eng.scam_prob(d["text"].tolist()))
 
-    result = {"dataset": "BTTC - Bangla Telegram and Text Communications (Mendeley Data, CC BY 4.0, 2026)",
+    result = {"dataset": "BTTC - Bangla Tri-class Text Corpus for Spam, Ham, and Promotional Messages (Mendeley Data, CC BY 4.0, 2026)",
               "protocol": __doc__.split("rarely, before")[1].strip() if "rarely, before" in __doc__ else "",
               "target_recall": TARGET, "messages": int(len(d)), "attributes": {}}
     for attr, groups in attrs.items():

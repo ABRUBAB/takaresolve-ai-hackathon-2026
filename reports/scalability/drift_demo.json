@@ -1,0 +1,231 @@
+{
+ "what": "PSI per AI-1 feature: reference bins (build_ai1_features, days 70-99: the 30 days before go-live) vs the feature-worker's sliding window of the last N p2p transfers on the stream",
+ "thresholds": {
+  "warn": 0.1,
+  "alert": 0.2
+ },
+ "phases": [
+  {
+   "name": "normal: days 100-106 as recorded",
+   "shift": "none",
+   "producer": {
+    "sent": 128275,
+    "seconds": 10.73,
+    "rate_achieved": 11954.4,
+    "target_rate": "max",
+    "backpressure_wait_s": 0.0,
+    "next": 128275
+   },
+   "drift": {
+    "status": "ok",
+    "max_psi": 0.059,
+    "window_n": 26457,
+    "window_size": 30000,
+    "events_seen": 422355,
+    "thresholds": {
+     "warn": 0.1,
+     "alert": 0.2
+    },
+    "top_drifted": [
+     {
+      "feature": "sender_out_count_7d",
+      "psi": 0.059
+     },
+     {
+      "feature": "recipient_out_in_ratio_7d",
+      "psi": 0.0455
+     },
+     {
+      "feature": "amount_log",
+      "psi": 0.0433
+     },
+     {
+      "feature": "recipient_age_days",
+      "psi": 0.0422
+     },
+     {
+      "feature": "sender_tenure_days",
+      "psi": 0.035
+     }
+    ],
+    "psi": {
+     "sender_tenure_days": 0.035,
+     "amount_log": 0.0433,
+     "amount_z_30d": 0.0202,
+     "amount_to_balance": 0.0159,
+     "sender_out_count_7d": 0.059,
+     "cash_in_gap_min": 0.018,
+     "device_change_72h": 0.0001,
+     "pin_reset_72h": 0.0,
+     "first_time_pair": 0.0011,
+     "recipient_age_days": 0.0422,
+     "recipient_in_count_7d": 0.0249,
+     "recipient_sender_days_7d": 0.024,
+     "recipient_in_today_before": 0.011,
+     "recipient_out_in_ratio_7d": 0.0455,
+     "recipient_cashout_count_7d": 0.0155,
+     "hour": 0.0013,
+     "is_night": 0.0008,
+     "dow": 0.0054,
+     "channel_ussd": 0.0
+    },
+    "features_alert": [],
+    "features_warn": []
+   }
+  },
+  {
+   "name": "shifted: days 107-113, p2p amounts x3",
+   "shift": "amount_x3",
+   "producer": {
+    "sent": 116786,
+    "seconds": 9.05,
+    "rate_achieved": 12903.3,
+    "target_rate": "max",
+    "backpressure_wait_s": 0.0,
+    "next": 116786
+   },
+   "drift": {
+    "status": "alert",
+    "max_psi": 0.4937,
+    "window_n": 30000,
+    "window_size": 30000,
+    "events_seen": 447186,
+    "thresholds": {
+     "warn": 0.1,
+     "alert": 0.2
+    },
+    "top_drifted": [
+     {
+      "feature": "amount_to_balance",
+      "psi": 0.4937
+     },
+     {
+      "feature": "amount_log",
+      "psi": 0.2758
+     },
+     {
+      "feature": "amount_z_30d",
+      "psi": 0.1683
+     },
+     {
+      "feature": "sender_out_count_7d",
+      "psi": 0.1038
+     },
+     {
+      "feature": "recipient_age_days",
+      "psi": 0.077
+     }
+    ],
+    "psi": {
+     "sender_tenure_days": 0.0614,
+     "amount_log": 0.2758,
+     "amount_z_30d": 0.1683,
+     "amount_to_balance": 0.4937,
+     "sender_out_count_7d": 0.1038,
+     "cash_in_gap_min": 0.0121,
+     "device_change_72h": 0.0,
+     "pin_reset_72h": 0.0,
+     "first_time_pair": 0.0034,
+     "recipient_age_days": 0.077,
+     "recipient_in_count_7d": 0.0464,
+     "recipient_sender_days_7d": 0.0452,
+     "recipient_in_today_before": 0.0116,
+     "recipient_out_in_ratio_7d": 0.0184,
+     "recipient_cashout_count_7d": 0.0376,
+     "hour": 0.0057,
+     "is_night": 0.0019,
+     "dow": 0.0489,
+     "channel_ussd": 0.0002
+    },
+    "features_alert": [
+     "amount_log",
+     "amount_to_balance"
+    ],
+    "features_warn": [
+     "amount_z_30d",
+     "sender_out_count_7d"
+    ]
+   }
+  },
+  {
+   "name": "shifted: days 114-119, 30% of p2p to brand-new receivers",
+   "shift": "new_receivers",
+   "producer": {
+    "sent": 132661,
+    "seconds": 10.19,
+    "rate_achieved": 13019.5,
+    "target_rate": "max",
+    "backpressure_wait_s": 0.0,
+    "next": 132661
+   },
+   "drift": {
+    "status": "alert",
+    "max_psi": 1.3479,
+    "window_n": 30000,
+    "window_size": 30000,
+    "events_seen": 479557,
+    "thresholds": {
+     "warn": 0.1,
+     "alert": 0.2
+    },
+    "top_drifted": [
+     {
+      "feature": "dow",
+      "psi": 1.3479
+     },
+     {
+      "feature": "recipient_out_in_ratio_7d",
+      "psi": 0.5782
+     },
+     {
+      "feature": "recipient_age_days",
+      "psi": 0.5351
+     },
+     {
+      "feature": "recipient_in_count_7d",
+      "psi": 0.4873
+     },
+     {
+      "feature": "recipient_sender_days_7d",
+      "psi": 0.487
+     }
+    ],
+    "psi": {
+     "sender_tenure_days": 0.1186,
+     "amount_log": 0.1539,
+     "amount_z_30d": 0.0542,
+     "amount_to_balance": 0.0902,
+     "sender_out_count_7d": 0.1867,
+     "cash_in_gap_min": 0.0351,
+     "device_change_72h": 0.0,
+     "pin_reset_72h": 0.0,
+     "first_time_pair": 0.1528,
+     "recipient_age_days": 0.5351,
+     "recipient_in_count_7d": 0.4873,
+     "recipient_sender_days_7d": 0.487,
+     "recipient_in_today_before": 0.0368,
+     "recipient_out_in_ratio_7d": 0.5782,
+     "recipient_cashout_count_7d": 0.2736,
+     "hour": 0.0064,
+     "is_night": 0.001,
+     "dow": 1.3479,
+     "channel_ussd": 0.0006
+    },
+    "features_alert": [
+     "recipient_age_days",
+     "recipient_in_count_7d",
+     "recipient_sender_days_7d",
+     "recipient_out_in_ratio_7d",
+     "recipient_cashout_count_7d",
+     "dow"
+    ],
+    "features_warn": [
+     "sender_tenure_days",
+     "amount_log",
+     "sender_out_count_7d",
+     "first_time_pair"
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,22 @@
+{
+ "consumer": "24324391d5c2",
+ "events": 186653,
+ "featured": 39625,
+ "shadow_scored": 0,
+ "shadow_errors": 0,
+ "active_seconds": 68.815,
+ "events_per_s": 2712.4,
+ "lag_ms": {
+  "p50": 43664.01,
+  "p95": 62485.22,
+  "p99": 64603.96,
+  "max": 65285.75
+ },
+ "batch_ms": {
+  "p50": 108.46,
+  "p95": 145.64,
+  "n": 374
+ },
+ "what": "warm-up replay days 0-99 (1,833,653 events incl. security), producer at max rate with backpressure, 1 worker",
+ "redis_used_memory_mb": 73.5
+}
