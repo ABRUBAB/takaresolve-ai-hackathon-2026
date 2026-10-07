@@ -177,7 +177,7 @@
   ],
   "break_even_follow_rate": {
     "base_assumptions": 0.001210405187372524,
-    "all_assumptions_pessimistic": 0.05112013303296904
+    "all_assumptions_pessimistic": 0.05580064081098359
   },
   "tornado_net_benefit_at_10pct_follow": {
     "reference_net_bdt": 2614201.796431305,

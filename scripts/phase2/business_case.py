@@ -49,6 +49,12 @@ ASSUME = {  # [low, base, high]
     "server_cost_bdt_per_month": [3000.0, 6000.0, 15000.0],
     "p2p_transfers_per_month": [1_000_000, 1_000_000, 1_000_000],
 }
+# the end of each range that makes UVERA look worse (every other assumption: the high end)
+PESSIMISTIC_LOW = {"minutes_per_alert_item", "cashout_fee_rate", "p2p_transfers_per_month"}
+
+
+def pessimistic():
+    return {k: (v[0] if k in PESSIMISTIC_LOW else v[2]) for k, v in ASSUME.items()}
 
 
 def measured():
@@ -136,8 +142,7 @@ def break_even(meas, agent, a):
 def main():
     meas, agent, st = measured(), agent_service(), study()
     base = {k: v[1] for k, v in ASSUME.items()}
-    worst = {k: (v[2] if "cost" in k or "minutes_lost" in k or "rate_per" in k or "abandon" in k or "lost_per" in k or "review" in k
-                 or k in ("minutes_per_linked_case", "server_cost_bdt_per_month") else v[0]) for k, v in ASSUME.items()}
+    worst = pessimistic()
     if st and st.get("analyst_triage", {}).get("minutes_per_alert_item_measured"):
         base["minutes_per_alert_item"] = st["analyst_triage"]["minutes_per_alert_item_measured"]
         base["minutes_per_linked_case"] = st["analyst_triage"]["minutes_per_linked_case_measured"]
@@ -179,7 +184,7 @@ def charts(out):
     # 1. net benefit vs follow rate
     fr = np.linspace(0, 0.5, 101)
     meas, agent, base = out["measured"], out["agent_service"], {k: v[1] for k, v in ASSUME.items()}
-    worst = {k: v[2] if k not in ("cashout_fee_rate", "p2p_transfers_per_month") else v[0] for k, v in ASSUME.items()}
+    worst = pessimistic()
     fig, ax = plt.subplots(figsize=(7, 3.4))
     for a, lab, col in ((base, "base assumptions", NAVY), (worst, "every assumption pessimistic", AMBER)):
         ax.plot(fr * 100, [economics(meas, agent, a, f)["net_benefit_bdt"] / 1e6 for f in fr], color=col, lw=2.2, label=lab)
