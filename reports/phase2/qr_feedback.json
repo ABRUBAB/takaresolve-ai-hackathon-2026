@@ -1,0 +1,67 @@
+{
+  "few_shot_feedback": [
+    {
+      "confirmed_D_examples_added": 0,
+      "recall_by_family": {
+        "A_round_amount_atm": 0.8780487804878049,
+        "B_split_under_limit": 0.8444444444444444,
+        "C_cash_in_pass_through": 0.9090909090909091,
+        "D_rotating_ring": 0.42105263157894735
+      },
+      "weekly_precision_at_20": 0.925,
+      "fpr_honest": 0.10168067226890756
+    },
+    {
+      "confirmed_D_examples_added": 3,
+      "recall_by_family": {
+        "A_round_amount_atm": 0.8780487804878049,
+        "B_split_under_limit": 0.8444444444444444,
+        "C_cash_in_pass_through": 0.9090909090909091,
+        "D_rotating_ring": 0.4473684210526316
+      },
+      "weekly_precision_at_20": 0.925,
+      "fpr_honest": 0.09915966386554621
+    },
+    {
+      "confirmed_D_examples_added": 5,
+      "recall_by_family": {
+        "A_round_amount_atm": 0.8780487804878049,
+        "B_split_under_limit": 0.8444444444444444,
+        "C_cash_in_pass_through": 0.8909090909090909,
+        "D_rotating_ring": 0.5263157894736842
+      },
+      "weekly_precision_at_20": 0.925,
+      "fpr_honest": 0.09915966386554621
+    },
+    {
+      "confirmed_D_examples_added": 10,
+      "recall_by_family": {
+        "A_round_amount_atm": 0.8780487804878049,
+        "B_split_under_limit": 0.8444444444444444,
+        "C_cash_in_pass_through": 0.9454545454545454,
+        "D_rotating_ring": 0.5789473684210527
+      },
+      "weekly_precision_at_20": 0.925,
+      "fpr_honest": 0.09789915966386555
+    },
+    {
+      "confirmed_D_examples_added": 20,
+      "recall_by_family": {
+        "A_round_amount_atm": 0.9024390243902439,
+        "B_split_under_limit": 0.8222222222222222,
+        "C_cash_in_pass_through": 0.9090909090909091,
+        "D_rotating_ring": 0.6052631578947368
+      },
+      "weekly_precision_at_20": 0.925,
+      "fpr_honest": 0.10336134453781512
+    }
+  ],
+  "pool_size": 224,
+  "interception": {
+    "scam_qr_cashout_events_test_window": 67,
+    "scam_qr_cashout_bdt": 254000.0,
+    "share_of_events_through_flagged_shops": 1.0,
+    "share_of_money_through_flagged_shops": 1.0,
+    "note": "test merchants only (unseen merchants scored by the deployed QR Shield)"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "window": "test window, all customers (days 100-119)",
+  "transfers": 83555,
+  "ladder": [
+    {
+      "configuration": "0. Rule only (Tk 5,000+ to a new receiver)",
+      "scams_paused": 160,
+      "scams_total": 597,
+      "recall": 0.26800670016750416,
+      "scam_money_paused_bdt": 1264090.0,
+      "scam_money_total_bdt": 2263940.0,
+      "false_pauses": 1102,
+      "false_pauses_per_1000_normal": 13.283830371995467,
+      "precision": 0.12678288431061807
+    },
+    {
+      "configuration": "1. Pause Check (AI-1) alone",
+      "scams_paused": 495,
+      "scams_total": 597,
+      "recall": 0.8291457286432161,
+      "scam_money_paused_bdt": 1983910.0,
+      "scam_money_total_bdt": 2263940.0,
+      "false_pauses": 644,
+      "false_pauses_per_1000_normal": 7.762964391619856,
+      "precision": 0.43459174714661986
+    },
+    {
+      "configuration": "2. Pause Check + Case Linker watchlist (closed loop)",
+      "scams_paused": 549,
+      "scams_total": 597,
+      "recall": 0.9195979899497487,
+      "scam_money_paused_bdt": 2137310.0,
+      "scam_money_total_bdt": 2263940.0,
+      "false_pauses": 657,
+      "false_pauses_per_1000_normal": 7.919670194556281,
+      "precision": 0.4552238805970149
+    }
+  ],
+  "closed_loop_extra": {
+    "extra_scams_paused": 54,
+    "extra_false_pauses": 13,
+    "extra_scam_money_bdt": 153400.0
+  },
+  "watchlist_size_end": 45,
+  "watchlist_added_by_day": {
+    "100": 1,
+    "101": 6,
+    "102": 3,
+    "103": 10,
+    "104": 5,
+    "105": 2,
+    "106": 6,
+    "107": 1,
+    "108": 3,
+    "109": 2,
+    "110": 3,
+    "111": 1,
+    "112": 2,
+    "113": 0,
+    "114": 0,
+    "115": 0,
+    "116": 0,
+    "117": 0,
+    "118": 0,
+    "119": 0
+  },
+  "rule": "watchlist = wallets in linked cases with chain score >= 0.95 and >= 2 alerts, built only from events before the decision day"
+}

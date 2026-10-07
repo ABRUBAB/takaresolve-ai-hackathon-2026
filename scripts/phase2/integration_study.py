@@ -283,6 +283,26 @@ def fairness_budget(world, df, thr):
     return out
 
 
+def fairness_dial(world, df, thr):
+    """Policy dial: lower only the long-tenure (>365d) group's pause threshold step by step (chosen on validation as the
+    share of that group's normal transfers paused) and measure, once on the test window, the FNR gap vs false pauses."""
+    g_col, grp = "tenure_bucket", ">365d"
+    va = df[df["split"] == "val"].reset_index(drop=True)
+    win = df[df["split"].isin(["test", "test_seen"])].reset_index(drop=True)
+    neg = va.loc[(va[g_col] == grp) & (va[LABEL] == 0), "raw"]
+    rows = []
+    for lv in [None, 0.008, 0.01, 0.012, 0.015, 0.02, 0.025]:
+        t_grp = thr["red_score"] if lv is None else min(thr["red_score"], float(np.quantile(neg, 1 - lv)))
+        t = np.where(win[g_col] == grp, t_grp, thr["red_score"])
+        ff, yy = win["raw"].to_numpy() > t, win[LABEL].to_numpy() == 1
+        fnr = {g: float(1 - ff[(win[g_col] == g).to_numpy() & yy].mean()) for g in sorted(win[g_col].unique())}
+        rows.append({"long_tenure_pause_level": lv or "phase-1 global threshold", "fnr": fnr,
+                     "fnr_gap": max(fnr.values()) - min(fnr.values()), "recall": float(ff[yy].mean()),
+                     "false_pauses_per_1000_normal": float(1000 * ff[~yy].mean())})
+        log("dial", rows[-1])
+    common.write_json(OUT / "fairness_dial.json", {"method": fairness_dial.__doc__.strip().replace("\n", " "), "rows": rows})
+
+
 if __name__ == "__main__":
     parts = sys.argv[1:] or ["linking", "loop", "fairness", "lofo"]
     t0 = time.time()
@@ -292,7 +312,7 @@ if __name__ == "__main__":
         try:
             {"linking": lambda: linking_vs_naive(world, df), "loop": lambda: closed_loop(world, df, thr),
              "lofo": lambda: lofo(world, df), "fairness": lambda: fairness(world, df, thr),
-             "fairness2": lambda: fairness_budget(world, df, thr)}[p]()
+             "fairness2": lambda: fairness_budget(world, df, thr), "dial": lambda: fairness_dial(world, df, thr)}[p]()
         except Exception as e:
             import traceback
             traceback.print_exc()

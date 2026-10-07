@@ -1,0 +1,82 @@
+{
+  "method": "Policy dial: lower only the long-tenure (>365d) group's pause threshold step by step (chosen on validation as the     share of that group's normal transfers paused) and measure, once on the test window, the FNR gap vs false pauses.",
+  "rows": [
+    {
+      "long_tenure_pause_level": "phase-1 global threshold",
+      "fnr": {
+        "90-365d": 0.19217081850533813,
+        "<90d": 0.18604651162790697,
+        ">365d": 0.29007633587786263
+      },
+      "fnr_gap": 0.10402982424995566,
+      "recall": 0.764505119453925,
+      "false_pauses_per_1000_normal": 8.32841181646157
+    },
+    {
+      "long_tenure_pause_level": 0.008,
+      "fnr": {
+        "90-365d": 0.19217081850533813,
+        "<90d": 0.18604651162790697,
+        ">365d": 0.29007633587786263
+      },
+      "fnr_gap": 0.10402982424995566,
+      "recall": 0.764505119453925,
+      "false_pauses_per_1000_normal": 8.32841181646157
+    },
+    {
+      "long_tenure_pause_level": 0.01,
+      "fnr": {
+        "90-365d": 0.19217081850533813,
+        "<90d": 0.18604651162790697,
+        ">365d": 0.26717557251908397
+      },
+      "fnr_gap": 0.081129060891177,
+      "recall": 0.7747440273037542,
+      "false_pauses_per_1000_normal": 9.11183695115043
+    },
+    {
+      "long_tenure_pause_level": 0.012,
+      "fnr": {
+        "90-365d": 0.19217081850533813,
+        "<90d": 0.18604651162790697,
+        ">365d": 0.24045801526717558
+      },
+      "fnr_gap": 0.05441150363926861,
+      "recall": 0.7866894197952219,
+      "false_pauses_per_1000_normal": 10.268895611613976
+    },
+    {
+      "long_tenure_pause_level": 0.015,
+      "fnr": {
+        "90-365d": 0.19217081850533813,
+        "<90d": 0.18604651162790697,
+        ">365d": 0.2290076335877863
+      },
+      "fnr_gap": 0.042961121959879334,
+      "recall": 0.7918088737201365,
+      "false_pauses_per_1000_normal": 11.667008159674095
+    },
+    {
+      "long_tenure_pause_level": 0.02,
+      "fnr": {
+        "90-365d": 0.19217081850533813,
+        "<90d": 0.18604651162790697,
+        ">365d": 0.2137404580152672
+      },
+      "fnr_gap": 0.027693946387360224,
+      "recall": 0.7986348122866894,
+      "false_pauses_per_1000_normal": 14.511444033313648
+    },
+    {
+      "long_tenure_pause_level": 0.025,
+      "fnr": {
+        "90-365d": 0.19217081850533813,
+        "<90d": 0.18604651162790697,
+        ">365d": 0.1984732824427481
+      },
+      "fnr_gap": 0.012426770814841115,
+      "recall": 0.8054607508532423,
+      "false_pauses_per_1000_normal": 17.765671515867375
+    }
+  ]
+}
