@@ -1,7 +1,7 @@
 {
   "status": "measured",
   "title": "Fairness: the tenure gap in missed scams",
-  "updated_at": "2026-10-07T04:12:02Z",
+  "updated_at": "2026-10-07T04:18:28Z",
   "source": "scripts/phase2/integration_study.py (fairness, fairness2, dial) -> reports/phase2/integration/",
   "summary": "Long-tenure customers' scams were missed more often (29.0% vs ~19%). We tested an equal-opportunity fix, searched for a fix with no extra false pauses, and built a policy dial.",
   "headline": [

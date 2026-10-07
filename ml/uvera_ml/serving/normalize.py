@@ -10,7 +10,7 @@ from __future__ import annotations
 import re
 import unicodedata
 
-_INVISIBLE = dict.fromkeys(map(ord, "​⁠﻿­᠎‎‏‪‫‬‭‮"), None)
+_INVISIBLE = dict.fromkeys(map(ord, "\u200b\u2060\ufeff\u00ad\u180e\u200e\u200f\u202a\u202b\u202c\u202d\u202e"), None)
 _HOMOGLYPHS = str.maketrans({
     "а": "a", "е": "e", "о": "o", "р": "p", "с": "c", "у": "y", "х": "x", "і": "i", "ј": "j", "ѕ": "s", "ԁ": "d", "һ": "h",
     "к": "k", "І": "I", "Ѕ": "S", "Ј": "J", "м": "m", "т": "t", "в": "b", "н": "h", "ɡ": "g", "ⅼ": "l", "Ι": "I", "Α": "A", "Β": "B", "Ε": "E", "Κ": "K",
@@ -25,7 +25,7 @@ _LEET_WORD = re.compile(r"\b(?=[A-Za-z0-9@$!]*[A-Za-z])(?=[A-Za-z0-9@$!]*[0-9@$!
 
 
 def _is_bengali(ch: str) -> bool:
-    return "ঀ" <= ch <= "৿"
+    return "\u0980" <= ch <= "\u09ff"
 
 
 def _fold(ch: str) -> str:
@@ -55,7 +55,7 @@ def _strip_zw(text: str) -> str:
     # ZWJ/ZWNJ are part of correct Bengali spelling; keep them only between Bengali characters
     out = []
     for i, ch in enumerate(text):
-        if ch in "‌‍":
+        if ch in "\u200c\u200d":
             prev, nxt = (text[i - 1] if i else ""), (text[i + 1] if i + 1 < len(text) else "")
             if not (_is_bengali(prev) and _is_bengali(nxt)):
                 continue

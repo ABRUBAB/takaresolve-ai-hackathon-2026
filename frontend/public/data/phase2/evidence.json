@@ -1,10 +1,23 @@
 {
   "status": "measured",
   "title": "Real-world evidence",
-  "updated_at": "2026-10-07T04:12:02Z",
+  "updated_at": "2026-10-07T04:18:28Z",
   "source": "public sources (cited) and scripts/phase2/real_data_validation.py",
-  "summary": "Public data on the size of the problem, and tests of our models on real public datasets we did not create.",
-  "headline": [],
+  "summary": "Public data on the size of the problem, and a test of our text model on real public messages we did not create.",
+  "headline": [
+    {
+      "label": "Real Bangla SMS: PR-AUC after 100 real labels",
+      "value": 0.9550991595231736,
+      "format": "num3",
+      "sub": "zero-shot from synthetic 0.55"
+    },
+    {
+      "label": "MFS fraud cases in Bangladesh, 2025",
+      "value": 81423,
+      "format": "num",
+      "sub": "only 8.7% of the money recovered (FE, citing Bangladesh Bank)"
+    }
+  ],
   "sections": [
     {
       "id": "public_data",
@@ -52,6 +65,46 @@
         ]
       },
       "takeaway": "Authorised scams through mule wallets, low recovery and agent liquidity gaps are documented in Bangladesh; warnings measurably stop scam payments elsewhere."
+    },
+    {
+      "id": "real_sms",
+      "title": "AI-2 on 10,267 REAL Bangla SMS and Telegram messages (BTTC, CC BY 4.0)",
+      "lead": "Zero-shot = our served model trained only on synthetic text. Pilot = the same pipeline retrained with n real labelled messages, tested on a held-out half (5 random splits).",
+      "chart": {
+        "kind": "line",
+        "unit": "num3",
+        "x": [
+          0,
+          100,
+          300,
+          1000,
+          3000
+        ],
+        "x_label": "real labelled messages used for training",
+        "series": [
+          {
+            "name": "PR-AUC, real messages only",
+            "values": [
+              null,
+              0.9551,
+              0.9689,
+              0.9747,
+              0.9791
+            ]
+          },
+          {
+            "name": "PR-AUC, synthetic + real",
+            "values": [
+              0.5008,
+              0.8761,
+              0.9405,
+              0.9653,
+              0.9746
+            ]
+          }
+        ]
+      },
+      "takeaway": "Synthetic-only text does not transfer (PR-AUC 0.55 on spam vs normal; it flags 59% of real operator/bank notices). With only 100 real labelled messages the same pipeline reaches 0.955, and 0.979 with 3,000: the pilot's first step is a few hundred labelled complaints."
     }
   ],
   "caveats": [

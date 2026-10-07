@@ -1,39 +1,104 @@
 {
-  "status": "pending",
-  "title": "Security and governance",
-  "updated_at": null,
-  "source": "TBD (backend/tests, scans, audit log, model registry)",
-  "summary": "TBD",
+  "status": "measured",
+  "title": "Security and governance, tested",
+  "updated_at": "2026-10-07T04:18:28Z",
+  "source": "reports/security/ (security_report.py, failure_recovery_test.py, secrets_scan.py, bandit, pip-audit)",
+  "summary": "Each governance control the judges named is implemented and verified by an automated test or scan.",
   "headline": [
     {
-      "label": "security tests passing",
-      "value": null,
-      "format": "text",
-      "sub": "TBD"
+      "label": "Security tests passing",
+      "value": 379,
+      "format": "num",
+      "sub": "of 379; 0 failed"
     },
     {
-      "label": "dependency / secret scan findings",
-      "value": null,
-      "format": "text",
-      "sub": "TBD"
+      "label": "Committed secrets found (full history)",
+      "value": 0,
+      "format": "num",
+      "sub": "API keys, tokens, private keys, JWTs"
     },
     {
-      "label": "models verified in the registry",
-      "value": null,
-      "format": "text",
-      "sub": "TBD"
+      "label": "Crash recovery without a human",
+      "value": 1.0,
+      "format": "pct",
+      "sub": "3 kills; mean 99.3 s to ready"
     }
   ],
   "sections": [
     {
       "id": "checks",
-      "title": "Checks",
-      "lead": "Each control and how it is verified.",
-      "chart": null,
-      "takeaway": "TBD"
+      "title": "Controls and how each is verified",
+      "lead": "Prototype security engineering, honestly separated from what a production fintech adds (see caveats).",
+      "chart": {
+        "kind": "table",
+        "columns": [
+          "control",
+          "result",
+          "how it is verified"
+        ],
+        "units": [
+          "text",
+          "text",
+          "text"
+        ],
+        "rows": [
+          [
+            "Authentication, roles, ownership, bad/expired/forged tokens, rate limits, CORS, input abuse",
+            "379 of 379 tests pass",
+            "backend/tests/test_security.py (route × test matrix)"
+          ],
+          [
+            "Stale or tampered model artifact",
+            "never served; readiness names the file",
+            "one bit flipped in ai1/model.txt → 503 with the file named; restored → 200"
+          ],
+          [
+            "Crash recovery (API killed 3 times)",
+            "recovered every time; kill-to-ready 60.6-161.5 s",
+            "requests during the outage fail fast; audit chain verifies after each crash"
+          ],
+          [
+            "Tamper-evident audit log",
+            "hash chain + append-only triggers",
+            "verify endpoint names the first altered row (tested)"
+          ],
+          [
+            "Model approval and rollback",
+            "registry: candidate → approved → retired",
+            "scripts/model_registry.py; unapproved models not served (tested)"
+          ],
+          [
+            "JWT key rotation and secrets",
+            "key ring with key ids; retired keys rejected",
+            "scripts/rotate_jwt_key.py; secrets from env or a file outside the repo"
+          ],
+          [
+            "Secrets in git history",
+            "0 high-confidence findings in all commits",
+            "scripts/secrets_scan.py over git log -p --all"
+          ],
+          [
+            "Dependency vulnerabilities",
+            "none known (pinned and installed)",
+            "pip-audit"
+          ],
+          [
+            "Static code scan",
+            "no exploitable finding; 2 issues fixed",
+            "bandit (reports/security/security_scan.md)"
+          ],
+          [
+            "PII before the LLM",
+            "phones, IDs, emails, cards, links removed",
+            "ml/tests/test_pii.py"
+          ]
+        ]
+      },
+      "takeaway": "Nothing here is a claim without a test or a scan behind it."
     }
   ],
   "caveats": [
-    "TBD"
+    "Production fintech additionally needs a KMS/HSM for keys, WORM storage for the audit log, a SIEM, and an external penetration test.",
+    "Signing keys are random per start unless a key ring is configured; then tokens survive restarts."
   ]
 }

@@ -1,7 +1,7 @@
 {
   "status": "measured",
   "title": "Business case: from metrics to money",
-  "updated_at": "2026-10-07T04:12:02Z",
+  "updated_at": "2026-10-07T04:18:28Z",
   "source": "scripts/phase2/business_case.py -> reports/phase2/business_case.json",
   "summary": "We measured what is measurable (scams and money paused, false pauses, reviews, analyst items, agent refusals), stated every other assumption with a range, and solved for break-even.",
   "headline": [
